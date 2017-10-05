@@ -1,4 +1,6 @@
-#PCA Principal Component Analysis
+#PCA Principal Component Analysis - USING CARET
+
+#NOT WORKING YET
 
 install.packages("ir.pca");
 library (ir.pca);
@@ -21,28 +23,28 @@ data_df<-unite(data_df, DECISION, c("FAILURE.NAME","AFFECTED.COMPONENT","RULE"),
 # consider only the feature columns
 features_df<-data.frame(data_df$UTILITY.DROP,data_df$CRITICALITY,
                         data_df$CONNECTIVITY,data_df$RELIABILITY);
-#                        data_df$DECISION);
 
 names<-c("Utility_Drop","Criticality","Connectity","Reliability");
 colnames(features_df) <- names;
 
 # apply PCA - scale. = TRUE is highly 
 # advisable, but default is FALSE. 
+
+require(caret);
+trans = preProcess(features_df, 
+                   method=c("BoxCox", "center", 
+                            "scale", "pca"))
+features_pca= predict(trans, features_df)
+
 features_pca <- prcomp(features_df,center=TRUE,scale=TRUE);
 print(features_pca);
 
-# Standard deviations:
-#   [1] 1.4864492 0.9750478 0.7559267 0.5180014
-# 
-# Rotation:
-#                PC1         PC2         PC3        PC4
-# Utility_Drop 0.6128382 -0.05281935  0.04842819  0.7869525
-# Criticality  0.4815655  0.44886497 -0.68929320 -0.3024728
-# Connectity   0.3160844 -0.87535050 -0.22137859 -0.2912794
-# Reliability  0.5409387  0.17173191  0.68812870 -0.4520756
-
-plot(features_pca, type="l");
-#from the plot we can see that the first two PC's explain most of the variability in the data
+trans$rotation
+#                 PC1         PC2        PC3
+# Utility_Drop 0.6203476 -0.06597448  0.2444351
+# Criticality  0.5143144 -0.57907044  0.2723650
+# Connectity   0.3884862  0.81086540  0.2726878
+# Reliability  0.4469094  0.05312336 -0.8897809
 
 summary(features_pca);
 # Importance of components:
@@ -60,9 +62,9 @@ library(ggbiplot)
 
 #Plotting Principal Components for certains columns
 
-plot_pca<-function(group_classes,pca_model){
-  g <- ggbiplot(pca_model, obs.scale = 1, var.scale = 1, 
-                groups = group_classes, ellipse = FALSE, 
+plot_pca<-function(group){
+  g <- ggbiplot(features_pca, obs.scale = 1, var.scale = 1, 
+                groups = data_df$FAILURE.NAME, ellipse = FALSE, 
                 circle = TRUE);
   g <- g + scale_color_discrete(name = '')
   g <- g + theme(legend.direction = 'horizontal', 
@@ -70,6 +72,6 @@ plot_pca<-function(group_classes,pca_model){
   print(g);
 }
 
-plot_pca(group=data_df$FAILURE.NAME,pca_model=features_pca);
-plot_pca(data_df$AFFECTED.COMPONENT);
-plot_pca(data_df$RULE);
+plot_pca(data_df$FAILURE.NAME);
+
+
