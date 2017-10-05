@@ -16,8 +16,10 @@ data_df <- data_df[order(g),];
 
 #merge columns Failure.Name, Affected.Component, Rule
 library(tidyr)
-data_df<-unite(data_df, DECISION, c("FAILURE.NAME","AFFECTED.COMPONENT","RULE"), remove=FALSE);
-
+data_df<-unite(data_df, FAILURE_RULE, c("FAILURE.NAME","RULE"), remove=FALSE);
+data_df<-unite(data_df, FAILURE_COMPONENT, c("FAILURE.NAME","AFFECTED.COMPONENT"), remove=FALSE);
+data_df<-unite(data_df, RULE_COMPONENT, c("RULE","AFFECTED.COMPONENT") , remove=FALSE);
+               
 # consider only the feature columns
 features_df<-data.frame(data_df$UTILITY.DROP,data_df$CRITICALITY,
                         data_df$CONNECTIVITY,data_df$RELIABILITY);
@@ -70,6 +72,12 @@ plot_pca<-function(group_classes,pca_model){
   print(g);
 }
 
-plot_pca(group=data_df$FAILURE.NAME,pca_model=features_pca);
-plot_pca(data_df$AFFECTED.COMPONENT);
-plot_pca(data_df$RULE);
+plot_pca(group_classes=data_df$FAILURE.NAME,pca_model=features_pca);
+plot_pca(group_classes=data_df$AFFECTED.COMPONENT,pca_model=features_pca);
+plot_pca(group_classes=data_df$RULE,pca_model=features_pca);
+plot_pca(group_classes=data_df$FAILURE_RULE,pca_model=features_pca);
+plot_pca(group_classes=data_df$RULE_COMPONENT,pca_model=features_pca);
+plot_pca(group_classes=data_df$FAILURE_COMPONENT,pca_model=features_pca);
+
+
+
