@@ -5,25 +5,25 @@ library (ir.pca);
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-data_df<-loadData(fileName="MLDATA2_STATIC.csv");
-summary(data_df);
+dataf<-loadData(fileName="MLDATA2_STATIC.csv");
+summary(dataf);
 
 #-----------------------------------------------------------
 #Scramble the dataset before extracting the training set.
 set.seed(8850);
-g<- runif((nrow(data_df))); #generates a random distribution
-data_df <- data_df[order(g),];
+g<- runif((nrow(dataf))); #generates a random distribution
+dataf <- dataf[order(g),];
 
-#merge columns Failure.Name, Affected.Component, Rule
+ #merge columns Failure.Name, Affected.Component, Rule
 library(tidyr)
-data_df<-unite(data_df, FAILURE_RULE, c("FAILURE.NAME","RULE"), remove=FALSE);
-data_df<-unite(data_df, FAILURE_COMPONENT, c("FAILURE.NAME","AFFECTED.COMPONENT"), remove=FALSE);
-data_df<-unite(data_df, RULE_COMPONENT, c("RULE","AFFECTED.COMPONENT") , remove=FALSE);
+dataf<-unite(dataf, FAILURE_RULE, c("FAILURE.NAME","RULE"), remove=FALSE);
+dataf<-unite(dataf, FAILURE_COMPONENT, c("FAILURE.NAME","AFFECTED.COMPONENT"), remove=FALSE);
+dataf<-unite(dataf, RULE_COMPONENT, c("RULE","AFFECTED.COMPONENT") , remove=FALSE);
                
 # consider only the feature columns
-features_df<-data.frame(data_df$UTILITY.DROP,data_df$CRITICALITY,
-                        data_df$CONNECTIVITY,data_df$RELIABILITY);
-#                        data_df$DECISION);
+features_df<-data.frame(dataf$UTILITY.DROP,dataf$CRITICALITY,
+                        dataf$CONNECTIVITY,dataf$RELIABILITY);
+#                        dataf$DECISION);
 
 names<-c("Utility_Drop","Criticality","Connectity","Reliability");
 colnames(features_df) <- names;
@@ -72,12 +72,13 @@ plot_pca<-function(group_classes,pca_model){
   print(g);
 }
 
-plot_pca(group_classes=data_df$FAILURE.NAME,pca_model=features_pca);
-plot_pca(group_classes=data_df$AFFECTED.COMPONENT,pca_model=features_pca);
-plot_pca(group_classes=data_df$RULE,pca_model=features_pca);
-plot_pca(group_classes=data_df$FAILURE_RULE,pca_model=features_pca);
-plot_pca(group_classes=data_df$RULE_COMPONENT,pca_model=features_pca);
-plot_pca(group_classes=data_df$FAILURE_COMPONENT,pca_model=features_pca);
+plot_pca(group_classes=dataf$FAILURE.NAME,pca_model=features_pca);
+plot_pca(group_classes=dataf$AFFECTED.COMPONENT,pca_model=features_pca);
+plot_pca(group_classes=dataf$RULE,pca_model=features_pca);
+plot_pca(group_classes=dataf$FAILURE_RULE,pca_model=features_pca);
+plot_pca(group_classes=dataf$RULE_COMPONENT,pca_model=features_pca);
+plot_pca(group_classes=dataf$FAILURE_COMPONENT,pca_model=features_pca);
+plot_pca(group_classes=dataf$COMPONENT,pca_model=features_pca);
 
 
 
