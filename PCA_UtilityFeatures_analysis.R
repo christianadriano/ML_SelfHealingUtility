@@ -20,7 +20,7 @@ dataf <- scrambleData(dataf);
 #dataf<-dataf[grep("Auth", dataf$AFFECTED.COMPONENT), ]
 
 #merge columns Failure.Name, Affected.Component, Rule
-library(tidyr)
+library(tidyr);
 #Create columns combinging two other columns
 dataf<-unite(dataf, FAILURE_RULE, c("FAILURE.NAME","RULE"), remove=FALSE);
 dataf<-unite(dataf, FAILURE_COMPONENT, c("FAILURE.NAME","AFFECTED.COMPONENT"), remove=FALSE);
