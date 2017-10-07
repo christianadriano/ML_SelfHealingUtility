@@ -11,6 +11,15 @@ validationf<- loadData(fileName = "MLDATA2_STATIC.csv")
 #Scramble the dataset before extracting the training set.
 dataf <- scrambleData(dataf);
 
+#Remove all Failures that do not cause utility increase
+dataf<- dataf[dataf$FAILURE.NAME=="CF3",];
+validationf<- validationf[dataf$FAILURE.NAME=="CF3",];
+
+#Select only the rows that have the Authentication component
+dataf<-dataf[grep("Auth", dataf$AFFECTED.COMPONENT), ];
+validationf<-validationf[grep("Auth", dataf$AFFECTED.COMPONENT), ];
+
+
 # consider only the feature columns
 features_df<-data.frame(dataf$CRITICALITY,
                         dataf$RELIABILITY,
@@ -26,6 +35,7 @@ validationf<-data.frame(validationf$CRITICALITY,
 names<-c("Criticality","Reliability","Connectivity","Utility");
 colnames(features_df) <- names;
 colnames(validationf) <- names;
+
 
 #Extract the unique items from a column and return them sorted
 # listUniqueItems<- function(column,columnName){
@@ -58,7 +68,7 @@ trControl <- trainControl(method="cv", number=10);
 modelFit<- train(Utility ~ .,features_df, method="lm", trControl=trControl);
 
 modelFit
-# Linear Regression 
+# Linear Regression ALL FAILURES
 # 
 # 1098 samples
 # 3 predictor
@@ -70,6 +80,22 @@ modelFit
 #   
 #   RMSE     Rsquared   MAE     
 # 6.42462  0.9079988  2.478855
+
+#---------------------------------------------------------
+# 
+# Linear Regression 
+# 
+# 54 samples
+# 3 predictor
+# 
+# No pre-processing
+# Resampling: Cross-Validated (10 fold) 
+# Summary of sample sizes: 48, 48, 48, 50, 48, 48, ... 
+# Resampling results:
+#   
+#   RMSE      Rsquared  MAE      
+# 1.150587  0.995727  0.9715667
+
 
 prediction<- predict(modelFit, validationf);
 #plot(modelFit)
