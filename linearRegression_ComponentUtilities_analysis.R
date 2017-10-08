@@ -1,12 +1,12 @@
 #Predict Utility of Components
 
 library(caret);
-library(LogicReg);
+library(car);
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf<-loadData(fileName="MLDATA2_data.csv");
-validationf<- loadData(fileName = "MLDATA2_STATIC.csv")
+dataf<-loadData(fileName="datatest.csv");
+validationf<- loadData(fileName = "datatest_validation.csv");
 #summary(dataf);
 
 #Scramble the dataset before extracting the training set.
@@ -22,19 +22,19 @@ validationf<-validationf[grep("Auth", dataf$AFFECTED.COMPONENT), ];
 
 
 # consider only the feature columns
-features_df<-data.frame(dataf$CRITICALITY,
-                        dataf$RELIABILITY,
+featuresf<-data.frame(dataf$CRITICALITY,
+                        
                         dataf$CONNECTIVITY,
-                        dataf$UTILITY.INCREASE);
+                        dataf$UTILITY.INCREASE); #dataf$RELIABILITY,
 
 validationf<-data.frame(validationf$CRITICALITY,
-                        validationf$RELIABILITY,
+                        
                         validationf$CONNECTIVITY,
-                        validationf$UTILITY.INCREASE);
+                        validationf$UTILITY.INCREASE); #validationf$RELIABILITY,
 
 
-names<-c("Criticality","Reliability","Connectivity","Utility");
-colnames(features_df) <- names;
+names<-c("Criticality","Connectivity","Utility"); #"Reliability",
+colnames(featuresf) <- names;
 colnames(validationf) <- names;
 
 
@@ -50,7 +50,7 @@ colnames(validationf) <- names;
 
 # Create custom indices: myFolds
 #Guarantees that we are going to use the exact same datasets for all models
-# myFolds <- createFolds(features_df , k = 10); 
+# myFolds <- createFolds(featuresf , k = 10); 
 
 #larger K implies less bias (overfitting). However, larger K implies larger variance, i.e., 
 #the prediction has large variation. The reason is that larger K makes each training data large and
@@ -64,11 +64,31 @@ colnames(validationf) <- names;
 #   savePredictions = TRUE 
 # );
 
-trControl <- trainControl(method="cv", number=10);
+# trControl <- trainControl(method="cv", number=10);
+# 
+# modelFit<- train(Utility ~ Criticality*Connectivity,featuresf, method="lm", 
+#                  trControl=trControl);
 
-modelFit<- train(Utility ~ Criticality*Connectivity*Reliability,features_df, method="lm", trControl=trControl);
+##Converted the non-linear into a linear
+modelFit<- lm(log(Utility) ~ log(Criticality) + log(Connectivity),data=featuresf);
+
+
+
+library(e1071) 
+svmModelFit <- svm(Utility ~ Criticality*Connectivity,featuresf);
 
 modelFit
+svmModelFit
+
+#validate models
+lmPredicted <- predict(modelFit,validationf)
+svmPredicted <- predict(svmModelFit, validationf)
+
+plot(x=validationf$Criticality,y=validationf$Utility);
+points(validationf$Connectivity, svmPredicted, col = "red", pch=4);
+points(validationf$Connectivity, exp(lmPredicted), col = "blue", pch=3);
+
+
 # Linear Regression ALL FAILURES
 # 
 # 1098 samples
@@ -98,15 +118,26 @@ modelFit
 # 1.150587  0.995727  0.9715667
 
 
-prediction<- predict(modelFit, features_df);
-#plot(modelFit)
+#Evaluate non-linearity
+crPlots(modelFit)
 
-compareTable <- data.frame(validationf$Criticality,validationf$Reliability,validationf$Connectivity,
-                           validationf$Utility,
+install.packages("gvlma")
+library(gvlma)
+gvmodel <- gvlma(modelFit) 
+summary(gvmodel)
+
+prediction<- predict(modelFit, featuresf);
+plot(modelFit)
+
+
+
+
+compareTable <- data.frame(validationf$Criticality,validationf$Connectivity,
+                           log(validationf$Utility),
                            prediction);
-colnames(compareTable) <- c("criticality","reliability","connectivity","actual_utility","predicted_utility");
+colnames(compareTable) <- c("criticality","connectivity","actual_utility","predicted_utility");
 
 compareTable
 
 plot(prediction)
-                           
+                     
