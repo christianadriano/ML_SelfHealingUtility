@@ -4,15 +4,10 @@
 
 library(ggplot2)
 
-plotInputs<- function(fileName){
-  
-  fileName<-"MLDATA2_data.csv";
-  fileName<-"MLDATA2_STATIC.csv";
-  setwd("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//");
-  
-  data_all <- read.csv(fileName,header = TRUE,sep=",");
-  
-  dataf <- data.frame(data_all);
+  # load data
+  source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
+  dataf<-loadData(fileName="MLDATA2_data.csv");
+  validationf<- loadData(fileName = "MLDATA2_STATIC.csv")
   summary(dataf);
   
   ggplot(data=dataf, aes(x=dataf$UTILITY.DROP)) +
@@ -72,5 +67,5 @@ plotInputs<- function(fileName){
   
   #As we can see that the data is medium to strongly correlated
   
-}
+
 
