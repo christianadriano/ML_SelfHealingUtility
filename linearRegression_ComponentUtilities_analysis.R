@@ -1,6 +1,7 @@
 #Predict Utility of Components
 
 library(caret);
+library(LogicReg);
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
@@ -65,7 +66,7 @@ colnames(validationf) <- names;
 
 trControl <- trainControl(method="cv", number=10);
 
-modelFit<- train(Utility ~ .,features_df, method="lm", trControl=trControl);
+modelFit<- train(Utility ~ Criticality*Connectivity*Reliability,features_df, method="lm", trControl=trControl);
 
 modelFit
 # Linear Regression ALL FAILURES
@@ -97,7 +98,7 @@ modelFit
 # 1.150587  0.995727  0.9715667
 
 
-prediction<- predict(modelFit, validationf);
+prediction<- predict(modelFit, features_df);
 #plot(modelFit)
 
 compareTable <- data.frame(validationf$Criticality,validationf$Reliability,validationf$Connectivity,
@@ -106,4 +107,6 @@ compareTable <- data.frame(validationf$Criticality,validationf$Reliability,valid
 colnames(compareTable) <- c("criticality","reliability","connectivity","actual_utility","predicted_utility");
 
 compareTable
+
+plot(prediction)
                            
