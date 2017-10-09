@@ -40,14 +40,13 @@ features_pca <- prcomp(features_df,center=TRUE,scale=TRUE);
 print(features_pca);
 
 # Standard deviations:
-#   [1] 1.4478560 0.9745273 0.7567600 0.6175142
+#   [1] 1.2182116 0.9712837 0.7566826
 # 
 # Rotation:
-#                  PC1         PC2         PC3        PC4
-# Criticality  0.4946076  0.45353889 -0.65547812 -0.3464307
-# Reliability  0.5369123  0.19339914  0.73378246 -0.3686262
-# Utility_Drop 0.3287742 -0.86701945 -0.17762719 -0.3295958
-# Connectity   0.5991628 -0.07194804 -0.01898166  0.7971619
+#                 PC1        PC2        PC3
+# Criticality 0.6386511 -0.3874427  0.6648405
+# Reliability 0.6805970 -0.1187240 -0.7229746
+# Connectity  0.3590438  0.9142170  0.1878691
 
 plot(features_pca, type="l");
 #from the plot we can see that the first two PC's explain most of the variability in the data
