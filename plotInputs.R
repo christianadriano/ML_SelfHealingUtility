@@ -65,7 +65,15 @@ library(ggplot2)
 #  Reliability     0.3579032   0.3172049    0.3265254   1.0000000
   
   
-  #As we can see that the data is medium to strongly correlated
+  #As we can see features (connectivity, criticality, reliabiliyt) 
+  #are medium to low correlated
   
-
+  
+qqnorm(dataf$CRITICALITY,main="Normal Q-Q Plot - Criticality")+ qqline();
+qqnorm(dataf$CONNECTIVITY,main="Normal Q-Q Plot - Connectivity") + qqline();
+qqline(dataf$CONNECTIVITY)
+  
+qqnorm(dataf$RELIABILITY,main="Normal Q-Q Plot - Reliability")
+qqline(dataf$RELIABILITY)
+  
 
