@@ -5,38 +5,42 @@ library(car);
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf<-loadData(fileName="datatest.csv");
-validationf<- loadData(fileName = "datatest_validation.csv");
+dataf<-loadData(fileName="MLDATA2_data.csv");
+staticf<- loadData(fileName = "MLDATA2_STATIC.csv");
 #summary(dataf);
-
-#Scramble the dataset before extracting the training set.
-dataf <- scrambleData(dataf);
 
 #Remove all Failures that do not cause utility increase
 dataf<- dataf[dataf$FAILURE.NAME=="CF3",];
-validationf<- validationf[dataf$FAILURE.NAME=="CF3",];
+#validationf<- validationf[dataf$FAILURE.NAME=="CF3",];
 
 #Select only the rows that have the Authentication component
-dataf<-dataf[grep("Auth", dataf$AFFECTED.COMPONENT), ];
-validationf<-validationf[grep("Auth", dataf$AFFECTED.COMPONENT), ];
+#dataf<-dataf[grep("Auth", dataf$AFFECTED.COMPONENT), ];
+#validationf<-validationf[grep("Auth", dataf$AFFECTED.COMPONENT), ];
 
+#Remove all reliability values equal to zero
+dataf<- dataf[dataf$RELIABILITY!=0,];
+staticf<- staticf[staticf$RELIABILITY!=0,];
 
 # consider only the feature columns
 featuresf<-data.frame(dataf$CRITICALITY,
-                        
-                        dataf$CONNECTIVITY,
-                        dataf$UTILITY.INCREASE); #dataf$RELIABILITY,
+                      dataf$CONNECTIVITY,
+                      dataf$RELIABILITY,
+                      dataf$UTILITY.INCREASE);
 
-validationf<-data.frame(validationf$CRITICALITY,
-                        
-                        validationf$CONNECTIVITY,
-                        validationf$UTILITY.INCREASE); #validationf$RELIABILITY,
+validationf<-data.frame(staticf$CRITICALITY,
+                        staticf$CONNECTIVITY,
+                        staticf$RELIABILITY,
+                        staticf$UTILITY.INCREASE);
 
 
-names<-c("Criticality","Connectivity","Utility"); #"Reliability",
-colnames(featuresf) <- names;
-colnames(validationf) <- names;
+colnames(featuresf) <- c("Criticality","Connectivity","Reliability","Utility");
+colnames(validationf) <- c("Criticality","Connectivity","Reliability","Utility");
 
+plot(featuresf);
+title("Training");
+
+plot(validationf);
+title("Validation");
 
 #Extract the unique items from a column and return them sorted
 # listUniqueItems<- function(column,columnName){
@@ -70,24 +74,32 @@ colnames(validationf) <- names;
 #                  trControl=trControl);
 
 ##Converted the non-linear into a linear
-modelFit<- lm(log(Utility) ~ log(Criticality) + log(Connectivity),data=featuresf);
+modelFit<- lm(log(Utility) ~ log(Criticality) + log(Connectivity) + log(Reliability) ,data=featuresf);
 
-
-
-library(e1071) 
-svmModelFit <- svm(Utility ~ Criticality*Connectivity,featuresf);
-
-modelFit
-svmModelFit
 
 #validate models
-lmPredicted <- predict(modelFit,validationf)
-svmPredicted <- predict(svmModelFit, validationf)
+lmPredicted <- predict(modelFit, featuresf)
+
+plot(x=featuresf$Criticality,y=featuresf$Utility);
+points(featuresf$Criticality, exp(lmPredicted), col = "red", pch=4);
+title("Linear Regression - actual (circles) vs predicted (crosses)");
 
 plot(x=validationf$Criticality,y=validationf$Utility);
-points(validationf$Connectivity, svmPredicted, col = "red", pch=4);
-points(validationf$Connectivity, exp(lmPredicted), col = "blue", pch=3);
+points(validationf$Criticality, exp(lmPredicted), col = "blue", pch=4);
+title("Linear Regression - actual (circles) vs predicted (crosses)");
 
+#Compute error
+rmse <- function(error)
+{
+  sqrt(mean(error^2))
+}
+
+#error <- modelFit$residuals (residuals of the training, not interesting)
+error<- featuresf$Utility - exp(lmPredicted)# same as data$Y - predictedY
+predictionRMSE <- rmse(error)  
+predictionRMSE
+# 25.23978 (validation error)
+# 5.090771e-13 (all events, features connectivty, criticality, reliability)
 
 # Linear Regression ALL FAILURES
 # 
