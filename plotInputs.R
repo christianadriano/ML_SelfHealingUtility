@@ -6,8 +6,10 @@ library(ggplot2)
 
   # load data
   source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-  dataf<-loadData(fileName="MLDATA2_data.csv");
-  validationf<- loadData(fileName = "MLDATA2_STATIC.csv")
+  dataf<-loadData(fileName="Random_proper_comp_names.csv");
+
+  #validationf<- loadData(fileName = "MLDATA2_STATIC.csv")
+
   summary(dataf);
   
   ggplot(data=dataf, aes(x=dataf$UTILITY.DROP)) +
