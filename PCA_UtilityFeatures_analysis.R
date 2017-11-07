@@ -7,7 +7,7 @@ library (ir.pca);
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf<-loadData(fileName="MLDATA2_data.csv");
+dataf<-loadData(fileName="Random_proper_comp_names.csv");
 summary(dataf);
 
 #Scramble the dataset before extracting the training set.
@@ -53,10 +53,10 @@ plot(features_pca, type="l");
 
 summary(features_pca);
 # Importance of components:
-#                          PC1    PC2    PC3     PC4
-# Standard deviation     1.4479 0.9745 0.7568 0.61751
-# Proportion of Variance 0.5241 0.2374 0.1432 0.09533
-# Cumulative Proportion  0.5241 0.7615 0.9047 1.00000
+#                          PC1    PC2    PC3     
+# Standard deviation     1.0342 1.0048 0.9596
+# Proportion of Variance 0.3565 0.3365 0.3070
+# Cumulative Proportion  0.3565 0.6930 1.0000
 
 install.packages("devtools")
 library(devtools)
@@ -78,6 +78,7 @@ plot_pca<-function(group_classes,pca_model){
 }
 
 plot_pca(group_classes=dataf$FAILURE.NAME,pca_model=features_pca);
+
 plot_pca(group_classes=dataf$RULE,pca_model=features_pca);
 
 plot_pca(group_classes=dataf$FAILURE_RULE,pca_model=features_pca);
