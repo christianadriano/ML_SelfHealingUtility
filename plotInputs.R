@@ -13,7 +13,7 @@ library(ggplot2)
   summary(dataf);
   
   ggplot(data=dataf, aes(x=dataf$UTILITY.DROP)) +
-    geom_bar(alpha=.2, position="identity")+
+    geom_bar(alpha=1, position="identity")+
     geom_vline(aes(xintercept=mean(dataf$UTILITY.DROP, na.rm=T)),   # Ignore NA values for mean
                color="red", linetype="dashed", size=1) +
     ggtitle("Utility drop distribution")+
@@ -47,10 +47,9 @@ library(ggplot2)
          y="Frequency")+
     scale_x_discrete(limits=c(min(dataf$CONNECTIVITY):max(dataf$CONNECTIVITY)));
 
-#    
-  
+  #    
   #Correlations
-  # Data is not normal
+  #Data is not normal (did not reject the null hypothesis)
   shapiro.test(dataf$UTILITY.DROP);
   shapiro.test(dataf$CRITICALITY);
   shapiro.test(dataf$CONNECTIVITY);
@@ -60,18 +59,19 @@ library(ggplot2)
   colnames(matrixInput)<-c("Utility_Drop","Criticality","Connectivity","Reliability");
   
   cor(matrixInput, method="kendall",use="pairwise");
-#                 Utility_Drop Criticality Connectivity Reliability
-#  Utility_Drop    1.0000000   0.6989180    0.4979811   0.3579032
-#  Criticality     0.6989180   1.0000000    0.1198513   0.3172049
-#  Connectivity    0.4979811   0.1198513    1.0000000   0.3265254
-#  Reliability     0.3579032   0.3172049    0.3265254   1.0000000
-  
+#                Utility_Drop Criticality Connectivity  Reliability
+# Utility_Drop   1.00000000   0.217679117  0.49190185  -0.032406079
+# Criticality    0.21767912   1.000000000  0.06472386   0.002819633
+# Connectivity   0.49190185   0.064723861  1.00000000  -0.053289824
+# Reliability   -0.03240608   0.002819633 -0.05328982   1.000000000
   
   #As we can see features (connectivity, criticality, reliabiliyt) 
   #are medium to low correlated
   
   
 qqnorm(dataf$CRITICALITY,main="Normal Q-Q Plot - Criticality")+ qqline();
+qqline(dataf$CRITICALITY)
+  
 qqnorm(dataf$CONNECTIVITY,main="Normal Q-Q Plot - Connectivity") + qqline();
 qqline(dataf$CONNECTIVITY)
   
