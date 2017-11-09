@@ -84,7 +84,7 @@ modelFit<- lm(Utility ~ Connectivity*Connectivity + Reliability ,data=featuresf)
 modelFit<- lm(Utility ~ Criticality ,data=featuresf);
 
 modelFit<- lm(Utility ~ Criticality*Connectivity ,data=featuresf);
-
+avPlots(modelFit)
 
 #validate models
 lmPredicted <- predict(modelFit, featuresf)
@@ -102,7 +102,7 @@ abline(0,0);
 
 plot(x=featuresf$Criticality,y=featuresf$Utility);
 points(featuresf$Criticality, lmPredicted, col = "red", pch=4, 
-       abline(a=featuresf$Criticality,b=lmPredicted, pch=3));
+       abline(modelFit));
 
 title("Linear Regression - actual (circles) vs predicted (crosses)");
 
