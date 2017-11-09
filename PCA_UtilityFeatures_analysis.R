@@ -79,9 +79,9 @@ plot_pca<-function(group_classes,pca_model){
 
 plot_pca(group_classes=dataf$FAILURE.NAME,pca_model=features_pca);
 
-plot_pca(group_classes=dataf$RULE,pca_model=features_pca);
+plot_pca(group_classes=dataf$FAILURE_COMPONENT,pca_model=features_pca);
 
-plot_pca(group_classes=dataf$FAILURE_RULE,pca_model=features_pca);
+plot_pca(group_classes=dataf$COMPONENT,pca_model=features_pca);
 
 #Cannot analyze by component because they are all unique
 #plot_pca(group_classes=dataf$RULE_COMPONENT,pca_model=features_pca);
