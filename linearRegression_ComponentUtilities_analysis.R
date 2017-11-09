@@ -5,21 +5,24 @@ library(car);
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf<-loadData(fileName="MLDATA2_data.csv");
+dataf<-loadData(fileName="Random_proper_comp_names.csv");
 staticf<- loadData(fileName = "MLDATA2_STATIC.csv");
+# randomDataf<- loadData(fileName = "MLDATA2_STATIC.csv");
 #summary(dataf);
 
 #Remove all Failures that do not cause utility increase
-dataf<- dataf[dataf$FAILURE.NAME=="CF3",];
+#dataf<- dataf[dataf$FAILURE.NAME=="CF3",];
 #validationf<- validationf[dataf$FAILURE.NAME=="CF3",];
 
-#Select only the rows that have the Authentication component
+#Select only the ws that have the Authentication component
 #dataf<-dataf[grep("Auth", dataf$AFFECTED.COMPONENT), ];
 #validationf<-validationf[grep("Auth", dataf$AFFECTED.COMPONENT), ];
 
 #Remove all reliability values equal to zero
 dataf<- dataf[dataf$RELIABILITY!=0,];
+dataf <- dataf[dataf$UTILITY.INCREASE!=0,] 
 staticf<- staticf[staticf$RELIABILITY!=0,];
+staticf<- staticf[staticf$UTILITY.INCREASE!=0,];
 
 # consider only the feature columns
 featuresf<-data.frame(dataf$CRITICALITY,
@@ -74,18 +77,47 @@ title("Validation");
 #                  trControl=trControl);
 
 ##Converted the non-linear into a linear
-modelFit<- lm(log(Utility) ~ log(Criticality) + log(Connectivity) + log(Reliability) ,data=featuresf);
+modelFit<- lm(log(Utility) ~ log(Criticality) + log(Connectivity)  ,data=featuresf);
+
+modelFit<- lm(Utility ~ Connectivity*Connectivity + Reliability ,data=featuresf);
+
+modelFit<- lm(Utility ~ Criticality ,data=featuresf);
+
+modelFit<- lm(Utility ~ Criticality*Connectivity ,data=featuresf);
 
 
 #validate models
 lmPredicted <- predict(modelFit, featuresf)
 
+summary(modelFit)
+lmPredicted
+
+residual.modelFit<- resid(modelFit);
+plot(x=featuresf$Criticality,y=residual.modelFit,
+     ylab="Residuals", xlab="Criticality",
+     main="Residual Plot Actual Utility minus Predicted Utility");
+abline(0,0);
+
+#There is a non-random pattern in the residuals, which suggest a non-linear relationship.
+
 plot(x=featuresf$Criticality,y=featuresf$Utility);
-points(featuresf$Criticality, exp(lmPredicted), col = "red", pch=4);
+points(featuresf$Criticality, lmPredicted, col = "red", pch=4, 
+       abline(a=featuresf$Criticality,b=lmPredicted, pch=3));
+
 title("Linear Regression - actual (circles) vs predicted (crosses)");
 
+plot(x=featuresf$Criticality,y=featuresf$Utility, abline(modelFit,cex = 1.3,pch = 16));
+title("Linear Regression - actual (circles) vs predicted (line)");
+
+plot(x=featuresf$Connectivity,y=featuresf$Utility);
+points(featuresf$Connectivity, lmPredicted, col = "red", pch=4);
+title("Linear Regression - actual (circles) vs predicted (crosses)");
+
+#validate models
+lmPredicted <- predict(modelFit, validationf)
+
 plot(x=validationf$Criticality,y=validationf$Utility);
-points(validationf$Criticality, exp(lmPredicted), col = "blue", pch=4);
+points(validationf$Criticality, exp(lmPredicted), col = "red", pch=4);
 title("Linear Regression - actual (circles) vs predicted (crosses)");
 
 #Compute error
