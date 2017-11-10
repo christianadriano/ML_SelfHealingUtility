@@ -33,7 +33,7 @@ dataf<-unite(dataf, RULE_COMPONENT, c("RULE","AFFECTED.COMPONENT") , remove=FALS
 # consider only the feature columns
 features_df<-data.frame(dataf$CRITICALITY,
                         dataf$RELIABILITY,
-                       dataf$CONNECTIVITY);# dataf$UTILITY.DROP);
+                       dataf$CONNECTIVITY);
 
 names<-c("Criticality","Reliability","Connectity"); # "Utility_Drop",
 colnames(features_df) <- names;
@@ -41,26 +41,26 @@ colnames(features_df) <- names;
 # apply PCA - scale. = TRUE is highly 
 # advisable, but default is FALSE. 
 features_pca <- prcomp(features_df,center=TRUE,scale=TRUE);
-print(features_pca);
+print(features_pca,type="l");
 
 # Standard deviations:
-#   [1] 1.2182116 0.9712837 0.7566826
+#   [1] 1.0767434 0.9781258 0.9401562
 # 
 # Rotation:
-#                 PC1        PC2        PC3
-# Criticality 0.6386511 -0.3874427  0.6648405
-# Reliability 0.6805970 -0.1187240 -0.7229746
-# Connectity  0.3590438  0.9142170  0.1878691
+#                PC1        PC2       PC3
+# Criticality -0.6396407  0.2159066 0.7377290
+# Reliability  0.4712771  0.8683510 0.1544812
+# Connectity   0.6072542 -0.4464872 0.6571845
 
 plot(features_pca, type="l");
 #from the plot we can see that the first two PC's explain most of the variability in the data
 
 summary(features_pca);
 # Importance of components:
-#                          PC1    PC2    PC3     
-# Standard deviation     1.0342 1.0048 0.9596
-# Proportion of Variance 0.3565 0.3365 0.3070
-# Cumulative Proportion  0.3565 0.6930 1.0000
+#                          PC1    PC2    PC3
+# Standard deviation     1.0767 0.9781 0.9402
+# Proportion of Variance 0.3865 0.3189 0.2946
+# Cumulative Proportion  0.3865 0.7054 1.0000
 
 install.packages("devtools")
 library(devtools)
