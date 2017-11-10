@@ -10,6 +10,10 @@ source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//l
 dataf<-loadData(fileName="Random_proper_comp_names.csv");
 summary(dataf);
 
+#Remove all reliability and utility values equal to zero
+dataf<- dataf[dataf$RELIABILITY!=0,];
+dataf <- dataf[dataf$UTILITY.INCREASE!=0,] 
+
 #Scramble the dataset before extracting the training set.
 dataf <- scrambleData(dataf);
 
