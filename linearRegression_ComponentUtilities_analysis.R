@@ -7,7 +7,6 @@ library(car);
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
 dataf<-loadData(fileName="Random_proper_comp_names.csv");
 staticf<- loadData(fileName = "MLDATA2_STATIC.csv");
-# randomDataf<- loadData(fileName = "MLDATA2_STATIC.csv");
 #summary(dataf);
 
 #Remove all Failures that do not cause utility increase
@@ -20,7 +19,7 @@ staticf<- loadData(fileName = "MLDATA2_STATIC.csv");
 
 #Remove all reliability values equal to zero
 dataf<- dataf[dataf$RELIABILITY!=0,];
-dataf <- dataf[dataf$UTILITY.INCREASE!=0,] 
+dataf <- dataf[dataf$UTILITY.INCREASE!=0,];
 staticf<- staticf[staticf$RELIABILITY!=0,];
 staticf<- staticf[staticf$UTILITY.INCREASE!=0,];
 
@@ -35,7 +34,6 @@ validationf<-data.frame(staticf$CRITICALITY,
                         staticf$RELIABILITY,
                         staticf$UTILITY.INCREASE);
 
-
 colnames(featuresf) <- c("Criticality","Connectivity","Reliability","Utility");
 colnames(validationf) <- c("Criticality","Connectivity","Reliability","Utility");
 
@@ -45,36 +43,6 @@ title("Training");
 plot(validationf);
 title("Validation");
 
-#Extract the unique items from a column and return them sorted
-# listUniqueItems<- function(column,columnName){
-#   uniqueItems <- data.frame(unique(column));
-#   colnames(uniqueItems) <- c(columnName);
-#   uniqueItems <- uniqueItems[with(uniqueItems,order(columnName)),];
-#   return(uniqueItems);
-# }
-
-# listUniqueItems(dataf$FAILURE.NAME,"FAILURE.NAME");
-
-# Create custom indices: myFolds
-#Guarantees that we are going to use the exact same datasets for all models
-# myFolds <- createFolds(featuresf , k = 10); 
-
-#larger K implies less bias (overfitting). However, larger K implies larger variance, i.e., 
-#the prediction has large variation. The reason is that larger K makes each training data large and
-#very similar.
-#nice explanation here: https://stats.stackexchange.com/questions/27730/choice-of-k-in-k-fold-cross-validation
-
-# Create reusable trainControl object: myControl
-# kFoldControl <- trainControl(
-#   index = myFolds, 
-#   verboseIter = TRUE,
-#   savePredictions = TRUE 
-# );
-
-# trControl <- trainControl(method="cv", number=10);
-# 
-# modelFit<- train(Utility ~ Criticality*Connectivity,featuresf, method="lm", 
-#                  trControl=trControl);
 
 ##Converted the non-linear into a linear
 modelFit<- lm(log(Utility) ~ log(Criticality) + log(Connectivity)  ,data=featuresf);
@@ -85,7 +53,13 @@ modelFit<- lm(Utility ~ Criticality ,data=featuresf);
 
 modelFit<- lm(Utility ~ Connectivity ,data=featuresf);
 
+modelFit<- lm(Utility ~ Reliability ,data=featuresf);
+
+
+modelFit <- lm(log(Utility) ~ log(Criticality) + log(Connectivity) +log(Reliability),data=featuresf);
+
 modelFit<- lm(Utility ~ Criticality*Connectivity ,data=featuresf);
+summary(modelFit)
 avPlots(modelFit)
 
 #validate models
@@ -102,7 +76,6 @@ abline(0,0);
 
 #There is a non-random pattern in the residuals, which suggest a non-linear relationship.
 
-
 plot(x=featuresf$Criticality,y=featuresf$Utility);
 points(featuresf$Criticality, lmPredicted, col = "red", pch=4, 
        abline(modelFit));
@@ -117,20 +90,22 @@ points(featuresf$Connectivity, lmPredicted, col = "red", pch=4);
 title("Linear Regression - actual (circles) vs predicted (crosses)");
 
 #validate models
-lmPredicted <- predict(modelFit, validationf);
+lmPredictedValidation <- predict(modelFit, validationf);
 
 plot(x=validationf$Criticality,y=validationf$Utility);
-points(validationf$Criticality, lmPredicted, col = "red", pch=4);
+points(validationf$Criticality, lmPredictedValidation, col = "red", 
+       pch=4,abline(modelFit));
 title("Linear Regression - actual (circles) vs predicted (crosses)");
 
-#Compute error
+#Compute Root Mean Square Error
 rmse <- function(error)
 {
-  sqrt(mean(error^2))
+  return (sqrt(mean(error^2)));
+  
 }
 
 #error <- modelFit$residuals (residuals of the training, not interesting)
-error<- validationf$Utility - lmPredicted # same as data$Y - predictedY
+error<- validationf$Utility - lmPredictedValidation # same as data$Y - predictedY
 predictionRMSE <- rmse(error)  
 predictionRMSE
 # 28.07377 (validation error)
@@ -195,6 +170,37 @@ compareTable <- data.frame(validationf$Criticality,validationf$Connectivity,
 colnames(compareTable) <- c("criticality","connectivity","actual_utility","predicted_utility");
 
 compareTable
-
 plot(prediction)
                      
+
+
+#Extract the unique items from a column and return them sorted
+# listUniqueItems<- function(column,columnName){
+#   uniqueItems <- data.frame(unique(column));
+#   colnames(uniqueItems) <- c(columnName);
+#   uniqueItems <- uniqueItems[with(uniqueItems,order(columnName)),];
+#   return(uniqueItems);
+# }
+
+# listUniqueItems(dataf$FAILURE.NAME,"FAILURE.NAME");
+
+# Create custom indices: myFolds
+#Guarantees that we are going to use the exact same datasets for all models
+# myFolds <- createFolds(featuresf , k = 10); 
+
+#larger K implies less bias (overfitting). However, larger K implies larger variance, i.e., 
+#the prediction has large variation. The reason is that larger K makes each training data large and
+#very similar.
+#nice explanation here: https://stats.stackexchange.com/questions/27730/choice-of-k-in-k-fold-cross-validation
+
+# Create reusable trainControl object: myControl
+# kFoldControl <- trainControl(
+#   index = myFolds, 
+#   verboseIter = TRUE,
+#   savePredictions = TRUE 
+# );
+
+# trControl <- trainControl(method="cv", number=10);
+# 
+# modelFit<- train(Utility ~ Criticality*Connectivity,featuresf, method="lm", 
+#                  trControl=trControl);
