@@ -83,6 +83,8 @@ modelFit<- lm(Utility ~ Connectivity*Connectivity + Reliability ,data=featuresf)
 
 modelFit<- lm(Utility ~ Criticality ,data=featuresf);
 
+modelFit<- lm(Utility ~ Connectivity ,data=featuresf);
+
 modelFit<- lm(Utility ~ Criticality*Connectivity ,data=featuresf);
 avPlots(modelFit)
 
@@ -100,13 +102,14 @@ abline(0,0);
 
 #There is a non-random pattern in the residuals, which suggest a non-linear relationship.
 
+
 plot(x=featuresf$Criticality,y=featuresf$Utility);
 points(featuresf$Criticality, lmPredicted, col = "red", pch=4, 
        abline(modelFit));
-
 title("Linear Regression - actual (circles) vs predicted (crosses)");
 
-plot(x=featuresf$Criticality,y=featuresf$Utility, abline(modelFit,cex = 1.3,pch = 16));
+plot(x=featuresf$Criticality,y=featuresf$Utility, 
+     abline(modelFit),cex = 1.3, pch = 16);
 title("Linear Regression - actual (circles) vs predicted (line)");
 
 plot(x=featuresf$Connectivity,y=featuresf$Utility);
@@ -114,10 +117,10 @@ points(featuresf$Connectivity, lmPredicted, col = "red", pch=4);
 title("Linear Regression - actual (circles) vs predicted (crosses)");
 
 #validate models
-lmPredicted <- predict(modelFit, validationf)
+lmPredicted <- predict(modelFit, validationf);
 
 plot(x=validationf$Criticality,y=validationf$Utility);
-points(validationf$Criticality, exp(lmPredicted), col = "red", pch=4);
+points(validationf$Criticality, lmPredicted, col = "red", pch=4);
 title("Linear Regression - actual (circles) vs predicted (crosses)");
 
 #Compute error
@@ -127,11 +130,10 @@ rmse <- function(error)
 }
 
 #error <- modelFit$residuals (residuals of the training, not interesting)
-error<- featuresf$Utility - exp(lmPredicted)# same as data$Y - predictedY
+error<- validationf$Utility - lmPredicted # same as data$Y - predictedY
 predictionRMSE <- rmse(error)  
 predictionRMSE
-# 25.23978 (validation error)
-# 5.090771e-13 (all events, features connectivty, criticality, reliability)
+# 28.07377 (validation error)
 
 # Linear Regression ALL FAILURES
 # 
@@ -170,11 +172,22 @@ library(gvlma)
 gvmodel <- gvlma(modelFit) 
 summary(gvmodel)
 
-prediction<- predict(modelFit, featuresf);
+prediction<- predict(modelFit, validationf);
 plot(modelFit)
 
-
-
+# ASSESSMENT OF THE LINEAR MODEL ASSUMPTIONS
+# USING THE GLOBAL TEST ON 4 DEGREES-OF-FREEDOM:
+#   Level of Significance =  0.05 
+# 
+# Call:
+#   gvlma(x = modelFit) 
+# 
+#                     Value  p-value  Decision
+# Global Stat        4.9304  0.2945 Assumptions acceptable.
+# Skewness           0.6027  0.4375 Assumptions acceptable.
+# Kurtosis           2.3508  0.1252 Assumptions acceptable.
+# Link Function      1.1567  0.2821 Assumptions acceptable.
+# Heteroscedasticity 0.8202  0.3651 Assumptions acceptable.
 
 compareTable <- data.frame(validationf$Criticality,validationf$Connectivity,
                            log(validationf$Utility),
