@@ -1,5 +1,16 @@
 # Investigate correlations among explanatory variables
 
+install.packages("Hmisc")
+library("Hmisc")
+
+# load data
+source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
+dataf<-loadData(fileName="Random_proper_comp_names.csv");
+
+#Remove all reliability and utility values equal to zero
+dataf<- dataf[dataf$RELIABILITY!=0,];
+dataf <- dataf[dataf$UTILITY.INCREASE!=0,] 
+
 #    
 #Correlations
 #Data is not normal (did not reject the null hypothesis)

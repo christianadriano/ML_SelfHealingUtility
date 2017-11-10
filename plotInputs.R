@@ -3,8 +3,7 @@
 #How are the features correlated? Yes, medium to highly correlated.
 
 library(ggplot2)
-install.packages("Hmisc")
-library("Hmisc")
+
 
   # load data
   source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
