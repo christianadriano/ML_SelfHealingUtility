@@ -53,6 +53,18 @@ library(ggplot2)
          y="Frequency")+
     scale_x_discrete(limits=c(min(dataf$CONNECTIVITY):max(dataf$CONNECTIVITY)));
 
+  ggplot(data=dataf, aes(x=log(dataf$CONNECTIVITY))) +
+    geom_bar(alpha=.2, position="identity")+
+    geom_vline(aes(xintercept=mean(log(dataf$CONNECTIVITY), na.rm=T)),   # Ignore NA values for mean
+               color="red", linetype="dashed", size=1) +
+    ggtitle("Component Connectivity distribution")+
+    labs(x="Log Connectivity of the component", 
+         y="Frequency")+
+    scale_x_discrete(limits=c(min(dataf$CONNECTIVITY):max(dataf$CONNECTIVITY)));
+  
+
+  
+  
   
 ###########################################################################
 # 
