@@ -7,11 +7,12 @@ library(ggplot2)
 
   # load data
   source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-  dataf<-loadData(fileName="Random_proper_comp_names.csv");
+  dataf<-loadData(fileName="Random_new_attributes.csv");
   
   #Remove all reliability and utility values equal to zero
   #dataf<- dataf[dataf$RELIABILITY!=0,];
   dataf <- dataf[dataf$UTILITY.INCREASE!=0,] 
+  dataf <- dataf[dataf$UTILITY.INCREASE!=Inf,]
 
   #validationf<- loadData(fileName = "MLDATA2_STATIC.csv")
 
