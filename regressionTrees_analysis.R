@@ -4,7 +4,7 @@
 
 #Imports
 library(xgboost)
-
+library(pROC)
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
@@ -72,5 +72,69 @@ best_iteration = xgboost.cv$best_iteration
 
 xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
 
+#Best training iteration = 17
+# iter train_rmse_mean train_rmse_std test_rmse_mean test_rmse_std
+# 17        110.4483        8.86739       225.6595      77.05662
 
- 
+xgb.test.data = xgb.DMatrix(data.matrix(validationData[,1:7]), missing = NA)
+xgb.preds = predict(xgb.model, xgb.test.data)
+xgb.roc_obj <- roc(validationData[,"Utility.Increase"], xgb.preds)
+
+# Call:
+#   roc.default(response = validationData[, "Utility.Increase"],     predictor = xgb.preds)
+# 
+# Data: xgb.preds in 399 controls (validationData[, "Utility.Increase"] 0) > 1 cases (validationData[, "Utility.Increase"] 13.3018695).
+# Area under the curve: 0.8571
+
+
+
+# Plot prediction ---------------------------------------------------------
+
+y_pred <- predict(xgb.model, as.matrix(validationData));
+mean(y_pred - validationData$Utility.Increase)
+plot(y_pred)
+plot(validationData$Utility.Increase)
+
+
+# Feature Importance ------------------------------------------------------
+
+col_names = attr(xgb.train.data, ".Dimnames")[[2]]
+importance_matrix = xgb.importance(col_names, xgb.model)
+
+xgb.plot.importance(importance_matrix, rel_to_first = TRUE, n_clusters=2, xlab = "Relative importance")
+
+(gg <- xgb.ggplot.importance(importance_matrix, measure = "Gain", rel_to_first = TRUE))
+gg + ggplot2::ylab("Information Gain (relative to top feature)")
+
+
+# Explaining the model ----------------------------------------------------
+
+library(xgboostExplainer)
+explainer = buildExplainer(xgb.model,xgb.train.data, type="regression", 
+                           base_score = 0.5, 
+                           n_first_tree = xgb.model$best_ntreelimit - 1)
+
+pred.breakdown = explainPredictions(xgb.model, explainer, xgb.test.data)
+cat('Breakdown Complete','\n')
+weights = rowSums(pred.breakdown)
+pred.xgb = 1/(1+exp(-weights))
+cat(max(xgb.preds-pred.xgb),'\n')
+idx_to_get = as.integer(802)
+validationData[idx_to_get,1:7]
+showWaterfall(xgb.model, explainer, xgb.test.data, data.matrix(validationData[,1:7]) ,idx_to_get, type = "regression")
+
+
+# Visualizing non-linearities ---------------------------------------------
+
+plot(validationData[,"Connectivity"], t(pred.breakdown[,"Connectivity"]), cex=0.4, pch=16, 
+     xlab = "Connectivity", ylab = "Connectivity impact on log-odds")
+
+plot(validationData[,"Criticality"], t(pred.breakdown[,"Criticality"]), cex=0.4, pch=16, 
+     xlab = "Criticality", ylab = "Criticality impact on log-odds")
+
+#Not working below
+# cr <- colorRamp(c("blue", "red"))
+# 
+# plot(validationData[,"Criticality"],  t(pred.breakdown[,"Criticality"]), 
+#      col = rgb(cr(round(validationData[,"Criticality"])), max=255), cex=0.4, pch=16, 
+#      xlab = "Criticality", ylab = "Criticality impact on log-odds")
