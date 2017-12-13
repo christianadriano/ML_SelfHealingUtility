@@ -51,7 +51,7 @@ featuresdf <- featuresdf[order(g),];
 #Training = used to create a model
 #Validation = used to compute prediction error (Bias)
 totalData = dim(featuresdf)[1];
-trainingSize = trunc(totalData * 0.9);
+trainingSize = trunc(totalData * 0.7);
 startTestIndex = totalData - trainingSize;
 endTestIndex = totalData;
 
@@ -67,7 +67,7 @@ xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:7]),
 
 param <- list(objective = "reg:linear", base_score = 0.5)
 xgboost.cv = xgb.cv(param=param, data = xgb.train.data, nfold = 10, nrounds = 1500, 
-                    early_stopping_rounds = 100, metrics='auc')
+                    early_stopping_rounds = 100, metrics='rmse')
 best_iteration = xgboost.cv$best_iteration
 
 xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
@@ -90,10 +90,29 @@ xgb.roc_obj <- roc(validationData[,"Utility.Increase"], xgb.preds)
 
 # Plot prediction ---------------------------------------------------------
 
+rmse <- function(error)
+{
+  sqrt(mean(error^2))
+}
+
 y_pred <- predict(xgb.model, as.matrix(validationData));
-mean(y_pred - validationData$Utility.Increase)
+error <- y_pred - validationData$Utility.Increase;
+meanError <- mean(y_pred - validationData$Utility.Increase)
+percentMeanError <- meanError / mean(validationData$Utility.Increase)*100;
+rmse_value <- rmse(error);
+plot(error) + title(main="Training set 0.8, RMSE=179.5716, percentMeanError=13,63%")
 plot(y_pred)
 plot(validationData$Utility.Increase)
+
+library(lattice)
+xyplot(validationData$Utility.Increase ~ y_pred, grid=TRUE,
+       type = c("p", "smooth"), col.line = "darkorange", lwd = 1, main="Predicted versus Actual")
+
+cor(y_pred,validationData$Utility.Increase)
+
+#90/10 percentMeanError -0.1447302
+#80/20 percentMeanError  0.01095572
+#70/30 percentMeanError -0.02022227
 
 
 # Feature Importance ------------------------------------------------------
@@ -119,9 +138,10 @@ cat('Breakdown Complete','\n')
 weights = rowSums(pred.breakdown)
 pred.xgb = 1/(1+exp(-weights))
 cat(max(xgb.preds-pred.xgb),'\n')
-idx_to_get = as.integer(802)
+idx_to_get = as.integer(500)
 validationData[idx_to_get,1:7]
-showWaterfall(xgb.model, explainer, xgb.test.data, data.matrix(validationData[,1:7]) ,idx_to_get, type = "regression")
+showWaterfall(xgb.model, explainer, xgb.test.data, data.matrix(validationData[,1:7]),
+              idx_to_get, type = "regression")
 
 
 # Visualizing non-linearities ---------------------------------------------
@@ -131,6 +151,22 @@ plot(validationData[,"Connectivity"], t(pred.breakdown[,"Connectivity"]), cex=0.
 
 plot(validationData[,"Criticality"], t(pred.breakdown[,"Criticality"]), cex=0.4, pch=16, 
      xlab = "Criticality", ylab = "Criticality impact on log-odds")
+
+plot(validationData[,"Reliability"], t(pred.breakdown[,"Reliability"]), cex=0.4, pch=16, 
+     xlab = "Reliability", ylab = "Reliability impact on log-odds")
+
+plot(validationData[,"ADT"], t(pred.breakdown[,"ADT"]), cex=0.4, pch=16, 
+     xlab = "ADT", ylab = "ADT impact on log-odds")
+
+plot(validationData[,"Importance"], t(pred.breakdown[,"Importance"]), cex=0.4, pch=16, 
+     xlab = "Importance", ylab = "Importance impact on log-odds")
+
+plot(validationData[,"Provided.Interface"], t(pred.breakdown[,"Provided.Interface"]), cex=0.4, pch=16, 
+     xlab = "Provided.Interface", ylab = "Provided.Interface impact on log-odds")
+
+plot(validationData[,"Required.Interface"], t(pred.breakdown[,"Required.Interface"]), cex=0.4, pch=16, 
+     xlab = "Required.Interface", ylab = "Required.Interface impact on log-odds")
+
 
 #Not working below
 # cr <- colorRamp(c("blue", "red"))
