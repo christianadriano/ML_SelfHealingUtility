@@ -8,11 +8,11 @@ library(pROC)
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf<-loadData(fileName="data//Random_with_different_Increase_for_each_rule.csv");
+dataf<-loadData(fileName="data//Random_10000Failures_without_inapplicable_rules.csv");
 
-summary(dataf);
+#summary(dataf);
 
-
+dataf<-dataf[dataf$UTILITY.INCREASE!=0,]
 
 # Select feature columns --------------------------------------------------
 featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY, dataf$IMPORTANCE, 
@@ -20,25 +20,6 @@ featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY, 
                           
 colnames(featuresdf) <- c("Connectivity", "Criticality","Reliability","Importance","Provided.Interface", 
                           "Required.Interface","ADT","Utility.Increase");
-
-
-
-#Centralize features (divide them by their mean)
-centralize<- function(featureData){
-  featureData <- featureData/mean(featureData);
-  return(featureData);
-}
-
-
-# Centralize variables ----------------------------------------------------
-featuresdf$Utility.Increase <- centralize(featuresdf$Utility.Increase);
-featuresdf$Criticality <- centralize(featuresdf$Criticality);
-featuresdf$Connectivity <- centralize(featuresdf$Connectivity);
-featuresdf$Reliability <- centralize(featuresdf$Reliability);
-featuresdf$Importance <- centralize(featuresdf$Importance);
-featuresdf$Provided.Interface <- centralize(featuresdf$Provided.Interface);
-featuresdf$Required.Interface <- centralize(featuresdf$Required.Interface);
-featuresdf$ADT <- centralize(featuresdf$ADT);
 
 # Scramble data -----------------------------------------------------------
 #Scramble the dataset before extracting the training set.
@@ -71,7 +52,7 @@ xgboost.cv = xgb.cv(param=param, data = xgb.train.data, nfold = 10, nrounds = 15
 best_iteration = xgboost.cv$best_iteration
 
 xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
-
+xgb.model
 #Best training iteration = 17
 # iter train_rmse_mean train_rmse_std test_rmse_mean test_rmse_std
 # 17        110.4483        8.86739       225.6595      77.05662
@@ -88,27 +69,63 @@ xgb.roc_obj <- roc(validationData[,"Utility.Increase"], xgb.preds)
 
 
 
-# Plot prediction ---------------------------------------------------------
 
-rmse <- function(error)
-{
+
+# Metric functions --------------------------------------------------------
+
+# Root mean square error
+# https://en.wikipedia.org/wiki/Root-mean-square_deviation
+rmse <- function(error){
   sqrt(mean(error^2))
 }
 
+# Coefficient of determination
+# https://en.wikipedia.org/wiki/Coefficient_of_determination
+r_squared <- function(prediction, actual){
+  
+  SS_ExplainedVariance <- sum((prediction - actual)^2);
+  SS_TotalVariance <- sum((actual-mean(actual))^2);
+  R2<- 1- SS_ExplainedVariance / SS_TotalVariance;
+  return (R2);  
+}
+
+#-------------------------------------------------------------------------
+
+# Validation -------------------------------------------------------------
+
 y_pred <- predict(xgb.model, as.matrix(validationData));
 error <- y_pred - validationData$Utility.Increase;
+refError <- error/validationData$Utility.Increase
+plot(refError) + title(main="Relative error")
 meanError <- mean(y_pred - validationData$Utility.Increase)
 percentMeanError <- meanError / mean(validationData$Utility.Increase)*100;
+percentMeanError
 rmse_value <- rmse(error);
-plot(error) + title(main="Training set 0.8, RMSE=179.5716, percentMeanError=13,63%")
-plot(y_pred)
-plot(validationData$Utility.Increase)
+rmse_value
+
+prediction <- data.frame(y_pred);
+actual <- data.frame(validationData$Utility.Increase);
+R2 <- r_squared(prediction,as.numeric(validationData$Utility.Increase));
+R2
+
+# Plot prediction ---------------------------------------------------------
+
+plot(error) + title(main="Training error")
+#plot(y_pred)
+#plot(validationData$Utility.Increase)
 
 library(lattice)
-xyplot(validationData$Utility.Increase ~ y_pred, grid=TRUE,
-       type = c("p", "smooth"), col.line = "darkorange", lwd = 1, main="Predicted versus Actual")
+xyplot(y_pred ~Utility.Increase,validationData, grid=TRUE,
+       type = c("p", "smooth"), col.line = "darkorange", lwd = 1, main="Predicted versus Actual");
 
+#https://www.stat.ubc.ca/~jenny/STAT545A/block09_xyplotLattice.html
+ 
 cor(y_pred,validationData$Utility.Increase)
+
+validationData$predicted<-y_pred
+
+model <- lm(y_pred ~ Utility.Increase, validationData)
+summary(model)
 
 #90/10 percentMeanError -0.1447302
 #80/20 percentMeanError  0.01095572
@@ -138,7 +155,7 @@ cat('Breakdown Complete','\n')
 weights = rowSums(pred.breakdown)
 pred.xgb = 1/(1+exp(-weights))
 cat(max(xgb.preds-pred.xgb),'\n')
-idx_to_get = as.integer(500)
+idx_to_get = as.integer(300)
 validationData[idx_to_get,1:7]
 showWaterfall(xgb.model, explainer, xgb.test.data, data.matrix(validationData[,1:7]),
               idx_to_get, type = "regression")

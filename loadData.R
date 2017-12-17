@@ -1,4 +1,5 @@
 
+
 #---------------------------------------------------------------
 #Load all data into a dataframe
 loadData<- function(fileName){
@@ -37,3 +38,13 @@ listUniqueItems<- function(column,columnName){
   uniqueItems <- uniqueItems[with(uniqueItems,order(columnName)),];
   return(uniqueItems);
 }
+
+
+# Centralize data ---------------------------------------------------------
+
+#Centralize features (divide them by their mean)
+centralize<- function(featureColumn){
+  featureColumn <- featureColumn/mean(featureData);
+  return(featureColumn);
+}
+
