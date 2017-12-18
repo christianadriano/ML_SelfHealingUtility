@@ -5,12 +5,13 @@ library("Hmisc")
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf<-loadData(fileName="Random_proper_comp_names.csv");
+dataf<-loadData(fileName="data//Random_10000Failures_without_inapplicable_rules.csv");
 
 #Remove all reliability and utility values equal to zero
 dataf<- dataf[dataf$RELIABILITY!=0,];
 dataf <- dataf[dataf$UTILITY.INCREASE!=0,] 
 
+qqplot(dataf$CONNECTIVITY)
 #    
 #Correlations
 #Data is not normal (did not reject the null hypothesis)
@@ -19,12 +20,39 @@ shapiro.test(dataf$CRITICALITY);
 shapiro.test(dataf$CONNECTIVITY);
 shapiro.test(dataf$RELIABILITY);
 
-matrixInput<-data.frame(dataf$UTILITY.DROP,dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY);
-colnames(matrixInput)<-c("Utility_Drop","Criticality","Connectivity","Reliability");
+###########################################################################  
+# Normality test
+
+qqnorm(dataf$CRITICALITY,main="Normal Q-Q Plot - Criticality")+ qqline();
+qqline(dataf$CRITICALITY)
+
+qqnorm(dataf$CONNECTIVITY,main="Normal Q-Q Plot - Connectivity") + qqline();
+qqline(dataf$CONNECTIVITY)
+
+qqnorm(log(dataf$PROVIDED_INTERFACE+1),main="Normal Q-Q Plot - Provided.Interface")
+qqline(log(dataf$PROVIDED_INTERFACE+1))
+
+qqnorm(dataf$RELIABILITY,main="Normal Q-Q Plot - Reliability")
+qqline(dataf$RELIABILITY)
+
+matrixInput<-data.frame(dataf$UTILITY.INCREASE,dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,
+                        dataf$IMPORTANCE, dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,dataf$ADT);
+colnames(matrixInput)<-c("Utility.Increase","Criticality","Connectivity","Reliability","Importance",
+                         "Provided.Inteface","Required.Interface","ADT");
 
 res <- rcorr(data.matrix(matrixInput),type=c("spearman"));
 res$r
+res$P
 
+cor(dataf$PROVIDED_INTERFACE,dataf$CONNECTIVITY,method=c("pearson"))
+cor(dataf$PROVIDED_INTERFACE,dataf$CONNECTIVITY,method=c("kendall"))
+cor(dataf$PROVIDED_INTERFACE,dataf$CONNECTIVITY,method=c("spearman"))
+
+plot(dataf$CONNECTIVITY,dataf$PROVIDED_INTERFACE)
+
+hist(dataf$PROVIDED_INTERFACE)
+dataf <- dataf[dataf$PROVIDED_INTERFACE!=0,]
+dataf$PROVIDED_INTERFACE!=0
 ##CORRELATIONS
 #                Utility_Drop Criticality Connectivity Reliability
 # Utility_Drop   1.00000000  0.87580705   0.41702881 -0.09647729

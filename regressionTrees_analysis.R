@@ -9,35 +9,46 @@ library(pROC)
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
 dataf<-loadData(fileName="data//Random_10000Failures_without_inapplicable_rules.csv");
+#dataf<-dataf[dataf$UTILITY.INCREASE!=0,] #Not removing anymore. We need some negative instances
 
 #summary(dataf);
-
-dataf<-dataf[dataf$UTILITY.INCREASE!=0,]
 
 # Select feature columns --------------------------------------------------
 featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY, dataf$IMPORTANCE, 
                         dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE, dataf$ADT, dataf$UTILITY.INCREASE); 
                           
-colnames(featuresdf) <- c("Connectivity", "Criticality","Reliability","Importance","Provided.Interface", 
+colnames(featuresdf) <- c("Criticality","Connectivity","Reliability","Importance","Provided.Interface", 
                           "Required.Interface","ADT","Utility.Increase");
 
-# Scramble data -----------------------------------------------------------
-#Scramble the dataset before extracting the training set.
-set.seed(8850);
-g<- runif((nrow(featuresdf))); #generates a random distribution
-featuresdf <- featuresdf[order(g),];
+##TODO
+#COMPUTE CORRELATIONS AMONG FEATURES!!! Ask a questoin on Stackexchange.
 
+#Create a Montecarlo Simulation loop to average the outcome of R2 and RMSE for different samplings
+#of the same training/testing/validation split
+#Create a loop to compute the outcomes for differnt splits (measure the time of execution)
+#Run the simulation for different file sizes 100, 1000, 10000
+
+##Nice to do - see if you can use vectorization to implment these loops (so you can even a blog post about it)
+
+#PLOT function for each feature. Do that using a scatter plot with bloxplot
+
+#Compute the RMSE and R2 for the case of probabilistic output (ask a question on Reddit or StackExchange?)
+#Why R2 is not good to select models? How to use AUC, PROC, AIC, BIC instead?
+
+proportion <- 0.8
+
+# Scramble data -----------------------------------------------------------
+featuresdf <- scrambleData(dataf=featuresdf);
 
 # Extract training ad validation sets -------------------------------------
 #Training = used to create a model
 #Validation = used to compute prediction error (Bias)
 totalData = dim(featuresdf)[1];
-trainingSize = trunc(totalData * 0.7);
+trainingSize = trunc(totalData * proportion);
 startTestIndex = totalData - trainingSize;
-endTestIndex = totalData;
 
 trainingData<- as.data.frame(featuresdf[1:trainingSize,]);
-validationData<-as.data.frame(featuresdf[startTestIndex:endTestIndex,]);
+validationData<-as.data.frame(featuresdf[startTestIndex:totalData,]);
 
 
 # Build model -------------------------------------------------------------
@@ -49,22 +60,25 @@ xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:7]),
 param <- list(objective = "reg:linear", base_score = 0.5)
 xgboost.cv = xgb.cv(param=param, data = xgb.train.data, nfold = 10, nrounds = 1500, 
                     early_stopping_rounds = 100, metrics='rmse')
-best_iteration = xgboost.cv$best_iteration
+best_iteration <- xgboost.cv$best_iteration;
+xgboost.cv$evaluation_log[best_iteration]
+
+
+# Compute AUC -------------------------------------------------------------
 
 xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
 xgb.model
-#Best training iteration = 17
-# iter train_rmse_mean train_rmse_std test_rmse_mean test_rmse_std
-# 17        110.4483        8.86739       225.6595      77.05662
+
 
 xgb.test.data = xgb.DMatrix(data.matrix(validationData[,1:7]), missing = NA)
 xgb.preds = predict(xgb.model, xgb.test.data)
 xgb.roc_obj <- roc(validationData[,"Utility.Increase"], xgb.preds)
-
+xgb.roc_obj
 # Call:
 #   roc.default(response = validationData[, "Utility.Increase"],     predictor = xgb.preds)
 # 
-# Data: xgb.preds in 399 controls (validationData[, "Utility.Increase"] 0) > 1 cases (validationData[, "Utility.Increase"] 13.3018695).
+# Data: xgb.preds in 399 controls (validationData[, "Utility.Increase"] 0) > 1 cases 
+#(validationData[, "Utility.Increase"] 13.3018695).
 # Area under the curve: 0.8571
 
 
@@ -95,11 +109,30 @@ r_squared <- function(prediction, actual){
 
 y_pred <- predict(xgb.model, as.matrix(validationData));
 error <- y_pred - validationData$Utility.Increase;
-refError <- error/validationData$Utility.Increase
-plot(refError) + title(main="Relative error")
+
+
+
+# Residual analysis -------------------------------------------------------
+
+#Are the residuals (errors) ok? So we can accept the regression model as valid?
+#Note however that regression trees usually do not perform well in terms of heteroscedacity [1]
+errorFrame <- data.frame(validationData[,1:7]);
+errorFrame$residuals<- error;
+for(i in 1:7){
+  plot(errorFrame[,i],error) #shows that the errors are randomly distributed for range of the predictions
+}
+qqnorm(error,main="Normal Q-Q Plot - error ") #shows that the residuals are fairly normally distributed
+qqline(error)
+hist(error)
+
+#[1] Gelfand, S. J. (2015). Understanding the impact of heteroscedasticity on the predictive ability of modern regression methods.
+
+# Percent error, RMSE, R2 -------------------------------------------------
+
 meanError <- mean(y_pred - validationData$Utility.Increase)
 percentMeanError <- meanError / mean(validationData$Utility.Increase)*100;
 percentMeanError
+
 rmse_value <- rmse(error);
 rmse_value
 
@@ -110,21 +143,52 @@ R2
 
 # Plot prediction ---------------------------------------------------------
 
-plot(error) + title(main="Training error")
-#plot(y_pred)
-#plot(validationData$Utility.Increase)
-
 library(lattice)
-xyplot(y_pred ~Utility.Increase,validationData, grid=TRUE,
+xyplot(y_pred ~ Provided.Interface,validationData, grid=TRUE,
        type = c("p", "smooth"), col.line = "darkorange", lwd = 1, main="Predicted versus Actual");
+
+
+xyplot(y_pred ~ ADT,validationData, grid=TRUE,
+       type = c("p", "smooth"), col.line = "darkorange", lwd = 1, main="Predicted versus Actual");
+
+
+xyplot(y_pred ~ Connectivity,validationData, grid=TRUE,
+       type = c("p", "smooth"), col.line = "darkorange", lwd = 1, main="Predicted versus Actual");
+
 
 #https://www.stat.ubc.ca/~jenny/STAT545A/block09_xyplotLattice.html
  
-cor(y_pred,validationData$Utility.Increase)
+cor(y_pred,validationData$Provided.Interface)
+
+xyplot(Provided.Interface ~ Criticality,validationData, grid=TRUE,
+       type = c("p", "smooth"), col.line = "darkorange", lwd = 1, main="Predicted versus Actual");
+
+cor(validationData$Provided.Interface,validationData$Connectivity)
+cor(trainingData$Provided.Interface,trainingData$Connectivity)
+
+
+plot(validationData$Provided.Interface,validationData$Criticality)
+
+plot(trainingData$Provided.Interface,trainingData$Connectivity)
+
+
 
 validationData$predicted<-y_pred
 
-model <- lm(y_pred ~ Utility.Increase, validationData)
+install.packages("lmtest")
+library(lmtest)
+library(gvlma)
+model <- lm(y_pred ~ Provided.Interface, validationData)
+bptest(model)
+# studentized Breusch-Pagan test
+# data:  model
+# BP = 1194.9, df = 1, p-value < 2.2e-16
+# p-value<0.05 means that we can reject the null-hypothesis
+# Null-hypothesis is that the data is homoscedacity,which is not.
+#There are many reasons to reject the null-hypothesis of homoscedacity, one is the omittion of predictors,
+#which we really omitted.
+
+gvlma(model, )
 summary(model)
 
 #90/10 percentMeanError -0.1447302
