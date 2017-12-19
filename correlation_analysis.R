@@ -5,13 +5,12 @@ library("Hmisc")
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf<-loadData(fileName="data//Random_10000Failures_without_inapplicable_rules.csv");
+dataf<-loadData(fileName="data//Probabilistic.csv");
 
 #Remove all reliability and utility values equal to zero
 dataf<- dataf[dataf$RELIABILITY!=0,];
 dataf <- dataf[dataf$UTILITY.INCREASE!=0,] 
 
-qqplot(dataf$CONNECTIVITY)
 #    
 #Correlations
 #Data is not normal (did not reject the null hypothesis)
@@ -40,7 +39,7 @@ matrixInput<-data.frame(dataf$UTILITY.INCREASE,dataf$CRITICALITY,dataf$CONNECTIV
 colnames(matrixInput)<-c("Utility.Increase","Criticality","Connectivity","Reliability","Importance",
                          "Provided.Inteface","Required.Interface","ADT");
 
-res <- rcorr(data.matrix(matrixInput),type=c("spearman"));
+res <- rcorr(data.matrix(matrixInput),type=c("pearson"));
 res$r
 res$P
 
