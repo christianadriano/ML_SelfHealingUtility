@@ -21,7 +21,6 @@ colnames(featuresdf) <- c("Criticality","Connectivity","Reliability","Importance
                           "Required.Interface","ADT","Utility.Increase");
 
 ##TODO
-#COMPUTE CORRELATIONS AMONG FEATURES!!! Ask a questoin on Stackexchange.
 
 #Create a Montecarlo Simulation loop to average the outcome of R2 and RMSE for different samplings
 #of the same training/testing/validation split
@@ -33,7 +32,7 @@ colnames(featuresdf) <- c("Criticality","Connectivity","Reliability","Importance
 #PLOT function for each feature. Do that using a scatter plot with bloxplot
 
 #Compute the RMSE and R2 for the case of probabilistic output (ask a question on Reddit or StackExchange?)
-#Why R2 is not good to select models? How to use AUC, PROC, AIC, BIC instead?
+#Why R2 is not good to select models? How to use AUC, PROC, AIC, BIC instead
 
 proportion <- 0.8
 
