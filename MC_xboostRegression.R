@@ -12,6 +12,8 @@ library(pROC)
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
 dataf_l<-loadData(fileName="data//Linear.csv");
 dataf_p<-loadData(fileName="data//Probabilistic.csv");
+dataf_d <- loadData(fileName="data//discontinous.csv");
+dataf <- dataf_l;
 
 resultsf <- data.frame(matrix(data=NA,nrow=100,ncol=6));
 colnames(resultsf) <- c("Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN", "Test_RMSE_STD","RMSE","R_Squared");
