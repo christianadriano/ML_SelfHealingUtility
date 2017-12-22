@@ -5,30 +5,41 @@
 #Run the simulation for different file sizes 100, 1000, 10000
 
 #Imports
+#https://stackoverflow.com/questions/10216014/simple-program-to-call-r-from-java-using-eclipse-and-rserve
+library(Rserve)
+Rserve()
+
 library(xgboost)
 library(pROC)
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf_l<-loadData(fileName="data//Linear.csv");
-dataf_p<-loadData(fileName="data//Probabilistic.csv");
-dataf_d <- loadData(fileName="data//discontinous.csv");
-dataf <- dataf_l;
+# dataf_l<-loadData(fileName="data//Linear.csv");
+# dataf_p<-loadData(fileName="data//Probabilistic.csv");
+# dataf_d <- loadData(fileName="data//discontinous.csv");
+dataf_s <- loadData(fileName="data//Saturating.csv");
+dataf <- dataf_s;
+#summary(dataf_s)
 
-resultsf <- data.frame(matrix(data=NA,nrow=100,ncol=6));
-colnames(resultsf) <- c("Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN", "Test_RMSE_STD","RMSE","R_Squared");
+resultsf <- data.frame(matrix(data=NA,nrow=100,ncol=7));
+colnames(resultsf) <- c("Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
+                        "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
 
 # Select feature columns --------------------------------------------------
 featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY, dataf$IMPORTANCE, 
-                        dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE, dataf$ADT, dataf$UTILITY.INCREASE); 
+                        dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE, dataf$ADT,
+                        dataf$PMax,dataf$alpha,dataf$REQUEST,
+                        dataf$UTILITY.INCREASE); 
 
-colnames(featuresdf) <- c("Criticality","Connectivity","Reliability","Importance","Provided.Interface", 
-                          "Required.Interface","ADT","Utility.Increase");
-
+colnames(featuresdf) <- c("Criticality","Connectivity","Reliability","Importance",
+                          "Provided.Interface", 
+                          "Required.Interface","ADT",
+                          "PMax","alpha","REQUEST",
+                          "Utility.Increase");
 proportion <- 0.7
+featuresdf <- featuresdf[featuresdf$Utility.Increase!=0,];
 
 for(i in c(1:100)){
-  
   
   # Scramble data -----------------------------------------------------------
   featuresdf <- scrambleData(dataf=featuresdf);
@@ -46,7 +57,7 @@ for(i in c(1:100)){
   
   # Build model -------------------------------------------------------------
   
-  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:7]), 
+  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:10]), 
                                label = trainingData[,"Utility.Increase"],
                                missing = NA)
   
@@ -70,17 +81,34 @@ for(i in c(1:100)){
   
   resultsf$RMSE[i] <- rmse(error);
   resultsf$R_Squared[i] <- r_squared(y_pred,validationData$Utility.Increase);
-  
+  resultsf$MAPD[i] <- mapd(y_pred,validationData$Utility.Increase);
 }
 
-plot(resultsf$Train_RMSE_MEAN, main="Training RMSE, 70/30, mean= 16.42466");
-mean(resultsf$Train_RMSE_MEAN)
-plot(resultsf$Test_RMSE_MEAN, main="Testing RMSE, 70/30, mean= 120.5871");
-mean(resultsf$Test_RMSE_MEAN)
-plot(resultsf$RMSE, main="Validation RMSE, 70/30, mean=80.52817");
-mean(resultsf$RMSE)
-plot(resultsf$R_Squared, main="Validation R_Squared, 70/30, mean=0.9905962");
-mean(resultsf$R_Squared)
+#Plot Train RMSE
+proportionStr <- toString(proportion);
+meanRMSE_Train <- toString(round(averageRMSE(resultsf$Train_RMSE_MEAN,trainingSize),2))
+title <- paste("Training RMSE, training proportion", proportionStr,"mean=",meanRMSE_Train)
+plot(resultsf$Train_RMSE_MEAN, main=title);
+
+# Plot Validation RMSE
+proportionStr <- toString(1-proportion);
+validationSize <- length(validationData$Utility.Increase)
+meanRMSE_validation <- toString(round(averageRMSE(resultsf$RMSE,validationSize),2))
+title <- paste("Validation RMSE, data proportion", proportionStr,"mean=",meanRMSE_validation)
+plot(resultsf$RMSE, main=title);
+
+#Plot MAPD
+meanMAPD_validation <- round(mean(resultsf$MAPD),4);
+title <- paste("Validation MAPD, data proportion", proportionStr,"mean=",meanMAPD_validation)
+plot(resultsf$MAPD, main=title);
+
+
+#Plot Validation R_Squared
+maxRSquared <- max(resultsf$R_Squared);
+minRSquared <- min(resultsf$R_Squared);
+title <- paste("Validation R_Squared, data proportion", proportionStr,"max=",maxRSquared,"min=",minRSquared);
+plot(resultsf$R_Squared, main=title);
+
 
 hist(resultsf$RMSE)
 
