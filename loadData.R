@@ -63,7 +63,7 @@ rmse <- function(error){
 # Mean Absolute Percent Deviation MAPD
 # https://en.wikipedia.org/wiki/Mean_absolute_percentage_error
 mapd <- function(prediction, actual){
-  return(100* (sum(abs(actual - prediction))/sum(actual) )/ length(actual));
+  return(100* (sum(abs(actual - prediction)/actual) )/ length(actual));
 }
 
 # R_squared ---------------------------------------------------------------
