@@ -5,7 +5,8 @@ library("Hmisc")
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf<-loadData(fileName="data//Probabilistic.csv");
+#dataf<-loadData(fileName="data//Probabilistic.csv");
+dataf<-loadData(fileName="data//Saturation.csv");
 
 #Remove all reliability and utility values equal to zero
 dataf<- dataf[dataf$RELIABILITY!=0,];
@@ -35,9 +36,10 @@ qqnorm(dataf$RELIABILITY,main="Normal Q-Q Plot - Reliability")
 qqline(dataf$RELIABILITY)
 
 matrixInput<-data.frame(dataf$UTILITY.INCREASE,dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,
-                        dataf$IMPORTANCE, dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,dataf$ADT);
+                        dataf$IMPORTANCE, dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,dataf$ADT,
+                        dataf$PMax,dataf$alpha,dataf$REQUEST);
 colnames(matrixInput)<-c("Utility.Increase","Criticality","Connectivity","Reliability","Importance",
-                         "Provided.Inteface","Required.Interface","ADT");
+                         "Provided.Inteface","Required.Interface","ADT","PMax","alpha","REQUEST");
 
 res <- rcorr(data.matrix(matrixInput),type=c("pearson"));
 res$r
