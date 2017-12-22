@@ -58,6 +58,14 @@ rmse <- function(error){
 }
 
 
+# MAPD --------------------------------------------------------------------
+
+# Mean Absolute Percent Deviation MAPD
+# https://en.wikipedia.org/wiki/Mean_absolute_percentage_error
+mapd <- function(prediction, actual){
+  return(100* (sum(abs(actual - prediction))/sum(actual) )/ length(actual));
+}
+
 # R_squared ---------------------------------------------------------------
 
 # Coefficient of determination
@@ -70,4 +78,12 @@ r_squared <- function(prediction, actual){
   return (R2);  
 }
 
+# Average RMSE ------------------------------------------------------------
+
+#sampleSize that was use to compute RMSE datapoint (assuming we used the same sampleSize for all RMSE datapoints)
+averageRMSE <- function(RMSEVector, sampleSize){
+  RMSE_sqr <- RMSEVector^2 * sampleSize;
+  RMSE_points <- length(RMSEVector);
+  return (sum(RMSE_sqr) /(RMSE_points * sampleSize))
+}
 
