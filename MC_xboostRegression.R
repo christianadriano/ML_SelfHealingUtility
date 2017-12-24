@@ -108,7 +108,7 @@ maxRSquared <- max(resultsf$R_Squared);
 minRSquared <- min(resultsf$R_Squared);
 title <- paste("Validation R_Squared, data proportion", proportionStr,"max=",maxRSquared,"min=",minRSquared);
 plot(resultsf$R_Squared, main=title);
-
+hist(resultsf$R_Squared)
 
 hist(resultsf$RMSE)
 
