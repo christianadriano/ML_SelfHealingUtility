@@ -6,11 +6,11 @@
 
 #Imports
 #https://stackoverflow.com/questions/10216014/simple-program-to-call-r-from-java-using-eclipse-and-rserve
+install.packages("Rserve")
 library(Rserve)
 Rserve()
 
 library(xgboost)
-library(pROC)
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
@@ -68,6 +68,7 @@ for(i in c(1:100)){
   xgboost.cv$evaluation_log[best_iteration]
   
   xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
+  xgb.save(xgb.model,fname="xgd.model.saturating");
   
   # Validation -------------------------------------------------------------
   
