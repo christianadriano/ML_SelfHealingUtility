@@ -83,8 +83,8 @@ r_squared <- function(prediction, actual){
 #sampleSize that was use to compute RMSE datapoint (assuming we used the same sampleSize for all RMSE datapoints)
 #https://stats.stackexchange.com/questions/99263/average-of-root-mean-square-error
 averageRMSE <- function(RMSEVector, sampleSize){
-  RMSE_sqr <- RMSEVector^2 * sampleSize;
+  RMSE_sqr <- sqrt((RMSEVector^2) * sampleSize);
   RMSE_points <- length(RMSEVector);
-  return (sum(RMSE_sqr) /(RMSE_points * sampleSize))
+  return (sum(RMSE_sqr /(RMSE_points * sampleSize)))
 }
 
