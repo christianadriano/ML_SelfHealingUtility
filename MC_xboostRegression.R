@@ -116,6 +116,8 @@ hist(resultsf$R_Squared)
 
 hist(resultsf$RMSE)
 
+hist(trainingData$Utility_Increase)
+
 meanLinear <- mean(validationData$Utilit_Increase)
 rmseLinear <- 5.97283
 rmseLinear/meanLinear *100
