@@ -17,7 +17,7 @@ source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//l
 # dataf_l<-loadData(fileName="data//Linear.csv");
 # dataf_p<-loadData(fileName="data//Probabilistic.csv");
 # dataf_d <- loadData(fileName="data//discontinous.csv");
-dataf_s <- loadData(fileName="data//Saturating.csv");
+dataf_s <- loadData(fileName="data//10000//Saturating50000.csv");
 dataf <- dataf_s;
 #summary(dataf_s)
 
@@ -27,18 +27,21 @@ colnames(resultsf) <- c("Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
 
 # Select feature columns --------------------------------------------------
 featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY, dataf$IMPORTANCE, 
-                        dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE, dataf$ADT,
+                        dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
                         dataf$PMax,dataf$alpha,dataf$REQUEST,
-                        dataf$UTILITY.INCREASE); 
+                        dataf$UTILITY_INCREASE); 
+# dataf$ADT,
 
 colnames(featuresdf) <- c("Criticality","Connectivity","Reliability","Importance",
-                          "Provided.Interface", 
-                          "Required.Interface","ADT",
+                          "Provided_Interface", 
+                          "Required_Interface",
                           "PMax","alpha","REQUEST",
-                          "Utility.Increase");
-proportion <- 0.7
-featuresdf <- featuresdf[featuresdf$Utility.Increase!=0,];
+                          "Utility_Increase");
+#"ADT",
 
+proportion <- 0.7
+featuresdf <- featuresdf[featuresdf$Utility_Increase!=0,];
+i <- 1;
 for(i in c(1:100)){
   
   # Scramble data -----------------------------------------------------------
@@ -57,8 +60,8 @@ for(i in c(1:100)){
   
   # Build model -------------------------------------------------------------
   
-  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:10]), 
-                               label = trainingData[,"Utility.Increase"],
+  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:9]), 
+                               label = trainingData[,"Utility_Increase"],
                                missing = NA)
   
   param <- list(objective = "reg:linear", base_score = 0.5)
@@ -73,7 +76,7 @@ for(i in c(1:100)){
   # Validation -------------------------------------------------------------
   
   y_pred <- predict(xgb.model, as.matrix(validationData));
-  error <- y_pred - validationData$Utility.Increase;
+  error <- y_pred - validationData$Utility_Increase;
   
   resultsf$Train_RMSE_MEAN[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_mean;
   resultsf$Train_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_std;
@@ -81,8 +84,8 @@ for(i in c(1:100)){
   resultsf$Test_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$test_rmse_std;
   
   resultsf$RMSE[i] <- rmse(error);
-  resultsf$R_Squared[i] <- r_squared(y_pred,validationData$Utility.Increase);
-  resultsf$MAPD[i] <- mapd(y_pred,validationData$Utility.Increase);
+  resultsf$R_Squared[i] <- r_squared(y_pred,validationData$Utility_Increase);
+  resultsf$MAPD[i] <- mapd(y_pred,validationData$Utility_Increase);
 }
 
 #Plot Train RMSE
@@ -93,7 +96,7 @@ plot(resultsf$Train_RMSE_MEAN, main=title);
 
 # Plot Validation RMSE
 proportionStr <- toString(1-proportion);
-validationSize <- length(validationData$Utility.Increase)
+validationSize <- length(validationData$Utility_Increase)
 meanRMSE_validation <- toString(round(averageRMSE(resultsf$RMSE,validationSize),2))
 title <- paste("Validation RMSE, data proportion", proportionStr,"mean=",meanRMSE_validation)
 plot(resultsf$RMSE, main=title);
@@ -113,7 +116,7 @@ hist(resultsf$R_Squared)
 
 hist(resultsf$RMSE)
 
-meanLinear <- mean(validationData$Utility.Increase)
+meanLinear <- mean(validationData$Utilit_Increase)
 rmseLinear <- 5.97283
 rmseLinear/meanLinear *100
 
