@@ -97,8 +97,8 @@ avPlots(modelFit)
 
 # Export model to PMML format ---------------------------------------------
 
-r2pmml(modelFit_CCplusR.lm, "CriticalityConnectivity_plus_Reliability_LM.pmml")
-r2pmml(modelFit_CCR.lm, "CriticalityConnectivityReliability_LM.pmml")
+r2pmml(modelFit_CCplusR.lm, "models//CriticalityConnectivity_plus_Reliability_LM.pmml")
+r2pmml(modelFit_CCR.lm, "models//CriticalityConnectivityReliability_LM.pmml")
 
 # Validate Models ---------------------------------------------------------
 
