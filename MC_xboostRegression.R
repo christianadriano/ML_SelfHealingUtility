@@ -14,34 +14,34 @@ library(xgboost)
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-# dataf_l<-loadData(fileName="data//Linear.csv");
-# dataf_p<-loadData(fileName="data//Probabilistic.csv");
-# dataf_d <- loadData(fileName="data//discontinous.csv");
+dataf_l<-loadData(fileName="data//100//Linear100.csv"); #3.96% MAPD
+dataf_p<-loadData(fileName="data//100//Probabilistic100.csv"); 
+dataf_d <- loadData(fileName="data//100//discontinous100.csv");
 dataf_s <- loadData(fileName="data//10000//Saturating50000.csv");
-dataf <- dataf_s;
+dataf_a <- loadData(fileName="data//10000//ALL44K.csv");
+dataf <- dataf_a;
 #summary(dataf_s)
 
-resultsf <- data.frame(matrix(data=NA,nrow=100,ncol=7));
+resultsf <- data.frame(matrix(data=NA,nrow=5,ncol=7));
 colnames(resultsf) <- c("Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
                         "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
 
 # Select feature columns --------------------------------------------------
-featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY, dataf$IMPORTANCE, 
-                        dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
-                        dataf$PMax,dataf$alpha,dataf$REQUEST,
-                        dataf$UTILITY_INCREASE); 
-# dataf$ADT,
+featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,dataf$IMPORTANCE, 
+                         dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
+                         dataf$PMax,dataf$alpha,dataf$REQUEST,dataf$ADT,                         
+                         dataf$UTILITY_INCREASE); 
+
 
 colnames(featuresdf) <- c("Criticality","Connectivity","Reliability","Importance",
-                          "Provided_Interface", 
+                          "Provided_Interface",
                           "Required_Interface",
-                          "PMax","alpha","REQUEST",
+                          "PMax","alpha","REQUEST","ADT",
                           "Utility_Increase");
-#"ADT",
 
 proportion <- 0.7
 featuresdf <- featuresdf[featuresdf$Utility_Increase!=0,];
-i <- 1;
+i <- 5;
 for(i in c(1:100)){
   
   # Scramble data -----------------------------------------------------------
