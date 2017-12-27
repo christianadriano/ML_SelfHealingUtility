@@ -7,8 +7,8 @@ library("Hmisc")
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
 #dataf<-loadData(fileName="data//Probabilistic.csv");
 #dataf<-loadData(fileName="data//Saturation.csv");
-dataf <- loadData(fileName="data//10000//Saturating150000.csv");
-
+#dataf <- loadData(fileName="data//10000//Saturating150000.csv");
+dataf <- loadData(fileName="data//10000//ALL44K.csv");
 
 #Remove all reliability and utility values equal to zero
 dataf<- dataf[dataf$RELIABILITY!=0,];
