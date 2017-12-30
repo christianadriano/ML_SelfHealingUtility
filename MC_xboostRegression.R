@@ -17,33 +17,29 @@ source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//l
 dataf_l<-loadData(fileName="data//100//Linear100.csv"); #3.96% MAPD
 dataf_p<-loadData(fileName="data//100//Probabilistic100.csv"); 
 dataf_d <- loadData(fileName="data//100//discontinous100.csv");
-dataf_s <- loadData(fileName="data//10000//Saturating50000.csv");
+dataf_s <- loadData(fileName="data//10000//Saturating100.csv");
 dataf_a <- loadData(fileName="data//100//ALL100.csv");
-dataf <- dataf_l;
+dataf <- dataf_a;
 #summary(dataf_s)
 
-dataf <- renameAuthenticationSerives(dataf)
+dataf <- renameAuthenticationServices(dataf)
+dataf <- dataf[dataf$AFFECTED_COMPONENT=="Authentication Service",];
 
 resultsf <- data.frame(matrix(data=NA,nrow=5,ncol=7));
 colnames(resultsf) <- c("Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
                         "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
 
 # Select feature columns --------------------------------------------------
-featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,dataf$IMPORTANCE, 
-                         dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
-                         dataf$PMax,dataf$alpha,dataf$REQUEST,dataf$ADT,                         
-                         dataf$UTILITY_INCREASE); 
+featuresdf<- select_ALL(dataf)
+inputFeatures <- dim(featuresdf)[2] -1;
+
+#
 
 
-colnames(featuresdf) <- c("Criticality","Connectivity","Reliability","Importance",
-                          "Provided_Interface",
-                          "Required_Interface",
-                          "PMax","alpha","REQUEST","ADT",
-                          "Utility_Increase");
 
-proportion <- 0.7
-featuresdf <- featuresdf[featuresdf$Utility_Increase!=0,];
-i <- 5;
+proportion <- 0.8
+featuresdf <- featuresdf[featuresdf$UTILITY_INCREASE!=0,];
+i <- 2;
 for(i in c(1:100)){
   
   # Scramble data -----------------------------------------------------------
@@ -62,8 +58,8 @@ for(i in c(1:100)){
   
   # Build model -------------------------------------------------------------
   
-  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:9]), 
-                               label = trainingData[,"Utility_Increase"],
+  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:inputFeatures]), 
+                               label = trainingData[,"UTILITY_INCREASE"],
                                missing = NA)
   
   param <- list(objective = "reg:linear", base_score = 0.5)
@@ -73,7 +69,6 @@ for(i in c(1:100)){
   xgboost.cv$evaluation_log[best_iteration]
   
   xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
-  xgb.save(xgb.model,fname="xgd.model.saturating");
   
   # Validation -------------------------------------------------------------
   
@@ -86,9 +81,11 @@ for(i in c(1:100)){
   resultsf$Test_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$test_rmse_std;
   
   resultsf$RMSE[i] <- rmse(error);
-  resultsf$R_Squared[i] <- r_squared(y_pred,validationData$Utility_Increase);
-  resultsf$MAPD[i] <- mapd(y_pred,validationData$Utility_Increase);
+  resultsf$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
+  resultsf$MAPD[i] <- mapd(y_pred,validationData$UTILITY_INCREASE);
 }
+
+resultsf
 
 #Plot Train RMSE
 proportionStr <- toString(proportion);
@@ -118,9 +115,9 @@ hist(resultsf$R_Squared)
 
 hist(resultsf$RMSE)
 
-hist(trainingData$Utility_Increase)
+hist(trainingData$UTILITY_INCREASE)
 
-meanLinear <- mean(validationData$Utilit_Increase)
+meanLinear <- mean(validationData$UTILITY_INCREASE)
 rmseLinear <- 5.97283
 rmseLinear/meanLinear *100
 
