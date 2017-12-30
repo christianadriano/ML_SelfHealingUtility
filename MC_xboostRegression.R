@@ -5,22 +5,24 @@
 #Run the simulation for different file sizes 100, 1000, 10000
 
 #Imports
+#Older implementation with Rserver. Not using it anymore.
 #https://stackoverflow.com/questions/10216014/simple-program-to-call-r-from-java-using-eclipse-and-rserve
-install.packages("Rserve")
-library(Rserve)
-Rserve()
+# install.packages("Rserve")
+# library(Rserve)
+# Rserve()
 
 library(xgboost)
-
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
 dataf_l<-loadData(fileName="data//100//Linear100.csv"); #3.96% MAPD
 dataf_p<-loadData(fileName="data//100//Probabilistic100.csv"); 
 dataf_d <- loadData(fileName="data//100//discontinous100.csv");
 dataf_s <- loadData(fileName="data//10000//Saturating50000.csv");
-dataf_a <- loadData(fileName="data//10000//ALL44K.csv");
-dataf <- dataf_a;
+dataf_a <- loadData(fileName="data//100//ALL100.csv");
+dataf <- dataf_l;
 #summary(dataf_s)
+
+dataf <- renameAuthenticationSerives(dataf)
 
 resultsf <- data.frame(matrix(data=NA,nrow=5,ncol=7));
 colnames(resultsf) <- c("Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",

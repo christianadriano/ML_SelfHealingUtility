@@ -17,6 +17,27 @@ loadData<- function(fileName){
 }
 
 
+# Replace component names -------------------------------------------------
+#Authentication components have different names, but are still of the same type
+#Twitter Authentication Service
+#Facebook Authentication Service
+#Google Authentication Service
+
+renameAuthenticationSerives <- function (df){
+  
+  flag<- dataf_a$AFFECTED_COMPONENT=="Twitter Authentication Service"
+  df$AFFECTED_COMPONENT <- replace(df$AFFECTED_COMPONENT,flag,"Authentication Service")
+  
+  flag<- dataf_a$AFFECTED_COMPONENT=="Facebook Authentication Service"
+  df$AFFECTED_COMPONENT <- replace(df$AFFECTED_COMPONENT,flag,"Authentication Service")
+
+  flag<- dataf_a$AFFECTED_COMPONENT=="Google Authentication Service"
+  df$AFFECTED_COMPONENT <- replace(df$AFFECTED_COMPONENT,flag,"Authentication Service")
+ 
+  return(df);
+}
+
+
 #-------------------------------------------------------------
 #Scramble the dataset before extracting the training set.
 scrambleData<-function(dataf){
