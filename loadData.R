@@ -38,7 +38,7 @@ renameAuthenticationServices <- function (df){
 }
 
 
-select_LinearProbabilistic <- function(dataf){
+select_Linear <- function(dataf){
   # Select feature columns --------------------------------------------------
   featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,                        
                           dataf$UTILITY_INCREASE); 
@@ -49,6 +49,21 @@ select_LinearProbabilistic <- function(dataf){
   
   return(featuresdf);
 }
+
+select_Probabilistic <- function(dataf){
+  # Select feature columns --------------------------------------------------
+  featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,
+                          dataf$ADT,
+                          dataf$UTILITY_INCREASE); 
+  
+  
+  colnames(featuresdf) <- c("CRITICALITY","CONNECTIVITY","RELIABILITY",
+                            "ADT",
+                            "UTILITY_INCREASE");
+  
+  return(featuresdf);
+}
+
 
 select_Saturation <- function(dataf){
   
@@ -87,14 +102,18 @@ select_ALL <- function(dataf){
   featuresdf<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY,dataf$IMPORTANCE, 
                           dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
                           dataf$REPLICA,dataf$REQUEST,dataf$ADT,                         
-                          dataf$UTILITY_INCREASE); 
+                          dataf$PMax,dataf$alpha,
+                           dataf$UTILITY_INCREASE); 
   
   
   colnames(featuresdf) <- c("CRITICALITY","RELIABILITY","IMPORTANCE",
                             "PROVIDED_INTERFACE", "REQUIRED_INTERFACE",
                             "REPLICA" ,"REQUEST","ADT",
-                            "UTILITY_INCREASE");
+                            "PMax","alpha",
+                           "UTILITY_INCREASE");
+
   
+    
   
   return(featuresdf);
 }
