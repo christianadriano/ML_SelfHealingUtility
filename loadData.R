@@ -23,20 +23,81 @@ loadData<- function(fileName){
 #Facebook Authentication Service
 #Google Authentication Service
 
-renameAuthenticationSerives <- function (df){
+renameAuthenticationServices <- function (df){
   
-  flag<- dataf_a$AFFECTED_COMPONENT=="Twitter Authentication Service"
+  flag<- df$AFFECTED_COMPONENT=="Twitter Authentication Service"
   df$AFFECTED_COMPONENT <- replace(df$AFFECTED_COMPONENT,flag,"Authentication Service")
   
-  flag<- dataf_a$AFFECTED_COMPONENT=="Facebook Authentication Service"
+  flag<- df$AFFECTED_COMPONENT=="Facebook Authentication Service"
   df$AFFECTED_COMPONENT <- replace(df$AFFECTED_COMPONENT,flag,"Authentication Service")
-
-  flag<- dataf_a$AFFECTED_COMPONENT=="Google Authentication Service"
+  
+  flag<- df$AFFECTED_COMPONENT=="Google Authentication Service"
   df$AFFECTED_COMPONENT <- replace(df$AFFECTED_COMPONENT,flag,"Authentication Service")
- 
+  
   return(df);
 }
 
+
+select_LinearProbabilistic <- function(dataf){
+  # Select feature columns --------------------------------------------------
+  featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,                        
+                          dataf$UTILITY_INCREASE); 
+  
+  
+  colnames(featuresdf) <- c("CRITICALITY","CONNECTIVITY","RELIABILITY",
+                            "UTILITY_INCREASE");
+  
+  return(featuresdf);
+}
+
+select_Saturation <- function(dataf){
+  
+  # Select feature columns --------------------------------------------------
+  featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,
+                          dataf$PMax,dataf$alpha,dataf$REPLICA_Original,dataf$REQUEST,                         
+                          dataf$UTILITY_INCREASE); 
+  
+  
+  colnames(featuresdf) <- c("CRITICALITY","Connectivity","RELIABILITY",
+                            "PMax","alpha","REPLICA_Original","REQUEST",
+                            "UTILITY_INCREASE");
+  
+  return(featuresdf);
+}
+
+
+select_Discontinous <- function(dataf){
+  
+  # Select feature columns --------------------------------------------------
+  featuresdf<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY,dataf$IMPORTANCE, 
+                          dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
+                          dataf$UTILITY_INCREASE); 
+  
+  
+  colnames(featuresdf) <- c("CRITICALITY","RELIABILITY","IMPORTANCE",
+                            "PROVIDED_INTERFACE","REQUIRED_INTERFACE",
+                            "UTILITY_INCREASE");
+  
+  return(featuresdf);
+}
+
+select_ALL <- function(dataf){
+  
+  # Select feature columns --------------------------------------------------
+  featuresdf<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY,dataf$IMPORTANCE, 
+                          dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
+                          dataf$REPLICA,dataf$REQUEST,dataf$ADT,                         
+                          dataf$UTILITY_INCREASE); 
+  
+  
+  colnames(featuresdf) <- c("CRITICALITY","RELIABILITY","IMPORTANCE",
+                            "PROVIDED_INTERFACE", "REQUIRED_INTERFACE",
+                            "REPLICA" ,"REQUEST","ADT",
+                            "UTILITY_INCREASE");
+  
+  
+  return(featuresdf);
+}
 
 #-------------------------------------------------------------
 #Scramble the dataset before extracting the training set.
