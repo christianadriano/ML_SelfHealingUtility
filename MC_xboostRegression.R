@@ -16,38 +16,50 @@ library(xgboost)
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
 
 index=0;
-resultsf <- data.frame(matrix(data=NA,nrow=5,ncol=8));
+
+
+datasetName <- c("linear10K","Probabilistic10K","Discontinous10K","Saturation10K","ALL10K","ALL_but_Random_10K");
+
+
+
+dataf <-loadData(fileName="data//10000//Linear10K.csv"); 
+dataf <-loadData(fileName="data//10000//Probabilistic10K.csv"); 
+dataf <- loadData(fileName="data//10000//Discontinous10K.csv");
+dataf <- loadData(fileName="data//10000//Saturating10K.csv");
+dataf <- loadData(fileName="data//10000//ALL10K.csv");
+dataf <- loadData(fileName="data//10000//ALL_but_Random10K.csv");
+summary(dataf)
+
+index=index+1;
+
+
+
+# Select feature columns --------------------------------------------------
+featuresdf<- select_Linear(dataf) #
+featuresdf<- select_Probabilistic(dataf) #
+featuresdf<- select_Discontinous(dataf) #
+featuresdf<- select_Saturation(dataf) #
+featuresdf<- select_ALL(dataf) #
+
+inputFeatures <- dim(featuresdf)[2] - 1;
+
+#RUN ALL DATA SETS WITH ALL FEATURES TO CHECK IF THE MODEL IS ABLE TO GET RID OF
+#USELESS FEATURES.
+averageResultsf <- data.frame(matrix(data=NA,nrow=6,ncol=8));
 colnames(resultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
                         "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
 
 
-dataf <-loadData(fileName="data//10000//Linear10000.csv"); #3.96% MAPD
-dataf <-loadData(fileName="data//10000//Probabilistic10000.csv"); 
-dataf <- loadData(fileName="data//10000//discontinous10000.csv");
-dataf <- loadData(fileName="data//10000//Saturating10000.csv");
-dataf <- loadData(fileName="data//10000//ALL10000.csv");
-#summary(dataf_s)
 
-index=index+1;
-index=5;
-datasetName <- c("linear10K","Probilistic10K","Discontinous10K","Saturation10K","ALL10K");
-
-dataf <- renameAuthenticationServices(dataf)
-#dataf <- dataf[dataf$AFFECTED_COMPONENT=="Authentication Service",];
-
-
-# Select feature columns --------------------------------------------------
-featuresdf<- select_ALL(dataf) #
-inputFeatures <- dim(featuresdf)[2] - 1;
-
-#
-
-
-
-proportion <- 0.75
+proportion <- 0.9
 featuresdf <- featuresdf[featuresdf$UTILITY_INCREASE!=0,];
-i <- index;
-#for(i in c(1:10)){
+
+#DATA STRUCTURE TO KEEP THE INTERMEDIATE MODELS 
+mcResultsf <- data.frame(matrix(data=NA,nrow=100,ncol=8));
+colnames(resultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
+                        "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
+
+for(i in c(1:100)){
   
   # Scramble data -----------------------------------------------------------
   featuresdf <- scrambleData(dataf=featuresdf);
@@ -57,6 +69,7 @@ i <- index;
   #Validation = used to compute prediction error (Bias)
   totalData = dim(featuresdf)[1];
   trainingSize = trunc(totalData * proportion);
+
   startTestIndex = totalData - trainingSize;
   
   trainingData<- as.data.frame(featuresdf[1:trainingSize,]);
@@ -82,19 +95,37 @@ i <- index;
   y_pred <- predict(xgb.model, as.matrix(validationData));
   error <- y_pred - validationData$UTILITY_INCREASE;
   
-  resultsf$DataSet[i]<-datasetName[i];
-  resultsf$Train_RMSE_MEAN[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_mean;
-  resultsf$Train_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_std;
-  resultsf$Test_RMSE_MEAN[i]<-xgboost.cv$evaluation_log[best_iteration]$test_rmse_mean;
-  resultsf$Test_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$test_rmse_std;
+  mcResultsf$DataSet[i]<-datasetName[i];
+  mcResultsf$Train_RMSE_MEAN[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_mean;
+  mcResultsf$Train_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_std;
+  mcResultsf$Test_RMSE_MEAN[i]<-xgboost.cv$evaluation_log[best_iteration]$test_rmse_mean;
+  mcResultsf$Test_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$test_rmse_std;
   
-  resultsf$RMSE[i] <- rmse(error);
-  resultsf$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
-  resultsf$MAPD[i] <- mapd(y_pred,validationData$UTILITY_INCREASE);
+  mcResultsf$RMSE[i] <- rmse(error);
+  mcResultsf$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
+  mcResultsf$MAPD[i] <- mapd(y_pred,validationData$UTILITY_INCREASE);
 
-#}
+}
 
-resultsf
+fileName <- paste0("mcResultsf_",datasetName[index],".csv");
+write.table(mcresultsf,fileName,sep=",",col.names = TRUE);
+
+
+# Compute Averages --------------------------------------------------------
+
+ 
+
+
+resultsf$TRAIN_RMSE_MEAN[index] <-averageRMSE(mcResultsf$Train_RMSE_MEAN,trainingSize);
+
+testingSize = totalData - trainingSize; 
+resultsf$TEST_RMSE_MEAN[index] <-averageRMSE(mcResultsf$Test_RMSE_MEAN,testingSize);
+
+resultsf$R_Squared[index] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
+resultsf$MAPD[index] <- mapd(y_pred,validationData$UTILITY_INCREASE);
+
+
+
 
 #Plot Train RMSE
 proportionStr <- toString(proportion);

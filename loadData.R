@@ -13,6 +13,9 @@ loadData<- function(fileName){
   dataf <- dataf[complete.cases(dataf),] 
   #summary(dataf)
   
+  dataf <- renameAuthenticationServices(dataf)
+  #dataf <- dataf[dataf$AFFECTED_COMPONENT=="Authentication Service",];
+  
   return(dataf);
 }
 
@@ -69,12 +72,12 @@ select_Saturation <- function(dataf){
   
   # Select feature columns --------------------------------------------------
   featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,
-                          dataf$PMax,dataf$alpha,dataf$REPLICA_Original,dataf$REQUEST,                         
+                          dataf$PMax,dataf$alpha,dataf$REPLICA,dataf$REQUEST,                         
                           dataf$UTILITY_INCREASE); 
   
   
   colnames(featuresdf) <- c("CRITICALITY","Connectivity","RELIABILITY",
-                            "PMax","alpha","REPLICA_Original","REQUEST",
+                            "PMax","alpha","REPLICA","REQUEST",
                             "UTILITY_INCREASE");
   
   return(featuresdf);
