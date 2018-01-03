@@ -15,61 +15,103 @@ library(xgboost)
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
 
+
+# Initialize section ------------------------------------------------------
 index=0;
 
+datasetSize="10K";
 
-datasetName <- c("linear10K","Probabilistic10K","Discontinous10K","Saturation10K","ALL10K","ALL_but_Random_10K");
+linear = paste0("Linear",datasetSize,".csv");
+discontinous = paste0("Discontinous",datasetSize,".csv");
+saturating = paste0("Saturating",datasetSize,".csv");
+all = paste0("ALL",datasetSize,".csv");
 
-
-
-dataf <-loadData(fileName="data//10000//Linear10K.csv"); 
-dataf <-loadData(fileName="data//10000//Probabilistic10K.csv"); 
-dataf <- loadData(fileName="data//10000//Discontinous10K.csv");
-dataf <- loadData(fileName="data//10000//Saturating10K.csv");
-dataf <- loadData(fileName="data//10000//ALL10K.csv");
-dataf <- loadData(fileName="data//10000//ALL_but_Random10K.csv");
-summary(dataf)
-
-index=index+1;
-
-
-
-# Select feature columns --------------------------------------------------
-featuresdf<- select_Linear(dataf) #
-featuresdf<- select_Probabilistic(dataf) #
-featuresdf<- select_Discontinous(dataf) #
-featuresdf<- select_Saturation(dataf) #
-featuresdf<- select_ALL(dataf) #
-
-inputFeatures <- dim(featuresdf)[2] - 1;
-
-#RUN ALL DATA SETS WITH ALL FEATURES TO CHECK IF THE MODEL IS ABLE TO GET RID OF
-#USELESS FEATURES.
-averageResultsf <- data.frame(matrix(data=NA,nrow=6,ncol=8));
-colnames(resultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
-                        "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
-
-
-
-proportion <- 0.9
-featuresdf <- featuresdf[featuresdf$UTILITY_INCREASE!=0,];
+datasetName <- c(linear,discontinous,saturating,all);
 
 #DATA STRUCTURE TO KEEP THE INTERMEDIATE MODELS 
-mcResultsf <- data.frame(matrix(data=NA,nrow=100,ncol=8));
-colnames(resultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
-                        "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
+mcResultsf <- data.frame(matrix(data=NA,nrow=4,ncol=8));
+colnames(mcResultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
+                          "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
 
-for(i in c(1:100)){
+folder <- "data//New4Cases//";
+
+# Load data section -------------------------------------------------------
+
+dataf <- loadData(fileName=paste0(folder,linear)); 
+dataf <- loadData(fileName=paste0(folder,discontinous));
+dataf <- loadData(fileName=paste0(folder,saturating));
+dataf <- loadData(fileName=paste0(folder,all));
+#summary(dataf)
+
+datasetName <- c("Linear100","Linear1000","Linear10K");
+datasetName <- c("Discontinous100","Discontinous1000","Discontinous10K");
+datasetName <- c("Saturating100","Saturating1000","Saturating10K");
+datasetName <- c("ALL100","ALL1000","ALL10K");
+#datasetName <- c("ALL10K-ALL","ALL10K-Item Mgmt Service","ALL10K-Query Service");
+index=3;
+fileName = paste0(folder,datasetName[index],".csv")
+dataf <- loadData(fileName);
+
+dtf <- dataf[dataf$AFFECTED_COMPONENT=="Item Management Service",]
+dtf <- dataf[dataf$AFFECTED_COMPONENT=="Query Service",]
+dtf <- dataf[dataf$AFFECTED_COMPONENT=="Authentication Service",]
+dim(dtf)
+dataf <- dtf
+
+# 
+# 
+
+# Run section -------------------------------------------------------------
+
+index <- index + 1;
+mcResultsf <- trainModel(index,dataf,mcResultsf);
+mcResultsf
+
+# Save to file ------------------------------------------------------------
+
+#fileName <- paste0("mcResultsf_ALL.csv");
+
+fileName <- paste0("mcResultsf_",datasetSize,".csv");
+write.table(mcResultsf,fileName,sep=",",col.names = TRUE);
+mcResultsf
+
+
+# Train function  ---------------------------------------------------------
+trainModel <- function(i, dataf,mcResultsf){
+  
+  
+  # Select feature columns --------------------------------------------------
+  # featuresdf<- select_Linear(dataf) 
+  # featuresdf<- select_Probabilistic(dataf) 
+  # featuresdf<- select_Discontinous(dataf) 
+  # featuresdf<- select_Saturation(dataf) 
+  featuresdf<- select_ALL(dataf) 
+  
+  inputFeatures <- dim(featuresdf)[2] - 1;
+  
+  #RUN ALL DATA SETS WITH ALL FEATURES TO CHECK IF THE MODEL IS ABLE TO GET RID OF
+  #USELESS FEATURES.
+  #averageResultsf <- data.frame(matrix(data=NA,nrow=6,ncol=8));
+  #colnames(resultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
+  #                        "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
+  
+  
+  proportion <- 0.7
+  featuresdf <- featuresdf[featuresdf$UTILITY_INCREASE!=0,];
+  featuresdf <- featuresdf[featuresdf$ADT!=0,];
+  
+  
+  #for(i in c(1:100)){
   
   # Scramble data -----------------------------------------------------------
-  featuresdf <- scrambleData(dataf=featuresdf);
+  featuresdf <- scrambleData(datadf=featuresdf);
   
   # Extract training ad validation sets -------------------------------------
   #Training = used to create a model
   #Validation = used to compute prediction error (Bias)
   totalData = dim(featuresdf)[1];
   trainingSize = trunc(totalData * proportion);
-
+  
   startTestIndex = totalData - trainingSize;
   
   trainingData<- as.data.frame(featuresdf[1:trainingSize,]);
@@ -82,13 +124,28 @@ for(i in c(1:100)){
                                label = trainingData[,"UTILITY_INCREASE"],
                                missing = NA)
   
-  param <- list(objective = "reg:linear", base_score = 0.5)
+  param <- list(objective = "reg:linear", base_score = 0.5)# booster="gbtree")
   xgboost.cv = xgb.cv(param=param, data = xgb.train.data, nfold = 10, nrounds = 1500, 
-                      early_stopping_rounds = 100, metrics='rmse')
+                      early_stopping_rounds = 100, metrics='rmse',verbose = FALSE)
   best_iteration <- xgboost.cv$best_iteration;
   xgboost.cv$evaluation_log[best_iteration]
   
   xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
+  
+
+  # Generate PMML file ------------------------------------------------------
+  
+  # Generate feature map
+  mpg.fmap = r2pmml::genFMap(featuresdf)
+  r2pmml::writeFMap(mpg.fmap, "xgboost.fmap")
+  
+  # Save the model in XGBoost proprietary binary format
+  xgb.save(xgb.model, "xgboost.model")
+  
+  # Dump the model in text format
+  xgb.dump(xgb.model, "xgboost.model.txt", fmap = "xgboost.fmap")
+    
+  
   
   # Validation -------------------------------------------------------------
   
@@ -104,16 +161,17 @@ for(i in c(1:100)){
   mcResultsf$RMSE[i] <- rmse(error);
   mcResultsf$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
   mcResultsf$MAPD[i] <- mapd(y_pred,validationData$UTILITY_INCREASE);
-
+  
+  #}
+  
+  
+  return(mcResultsf);
 }
-
-fileName <- paste0("mcResultsf_",datasetName[index],".csv");
-write.table(mcresultsf,fileName,sep=",",col.names = TRUE);
-
-
 # Compute Averages --------------------------------------------------------
 
- 
+
+
+
 
 
 resultsf$TRAIN_RMSE_MEAN[index] <-averageRMSE(mcResultsf$Train_RMSE_MEAN,trainingSize);
