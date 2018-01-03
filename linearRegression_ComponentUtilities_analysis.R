@@ -14,10 +14,10 @@ source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//l
 
 datasetSize="10K";
 
-linear = paste0("Linear_",datasetSize,".csv");
-discontinous = paste0("Discontinous_",datasetSize,".csv");
-saturating = paste0("Saturating_",datasetSize,".csv");
-all = paste0("ALL_but_Random_",datasetSize,".csv");
+linear = paste0("Linear",datasetSize,".csv");
+discontinous = paste0("Discontinous",datasetSize,".csv");
+saturating = paste0("Saturating",datasetSize,".csv");
+all = paste0("ALL",datasetSize,".csv");
 
 datasetName <- c(linear,discontinous,saturating,all);
 
@@ -45,10 +45,10 @@ colnames(featuresdf) <- c("CRITICALITY","CONNECTIVITY","RELIABILITY","UTILITY_IN
 plot(featuresdf);
 title("Training");
 
-proportion <- 0.8;
+proportion <- 0.7;
 
 # Scramble data -----------------------------------------------------------
-featuresdf <- scrambleData(dataf=featuresdf);
+featuresdf <- scrambleData(featuresdf);
 
 # Extract training ad validation sets -------------------------------------
 #Training = used to create a model
