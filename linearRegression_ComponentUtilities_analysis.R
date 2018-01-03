@@ -11,11 +11,27 @@ library(XML)
 
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-dataf<- loadData(fileName = "data//100//Linear100.csv");
-#summary(dataf);
+
+datasetSize="10K";
+
+linear = paste0("Linear_",datasetSize,".csv");
+discontinous = paste0("Discontinous_",datasetSize,".csv");
+saturating = paste0("Saturating_",datasetSize,".csv");
+all = paste0("ALL_but_Random_",datasetSize,".csv");
+
+datasetName <- c(linear,discontinous,saturating,all);
+
+folder <- "data//New4Cases//";
+
+# Load data section -------------------------------------------------------
+
+dataf <-loadData(fileName=paste0(folder,linear)); 
+dataf <- loadData(fileName=paste0(folder,discontinous));
+dataf <- loadData(fileName=paste0(folder,saturating));
+dataf <- loadData(fileName=paste0(folder,all));
+#summary(dataf)
 
 #Remove all reliability values equal to zero
-dataf<- dataf[dataf$RELIABILITY!=0,];
 dataf <- dataf[dataf$UTILITY.INCREASE!=0,];
 
 # consider only the feature columns

@@ -123,11 +123,10 @@ select_ALL <- function(dataf){
 
 #-------------------------------------------------------------
 #Scramble the dataset before extracting the training set.
-scrambleData<-function(dataf){
+scrambleData<-function(datadf){
   set.seed(8850);
-  g<- runif((nrow(dataf))); #generates a random distribution
-  dataf <- dataf[order(g),];
-  return (dataf);
+  g<- runif((nrow(datadf))); #generates a random distribution
+  return(datadf[order(g),]);
 }
 
 #--------------------------------------------------------------
@@ -167,7 +166,8 @@ rmse <- function(error){
 # Mean Absolute Percent Deviation MAPD
 # https://en.wikipedia.org/wiki/Mean_absolute_percentage_error
 mapd <- function(prediction, actual){
-  return(100* (sum(abs(actual - prediction)/actual) )/ length(actual));
+  error <- abs(actual-prediction);
+  return(100* (sum(error/abs(actual) ))/ length(actual));
 }
 
 # R_squared ---------------------------------------------------------------

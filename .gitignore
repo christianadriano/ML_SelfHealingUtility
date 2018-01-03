@@ -55,3 +55,4 @@ data/MLDATA2_data_plots.xlsx
 data/Random_with_diffrent_Increase_for_each_rule_plots.xlsx
 *.class
 *.pmml
+*.xlsx
