@@ -1,11 +1,12 @@
 #Predict Utility of Components
 
+install_git("git://github.com/jpmml/r2pmml.git")
+install.packages("XML")
+
 library(caret);
 library(car);
-
 # load xml and pmml library
 library("devtools")
-install_git("git://github.com/jpmml/r2pmml.git")
 library(r2pmml)
 library(XML)
 
@@ -26,13 +27,13 @@ folder <- "data//New4Cases//";
 # Load data section -------------------------------------------------------
 
 dataf <-loadData(fileName=paste0(folder,linear)); 
-dataf <- loadData(fileName=paste0(folder,discontinous));
-dataf <- loadData(fileName=paste0(folder,saturating));
-dataf <- loadData(fileName=paste0(folder,all));
+# dataf <- loadData(fileName=paste0(folder,discontinous));
+# dataf <- loadData(fileName=paste0(folder,saturating));
+# dataf <- loadData(fileName=paste0(folder,all));
 #summary(dataf)
 
 #Remove all reliability values equal to zero
-dataf <- dataf[dataf$UTILITY.INCREASE!=0,];
+#dataf <- dataf[dataf$UTILITY_INCREASE!=0,];
 
 # consider only the feature columns
 featuresdf<-data.frame(dataf$CRITICALITY,
@@ -42,8 +43,8 @@ featuresdf<-data.frame(dataf$CRITICALITY,
 
 colnames(featuresdf) <- c("CRITICALITY","CONNECTIVITY","RELIABILITY","UTILITY_INCREASE");
 
-plot(featuresdf);
-title("Training");
+# plot(featuresdf);
+# title("Training");
 
 proportion <- 0.7;
 
@@ -74,53 +75,56 @@ computeErrors <- function(training_error,predicted_values,actual_values){
 
 # Build Models ------------------------------------------------------------
 
-modelFit <- lm(log(UTILITY_INCREASE) ~ log(CRITICALITY) + log(CONNECTIVITY)  ,data=trainingData);
-#summary(modelFit_1);
-predicted_values <- predict(modelFit,log(validationData));
-resultsf[1,]<- computeErrors(modelFit$residuals,predicted_values,log(validationData$UTILITY_INCREASE));
-
-modelFit <- lm(UTILITY_INCREASE ~ CONNECTIVITY*CRITICALITY + RELIABILITY ,data=trainingData);
-predicted_values <- predict(modelFit,validationData);
-resultsf[2,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
-modelFit_CCplusR.lm <- modelFit; #Save it to export
-
-modelFit <- lm(UTILITY_INCREASE ~ CRITICALITY ,data=trainingData);
-predicted_values <- predict(modelFit,validationData);
-resultsf[3,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
-
-modelFit <- lm(UTILITY_INCREASE ~ CONNECTIVITY ,data=trainingData);
-predicted_values <- predict(modelFit,validationData);
-resultsf[4,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
-
-modelFit<- lm(UTILITY_INCREASE ~ RELIABILITY ,data=trainingData);
-predicted_values <- predict(modelFit,validationData);
-resultsf[5,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
-
-modelFit <- lm(log(UTILITY_INCREASE) ~ log(CRITICALITY) + log(CONNECTIVITY) +log(RELIABILITY),data=trainingData);
-predicted_values <- predict(modelFit,log(validationData));
-resultsf[6,]<- computeErrors(modelFit$residuals, predicted_values,log(validationData$UTILITY_INCREASE));
+# modelFit <- lm(log(UTILITY_INCREASE) ~ log(CRITICALITY) + log(CONNECTIVITY)  ,data=trainingData);
+# #summary(modelFit_1);
+# predicted_values <- predict(modelFit,log(validationData));
+# resultsf[1,]<- computeErrors(modelFit$residuals,predicted_values,log(validationData$UTILITY_INCREASE));
+# 
+# modelFit <- lm(UTILITY_INCREASE ~ CONNECTIVITY*CRITICALITY + RELIABILITY ,data=trainingData);
+# predicted_values <- predict(modelFit,validationData);
+# resultsf[2,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
+# modelFit_CCplusR.lm <- modelFit; #Save it to export
+# 
+# modelFit <- lm(UTILITY_INCREASE ~ CRITICALITY ,data=trainingData);
+# predicted_values <- predict(modelFit,validationData);
+# resultsf[3,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
+# 
+# modelFit <- lm(UTILITY_INCREASE ~ CONNECTIVITY ,data=trainingData);
+# predicted_values <- predict(modelFit,validationData);
+# resultsf[4,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
+# 
+# modelFit<- lm(UTILITY_INCREASE ~ RELIABILITY ,data=trainingData);
+# predicted_values <- predict(modelFit,validationData);
+# resultsf[5,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
+# 
+# modelFit <- lm(log(UTILITY_INCREASE) ~ log(CRITICALITY) + log(CONNECTIVITY) +log(RELIABILITY),data=trainingData);
+# predicted_values <- predict(modelFit,log(validationData));
+# resultsf[6,]<- computeErrors(modelFit$residuals, predicted_values,log(validationData$UTILITY_INCREASE));
 
 modelFit <- lm(UTILITY_INCREASE ~ CRITICALITY*CONNECTIVITY*RELIABILITY ,data=trainingData);
 predicted_values <- predict(modelFit,validationData);
 resultsf[7,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
 modelFit_CCR.lm <- modelFit; #Save it to export
 
-modelFit <- lm(UTILITY_INCREASE ~ . ,data=trainingData);
-predicted_values <- predict(modelFit,validationData);
-resultsf[8,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
+# modelFit <- lm(UTILITY_INCREASE ~ . ,data=trainingData);
+# predicted_values <- predict(modelFit,validationData);
+# resultsf[8,]<- computeErrors(modelFit$residuals,predicted_values,validationData$UTILITY_INCREASE);
 
-avPlots(modelFit)
+# avPlots(modelFit)
 
 # Export model to PMML format ---------------------------------------------
 
-r2pmml(modelFit_CCplusR.lm, "models//CriticalityConnectivity_plus_Reliability_LM.pmml")
-r2pmml(modelFit_CCR.lm, "models//CriticalityConnectivityReliability_LM.pmml")
+# r2pmml(modelFit_CCplusR.lm, "models//CriticalityConnectivity_plus_Reliability_LM.pmml")
+r2pmml(modelFit_CCR.lm, "models//CriticalityConnectivityReliability_LM.pmml") 
+
 
 # Validate Models ---------------------------------------------------------
 
-lmPredicted <- predict(modelFit_1, validationData)
+lmPredicted <- predict(modelFit_CCR.lm, validationData)
+MADP <- mapd(lmPredicted, validationData$UTILITY_INCREASE)
+MADP
 
-residual.modelFit<- resid(modelFit_1);
+residual.modelFit<- resid(modelFit_CCR.lm);
 plot(x=validationData$CRITICALITY,y=residual.modelFit,
      ylab="Residuals", xlab="Criticality",
      main="Residual Plot Actual Utility minus Predicted Utility");
