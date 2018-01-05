@@ -72,8 +72,9 @@ select_Saturation <- function(dataf){
   
   # Select feature columns --------------------------------------------------
   featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,dataf$RELIABILITY,
-                          dataf$PMax,dataf$alpha,dataf$REPLICA,dataf$REQUEST,                         
+                          dataf$PMax,dataf$alpha,dataf$REPLICA,dataf$REQUEST, 
                           dataf$UTILITY_INCREASE); 
+  #dataf$AFFECTED_COMPONENT,                        "AFFECTED_COMPONENT",
   
   
   colnames(featuresdf) <- c("CRITICALITY","Connectivity","RELIABILITY",
