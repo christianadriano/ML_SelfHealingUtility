@@ -103,14 +103,14 @@ select_Discontinous <- function(dataf){
 select_ALL <- function(dataf){
   
   # Select feature columns --------------------------------------------------
-  featuresdf<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY,dataf$IMPORTANCE, 
+  featuresdf<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY,dataf$CONNECTIVITY, dataf$IMPORTANCE, 
                           dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
                           dataf$REPLICA,dataf$REQUEST,dataf$ADT,                         
                           dataf$PMax,dataf$alpha,
                            dataf$UTILITY_INCREASE); 
   
   
-  colnames(featuresdf) <- c("CRITICALITY","RELIABILITY","IMPORTANCE",
+  colnames(featuresdf) <- c("CRITICALITY","RELIABILITY","CONNECTIVITY", "IMPORTANCE",
                             "PROVIDED_INTERFACE", "REQUIRED_INTERFACE",
                             "REPLICA" ,"REQUEST","ADT",
                             "PMax","alpha",

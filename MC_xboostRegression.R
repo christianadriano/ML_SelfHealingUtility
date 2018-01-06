@@ -21,7 +21,7 @@
 library(xgboost)
 # load data
 source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
-
+library(r2pmml) #https://github.com/jpmml/r2pmml
 
 # Initialize section ------------------------------------------------------
 
@@ -34,13 +34,14 @@ folder <- "data//New4Cases//";
 
 # Load data section -------------------------------------------------------
 
-# datasetName <- c("Linear100","Linear1000","Linear10K");
-# datasetName <- c("Discontinous100","Discontinous1000","Discontinous10K");
+ #datasetName <- c("Linear100","Linear1000","Linear10K");
+datasetName <- c("Discontinous100","Discontinous1000","Discontinous10K");
 #datasetName <- c("Saturating100","Saturating1000","Saturating10K");
-datasetName <- c("ALL100","ALL1000","ALL10K");
+#datasetName <- c("ALL100","ALL1000","ALL10K");
 
 for(i in c(1:length(datasetName))){
-  fileName <- paste0(folder,datasetName[i],".csv");
+i=3;
+    fileName <- paste0(folder,datasetName[i],".csv");
   dataf <- loadData(fileName);
 
   #Train model
@@ -52,6 +53,7 @@ for(i in c(1:length(datasetName))){
   write.table(mcResultsf,fileName,sep=",",col.names = TRUE);
   mcResultsf
 
+  
 
 # Train function  ---------------------------------------------------------
 trainModel <- function(i, dataf,mcResultsf){
@@ -110,20 +112,6 @@ trainModel <- function(i, dataf,mcResultsf){
   xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
   
   
-  # Generate PMML file ------------------------------------------------------
-  
-  # Generate feature map
-  mpg.fmap = r2pmml::genFMap(featuresdf)
-  r2pmml::writeFMap(mpg.fmap, "xgboost.fmap")
-  
-  # Save the model in XGBoost proprietary binary format
-  xgb.save(xgb.model, "xgboost.model")
-  
-  # Dump the model in text format
-  xgb.dump(xgb.model, "xgboost.model.txt", fmap = "xgboost.fmap")
-  
-  
-  
   # Validation -------------------------------------------------------------
   
   y_pred <- predict(xgb.model, as.matrix(validationData));
@@ -140,9 +128,30 @@ trainModel <- function(i, dataf,mcResultsf){
   mcResultsf$MAPD[i] <- mapd(y_pred,validationData$UTILITY_INCREASE);
   
   return(mcResultsf);
+  #return(xgb.model);
 }
 
 
+  # Generate PMML file ------------------------------------------------------
+  
+  generatePMML <- function(xgb.model, featuresdf){  
+    # Generate feature map
+    xgboost.fmap = r2pmml::genFMap(featuresdf)
+    r2pmml::writeFMap(xgboost.fmap, "xgboost.fmap")
+    
+    # Save the model in XGBoost proprietary binary format
+    xgb.save(xgb.model, "xgboost.model")
+    
+    # Dump the model in text format
+    #  xgb.dump(xgb.model, "xgboost.model.txt", fmap = "xgboost.fmap");
+    
+    pmmlFileName <- paste0(datasetName[i],"-xgb.pmml");
+    
+    r2pmml(xgb.model, pmmlFileName, fmap = xgboost.fmap, response_name = "UTILITY_INCREASE", missing = NULL, ntreelimit = 7, compact = TRUE)
+    
+  }
+  
+  
 
 #return(mcResultsf);
 
