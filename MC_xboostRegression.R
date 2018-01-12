@@ -19,104 +19,141 @@
 #https://stats.stackexchange.com/questions/218208/what-are-the-advantages-of-stepwise-regression
 
 library(xgboost)
-# load data
-source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
 library(r2pmml) #https://github.com/jpmml/r2pmml
 
-# Initialize section ------------------------------------------------------
 
-#DATA STRUCTURE TO KEEP THE INTERMEDIATE MODELS 
+# Initialization section ------------------------------------------------------
+
+#Load utility functions
+source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
+
+#Data structure to keep results
 mcResultsf <- data.frame(matrix(data=NA,nrow=3,ncol=8));
 colnames(mcResultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
                           "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
+#Folder with training data
+folder <- "data//1K-3K-9K//";
+#
 
-folder <- "data//New4Cases//";
+# CONTROL CODE   ------------------------------------------------------------
 
-# Load data section -------------------------------------------------------
+modelList <- c("Linear","Discontinuous","Saturating","ALL");
+datasetSize <- c("1K","3K","9K");
+modelName <- modelList[4];
 
- #datasetName <- c("Linear100","Linear1000","Linear10K");
-datasetName <- c("Discontinous100","Discontinous1000","Discontinous10K");
-#datasetName <- c("Saturating100","Saturating1000","Saturating10K");
-#datasetName <- c("ALL100","ALL1000","ALL10K");
+datasetName <- generateDataSetNames(modelName,datasetSize,0);
 
 for(i in c(1:length(datasetName))){
-i=3;
-    fileName <- paste0(folder,datasetName[i],".csv");
+  # i <- 3
+   fileName <- paste0(folder,datasetName[i],".csv");
   dataf <- loadData(fileName);
+  
+  featuresdf <- prepareFeatures(dataf,"ALL");
 
-  #Train model
-  mcResultsf <- trainModel(i,dataf,mcResultsf);
-  mcResultsf
-}
-  # Save to file
-  fileName <- paste0("mcResultsf_",datasetSize,".csv");
-  write.table(mcResultsf,fileName,sep=",",col.names = TRUE);
-  mcResultsf
-
-  
-
-# Train function  ---------------------------------------------------------
-trainModel <- function(i, dataf,mcResultsf){
-  
-  
-  # Select feature columns --------------------------------------------------
-  # featuresdf<- select_Linear(dataf) 
-  # featuresdf<- select_Probabilistic(dataf) 
-  # featuresdf<- select_Discontinous(dataf) 
-  # featuresdf<- select_Saturation(dataf) 
-  featuresdf<- select_ALL(dataf) 
-  
-  inputFeatures <- dim(featuresdf)[2] - 1;
-  
-  #RUN ALL DATA SETS WITH ALL FEATURES TO CHECK IF THE MODEL IS ABLE TO GET RID OF
-  #USELESS FEATURES.
-  #averageResultsf <- data.frame(matrix(data=NA,nrow=6,ncol=8));
-  #colnames(resultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
-  #                        "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
-  
-  
-  proportion <- 0.7
-  featuresdf <- featuresdf[featuresdf$UTILITY_INCREASE!=0,];
-  featuresdf <- featuresdf[featuresdf$ADT!=0,];
-  
-  
-  #for(i in c(1:100)){
-  
-  # Scramble data -----------------------------------------------------------
-  featuresdf <- scrambleData(datadf=featuresdf);
-  
-  # Extract training ad validation sets -------------------------------------
-  #Training = used to create a model
-  #Validation = used to compute prediction error (Bias)
+  #Extract training ad validation sets 
   totalData = dim(featuresdf)[1];
-  trainingSize = trunc(totalData * proportion);
-  
+  trainingSize = trunc(totalData * 0.7);
   startTestIndex = totalData - trainingSize;
-  
   trainingData<- as.data.frame(featuresdf[1:trainingSize,]);
   validationData<-as.data.frame(featuresdf[startTestIndex:totalData,]);
   
+  #Train model  
+  outcomeList <- trainModel(trainingData);
   
-  # Build model -------------------------------------------------------------
+  #Compute results
+  mcResultsf <- validatePredictions(outcomeList,mcResultsf,validationData);
+}
+
+print(mcResultsf); #show on the console
+
+resultsToFile(mcResults,modelName); #save to a .csv file
+generatePMML(outcomeList[[1]],featuresdf,datasetName[i]);#datasetName[length(datasetName)]);
+
+#-------------------------------------------------------------------------------------------------
+
+
+# Generate the dataset names that will be trained -------------------------
+generateDataSetNames <- function(modelName,datasetSize,s_idx){
+  
+  if(s_idx==0 & length(datasetSize)>0){#Generate for all sizes
+    datasetName <- paste0(modelName,datasetSize[1]);
+    for(i in c(2:length(datasetSize))){
+      datasetName <- cbind(datasetName,paste0(modelName,datasetSize[i]));
+    }
+  }
+  else{
+    datasetName <- paste0(modelName,datasetSize[s_idx]);
+  }
+  return(datasetName);
+}
+
+# Save results to file ----------------------------------------------------
+resultsToFile <- function(mcResults,modelName){
+  fileName <- paste0("mcResultsf_",modelName,".csv");
+  write.table(mcResultsf,fileName,sep=",",col.names = TRUE);
+  mcResultsf
+}
+
+# Prepare features --------------------------------------------------------
+prepareFeatures <- function(dataf,selectionType){
+  
+  #Do feature selection (or not)
+  if(selectionType=="ALL")
+    featuresdf<- select_ALL(dataf) 
+  else
+  if(selectionType=="Linear")
+    featuresdf<- select_Linear(dataf) 
+  else
+    if(selectionType=="Discontinuous")
+      featuresdf<- select_Discontinuous(dataf) 
+    else
+      if(selectionType=="Saturating")
+        featuresdf<- select_Saturation(dataf) 
+  
+  #Remove zero utilities
+  featuresdf <- featuresdf[featuresdf$UTILITY_INCREASE!=0,];
+
+  # Scramble data 
+  featuresdf <- scrambleData(datadf=featuresdf);
+  
+  return (featuresdf);
+}
+
+
+# Train function  ---------------------------------------------------------
+trainModel <- function(featuresdf){
+  
+  inputFeatures <- dim(featuresdf)[2] - 1; #last column is the target variable
   
   xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:inputFeatures]), 
                                label = trainingData[,"UTILITY_INCREASE"],
                                missing = NA)
   
   param <- list(objective = "reg:linear", base_score = 0.5)# booster="gbtree")
-  xgboost.cv = xgb.cv(param=param, data = xgb.train.data, nfold = 10, nrounds = 1500, 
-                      early_stopping_rounds = 100, metrics='rmse',verbose = FALSE)
+  xgboost.cv = xgb.cv(param=param, data = xgb.train.data, nfold = 10, nrounds = 2500, 
+                      early_stopping_rounds = 500, metrics='rmse',verbose = FALSE)
   best_iteration <- xgboost.cv$best_iteration;
   xgboost.cv$evaluation_log[best_iteration]
   
   xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
+ 
+  return(list(xgb.model,xgboost.cv));
   
+}
+
+# Validation -------------------------------------------------------------
+validatePredictions <- function(modelList, mcResultsf,validationData){
   
-  # Validation -------------------------------------------------------------
+  xgb.model <- modelList[[1]];
+  xgboost.cv <- modelList[[2]];
   
+  best_iteration <- xgboost.cv$best_iteration;
+
   y_pred <- predict(xgb.model, as.matrix(validationData));
   error <- y_pred - validationData$UTILITY_INCREASE;
   
+  best_iteration <- xgboost.cv$best_iteration;
+
   mcResultsf$DataSet[i]<-datasetName[i];
   mcResultsf$Train_RMSE_MEAN[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_mean;
   mcResultsf$Train_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_std;
@@ -127,33 +164,32 @@ trainModel <- function(i, dataf,mcResultsf){
   mcResultsf$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
   mcResultsf$MAPD[i] <- mapd(y_pred,validationData$UTILITY_INCREASE);
   
-  return(mcResultsf);
-  #return(xgb.model);
+  return(mcResultsf);    
 }
 
 
-  # Generate PMML file ------------------------------------------------------
-  
-  generatePMML <- function(xgb.model, featuresdf){  
-    # Generate feature map
-    xgboost.fmap = r2pmml::genFMap(featuresdf)
-    r2pmml::writeFMap(xgboost.fmap, "xgboost.fmap")
-    
-    # Save the model in XGBoost proprietary binary format
-    xgb.save(xgb.model, "xgboost.model")
-    
-    # Dump the model in text format
-    #  xgb.dump(xgb.model, "xgboost.model.txt", fmap = "xgboost.fmap");
-    
-    pmmlFileName <- paste0(datasetName[i],"-xgb.pmml");
-    
-    r2pmml(xgb.model, pmmlFileName, fmap = xgboost.fmap, response_name = "UTILITY_INCREASE", missing = NULL, ntreelimit = 7, compact = TRUE)
-    
-  }
-  
-  
+# Generate PMML file ------------------------------------------------------
 
-#return(mcResultsf);
+generatePMML <- function(xgb.model, featuresdf,modelName){  
+
+  inputFeatures <- dim(featuresdf)[2] - 1; #last column is the target variable
+  
+    # Generate feature map
+  xgboost.fmap = r2pmml::genFMap(featuresdf[1:inputFeatures])
+  r2pmml::writeFMap(xgboost.fmap, "xgboost.fmap")
+  
+  # Save the model in XGBoost proprietary binary format
+  xgb.save(xgb.model, "xgboost.model")
+  
+  # Dump the model in text format
+  #  xgb.dump(xgb.model, "xgboost.model.txt", fmap = "xgboost.fmap");
+  
+  pmmlFileName <- paste0(".//pmml///",modelName,"-xgb.pmml");
+  
+  r2pmml(xgb.model, pmmlFileName, fmap = xgboost.fmap, response_name = "UTILITY_INCREASE", 
+         missing = NULL, ntreelimit = 25, compact = TRUE)
+  
+}
 
 
 # Plot Predicted vs Actual ------------------------------------------------

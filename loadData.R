@@ -41,14 +41,28 @@ renameAuthenticationServices <- function (df){
 }
 
 
+# select_Linear <- function(dataf){
+#   # Select feature columns --------------------------------------------------
+#   featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY, 
+#                           dataf$RELIABILITY,                        
+#                           dataf$UTILITY_INCREASE); 
+#   
+#   
+#   colnames(featuresdf) <- c("CRITICALITY","CONNECTIVITY", 
+#                             "RELIABILITY",
+#                             "UTILITY_INCREASE");
+#   
+#   return(featuresdf);
+# }
+
 select_Linear <- function(dataf){
   # Select feature columns --------------------------------------------------
-  featuresdf<- data.frame(dataf$CRITICALITY,dataf$REQUIRED_INTERFACE,dataf$PROVIDED_INTERFACE, 
+  featuresdf<- data.frame(dataf$CRITICALITY,dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
                           dataf$RELIABILITY,                        
                           dataf$UTILITY_INCREASE); 
   
   
-  colnames(featuresdf) <- c("CRITICALITY","REQUIRED_INTERFACE","PROVIDED_INTERFACE", 
+  colnames(featuresdf) <- c("CRITICALITY","PROVIDED_INTERFACE","REQUIRED_INTERFACE",
                             "RELIABILITY",
                             "UTILITY_INCREASE");
   
@@ -56,17 +70,17 @@ select_Linear <- function(dataf){
 }
 
 
+
 select_Saturation <- function(dataf){
   
   # Select feature columns --------------------------------------------------
-  featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY,
-                          dataf$PROVIDED_INTERFACE,dataf$RELIABILITY,
+  featuresdf<- data.frame(dataf$CRITICALITY,dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
+                          dataf$RELIABILITY,
                           dataf$PMax,dataf$alpha,dataf$REPLICA,dataf$REQUEST, 
                           dataf$UTILITY_INCREASE); 
-  #dataf$AFFECTED_COMPONENT,                        "AFFECTED_COMPONENT",
   
-  
-  colnames(featuresdf) <- c("CRITICALITY","CONNECTIVITY","RELIABILITY",
+  colnames(featuresdf) <- c("CRITICALITY","PROVIDED_INTERFACE","REQUIRED_INTERFACE",
+                            "RELIABILITY",
                             "PMax","alpha","REPLICA","REQUEST",
                             "UTILITY_INCREASE");
   
@@ -95,17 +109,17 @@ select_ALL <- function(dataf){
   featuresdf<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY, dataf$IMPORTANCE, 
                           dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
                           dataf$REPLICA,dataf$REQUEST,dataf$ADT,                         
-                          dataf$PMax,dataf$alpha,
+                          dataf$PMax,
                            dataf$UTILITY_INCREASE); 
-  
+  # dataf$alpha
   
   colnames(featuresdf) <- c("CRITICALITY","RELIABILITY", "IMPORTANCE",
                             "PROVIDED_INTERFACE", "REQUIRED_INTERFACE",
                             "REPLICA" ,"REQUEST","ADT",
-                            "PMax","alpha",
+                            "PMax",
                            "UTILITY_INCREASE");
 
-  
+  # "alpha",
     
   
   return(featuresdf);
