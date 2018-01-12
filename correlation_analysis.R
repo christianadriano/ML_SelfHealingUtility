@@ -70,3 +70,20 @@ res$P
 # Criticality  2.508149e-11           NA   0.77491735   0.3345085
 # Connectivity 1.575973e-02 7.749174e-01           NA   0.5331181
 # Reliability  5.932733e-01 3.345085e-01   0.53311814          NA
+
+##
+
+# Experiment with rank mistmatches and their distances --------------------
+a <- c(1,2,3,4,5,6,7,8,9,10)
+b <- c(2,1,3,4,5,6,7,8,9,10)
+c <- c(3,2,1,4,5,6,7,8,9,10)
+d <- c(4,2,3,1,5,6,7,8,9,10)
+
+ab <- cor(a,b,method = "kendall")
+ac <- cor(a,c,method = "kendall")
+ad <- cor(a,d,method = "kendall")
+
+#The larger the distance of teh mismatch, lower the kendall tau correlation.
+# ab 0.9555556
+# ac 0.8666667
+# ad 0.7777778
