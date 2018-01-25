@@ -39,12 +39,12 @@ folder <- "data//1K-3K-9K//";
 
 modelList <- c("Linear","Discontinuous","Saturating","ALL");
 datasetSize <- c("1K","3K","9K");
-modelName <- modelList[4];
+modelName <- modelList[1];
 
 datasetName <- generateDataSetNames(modelName,datasetSize,0);
 
-for(i in c(1:length(datasetName))){
-  # i <- 3
+#for(i in c(1:length(datasetName))){
+   i <- 2;
    fileName <- paste0(folder,datasetName[i],".csv");
   dataf <- loadData(fileName);
   
@@ -62,7 +62,7 @@ for(i in c(1:length(datasetName))){
   
   #Compute results
   mcResultsf <- validatePredictions(outcomeList,mcResultsf,validationData);
-}
+#}
 
 print(mcResultsf); #show on the console
 
@@ -218,6 +218,7 @@ resultsf$MAPD[index] <- mapd(y_pred,validationData$UTILITY_INCREASE);
 
 
 #Plot Train RMSE
+proportion <- "70/30"
 proportionStr <- toString(proportion);
 meanRMSE_Train <- toString(round(averageRMSE(resultsf$Train_RMSE_MEAN,trainingSize),2))
 title <- paste("Training RMSE, training proportion", proportionStr,"mean=",meanRMSE_Train)
@@ -231,7 +232,7 @@ title <- paste("Validation RMSE, data proportion", proportionStr,"mean=",meanRMS
 plot(resultsf$RMSE, main=title);
 
 #Plot MAPD
-meanMAPD_validation <- round(mean(resultsf$MAPD),4);
+meanMAPD_validation <- round(mean(mcResultsf$MAPD),4);
 title <- paste("Validation MAPD, data proportion", proportionStr,"mean=",meanMAPD_validation)
 plot(resultsf$MAPD, main=title);
 
