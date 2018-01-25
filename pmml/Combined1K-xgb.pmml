@@ -1,0 +1,3061 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_3" version="4.3">
+	<Header>
+		<Application name="JPMML-R" version="1.2.20"/>
+		<Timestamp>2018-01-16T09:46:31Z</Timestamp>
+	</Header>
+	<DataDictionary>
+		<DataField name="UTILITY_INCREASE" optype="continuous" dataType="float"/>
+		<DataField name="CRITICALITY" optype="continuous" dataType="integer"/>
+		<DataField name="RELIABILITY" optype="continuous" dataType="float"/>
+		<DataField name="IMPORTANCE" optype="continuous" dataType="integer"/>
+		<DataField name="PROVIDED_INTERFACE" optype="continuous" dataType="integer"/>
+		<DataField name="REQUIRED_INTERFACE" optype="continuous" dataType="integer"/>
+		<DataField name="REPLICA" optype="continuous" dataType="integer"/>
+		<DataField name="REQUEST" optype="continuous" dataType="integer"/>
+		<DataField name="ADT" optype="continuous" dataType="float"/>
+		<DataField name="PMax" optype="continuous" dataType="float"/>
+	</DataDictionary>
+	<MiningModel functionName="regression" x-mathContext="float">
+		<MiningSchema>
+			<MiningField name="UTILITY_INCREASE" usageType="target"/>
+			<MiningField name="IMPORTANCE"/>
+			<MiningField name="REQUEST"/>
+			<MiningField name="CRITICALITY"/>
+			<MiningField name="ADT"/>
+			<MiningField name="REQUIRED_INTERFACE"/>
+			<MiningField name="RELIABILITY"/>
+			<MiningField name="PMax"/>
+			<MiningField name="PROVIDED_INTERFACE"/>
+			<MiningField name="REPLICA"/>
+		</MiningSchema>
+		<Targets>
+			<Target field="UTILITY_INCREASE" rescaleConstant="0.5"/>
+		</Targets>
+		<Segmentation multipleModelMethod="sum">
+			<Segment id="1">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="38.271694">
+						<True/>
+						<Node score="243.4094">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="10"/>
+							<Node score="4237.242">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="9"/>
+							</Node>
+							<Node score="1927.2903">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+							</Node>
+							<Node score="765.9518">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							</Node>
+						</Node>
+						<Node score="283.0161">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="9"/>
+							<Node score="537.0194">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="818.65894">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+									<Node score="701.39844">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7635"/>
+									</Node>
+									<Node score="1113.321">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+									</Node>
+								</Node>
+								<Node score="820.76605">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="12"/>
+									<Node score="544.6718">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="5151"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="926.8298">
+								<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+							</Node>
+							<Node score="379.16406">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.541543"/>
+								<Node score="598.2044">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="267.286">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+							<Node score="282.69934">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="406.3002">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+									<Node score="599.15216">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+									</Node>
+								</Node>
+								<Node score="425.6418">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								</Node>
+							</Node>
+							<Node score="130.56851">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="58"/>
+								<Node score="207.70079">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								</Node>
+							</Node>
+							<Node score="376.40707">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+							</Node>
+						</Node>
+						<Node score="129.7894">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							<Node score="266.3886">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="169.08691">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6455"/>
+								</Node>
+							</Node>
+							<Node score="188.19887">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+							</Node>
+						</Node>
+						<Node score="94.28077">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							<Node score="148.81537">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+							</Node>
+						</Node>
+						<Node score="62.945084">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="2">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="30.536646">
+						<True/>
+						<Node score="188.64226">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="10"/>
+							<Node score="691.93286">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="9"/>
+								<Node score="1135.7787">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="8493"/>
+								</Node>
+								<Node score="3302.2056">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0522568"/>
+								</Node>
+							</Node>
+							<Node score="1669.8767">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+								<Node score="679.6885">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="5309"/>
+								</Node>
+							</Node>
+							<Node score="693.46924">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							</Node>
+						</Node>
+						<Node score="348.31598">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+							<Node score="469.9939">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="813.76556">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+									<Node score="594.2544">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1928"/>
+									</Node>
+								</Node>
+								<Node score="707.7927">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="4"/>
+									<Node score="159.4566">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="65"/>
+									</Node>
+								</Node>
+								<Node score="182.08665">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="70"/>
+								</Node>
+							</Node>
+							<Node score="715.1608">
+								<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+								<Node score="415.6447">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="5157"/>
+								</Node>
+							</Node>
+							<Node score="92.46063">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="56"/>
+								<Node score="245.21184">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+								</Node>
+							</Node>
+							<Node score="506.6981">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+							</Node>
+						</Node>
+						<Node score="130.10303">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+							<Node score="300.30875">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="197.0913">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3484"/>
+									<Node score="285.09912">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+									</Node>
+								</Node>
+								<Node score="427.69257">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+								</Node>
+							</Node>
+							<Node score="235.16347">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="3"/>
+								<Node score="395.02274">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								</Node>
+							</Node>
+							<Node score="267.04355">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+							</Node>
+						</Node>
+						<Node score="120.79379">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+							<Node score="94.88318">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="244.22198">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+								</Node>
+							</Node>
+							<Node score="174.12587">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.109611"/>
+							</Node>
+						</Node>
+						<Node score="76.23127">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							<Node score="117.09341">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+							</Node>
+						</Node>
+						<Node score="50.784042">
+							<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="3">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="19.13749">
+						<True/>
+						<Node score="146.19777">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="10"/>
+							<Node score="2467.5342">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+								<Node score="1432.3475">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="46"/>
+								</Node>
+							</Node>
+							<Node score="962.5696">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+								<Node score="285.07162">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6513"/>
+								</Node>
+							</Node>
+							<Node score="382.85376">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							</Node>
+						</Node>
+						<Node score="214.36568">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+							<Node score="136.94351">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+								<Node score="478.77213">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+									<Node score="706.5474">
+										<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+										<Node score="456.89438">
+											<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="5798"/>
+										</Node>
+									</Node>
+									<Node score="326.3349">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3427"/>
+									</Node>
+								</Node>
+								<Node score="500.1007">
+									<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+								</Node>
+								<Node score="325.15994">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.541543"/>
+								</Node>
+							</Node>
+							<Node score="318.9708">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="216.37865">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="4483"/>
+								</Node>
+								<Node score="473.64154">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								</Node>
+							</Node>
+							<Node score="117.28621">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="49"/>
+								<Node score="178.63164">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="10"/>
+								</Node>
+							</Node>
+							<Node score="331.18036">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="5"/>
+							</Node>
+						</Node>
+						<Node score="69.98239">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+							<Node score="136.47243">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="243.6439">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+									<Node score="126.16749">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7587"/>
+									</Node>
+								</Node>
+								<Node score="241.75548">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+								</Node>
+							</Node>
+							<Node score="203.9459">
+								<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+							</Node>
+							<Node score="162.76154">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="10"/>
+							</Node>
+						</Node>
+						<Node score="63.284893">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							<Node score="47.93769">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="105.62735">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+								</Node>
+							</Node>
+							<Node score="27.322569">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7225"/>
+							</Node>
+						</Node>
+						<Node score="21.043121">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+							<Node score="40.30989">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+							</Node>
+						</Node>
+						<Node score="-2.428388">
+							<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="66"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="4">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="13.271618">
+						<True/>
+						<Node score="102.79664">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="10"/>
+							<Node score="373.29083">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="9"/>
+								<Node score="698.0474">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="70"/>
+								</Node>
+								<Node score="1833.2339">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0522568"/>
+								</Node>
+							</Node>
+							<Node score="883.2635">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+								<Node score="380.30255">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="4054"/>
+								</Node>
+							</Node>
+							<Node score="153.77824">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="36"/>
+							</Node>
+							<Node score="405.6597">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							</Node>
+						</Node>
+						<Node score="211.16325">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+							<Node score="238.04465">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="150.42639">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+									<Node score="372.1173">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2844"/>
+										<Node score="218.24657">
+											<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="71"/>
+										</Node>
+									</Node>
+									<Node score="521.46106">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0265212"/>
+									</Node>
+								</Node>
+								<Node score="216.75948">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+									<Node score="357.58282">
+										<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.109611"/>
+									</Node>
+								</Node>
+								<Node score="110.13655">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="60"/>
+								</Node>
+							</Node>
+							<Node score="386.67584">
+								<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+								<Node score="212.33191">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="4717"/>
+								</Node>
+							</Node>
+							<Node score="375.35248">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="5"/>
+							</Node>
+							<Node score="113.60983">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+							</Node>
+						</Node>
+						<Node score="11.213876">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+							<Node score="162.33571">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="85.447624">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1106"/>
+									<Node score="166.35315">
+										<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+									</Node>
+								</Node>
+								<Node score="265.81522">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								</Node>
+							</Node>
+							<Node score="229.95207">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="3"/>
+							</Node>
+							<Node score="125.54048">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.541543"/>
+							</Node>
+						</Node>
+						<Node score="53.214703">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							<Node score="71.250175">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="129.14127">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="10.377298"/>
+								</Node>
+							</Node>
+							<Node score="119.81901">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="4"/>
+							</Node>
+						</Node>
+						<Node score="87.30258">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="4"/>
+							<Node score="43.547504">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2139"/>
+							</Node>
+						</Node>
+						<Node score="40.044216">
+							<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="5">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-5.9713826">
+						<True/>
+						<Node score="106.3924">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="10"/>
+							<Node score="742.7313">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="9"/>
+								<Node score="1449.027">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+									<Node score="358.15753">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="740.3519">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+								<Node score="347.29373">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="39"/>
+								</Node>
+							</Node>
+							<Node score="318.17627">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								<Node score="38.818214">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7522"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="112.669846">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+							<Node score="171.7067">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+								<Node score="56.40673">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1866"/>
+									<Node score="87.5953">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+										<Node score="161.48578">
+											<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+										</Node>
+									</Node>
+									<Node score="306.47485">
+										<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+									</Node>
+								</Node>
+								<Node score="231.28438">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+									<Node score="339.29492">
+										<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+									</Node>
+								</Node>
+								<Node score="268.88928">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+								</Node>
+							</Node>
+							<Node score="60.689907">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2922"/>
+								<Node score="151.77872">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="4"/>
+								</Node>
+								<Node score="134.96281">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								</Node>
+							</Node>
+							<Node score="161.66078">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+								<Node score="262.762">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								</Node>
+							</Node>
+							<Node score="235.93509">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="3"/>
+							</Node>
+						</Node>
+						<Node score="-7.747503">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+							<Node score="52.351444">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="181.46846">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="15.83197"/>
+									<Node score="72.88257">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="51"/>
+									</Node>
+								</Node>
+								<Node score="114.61723">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+								</Node>
+							</Node>
+							<Node score="141.43625">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="4"/>
+								<Node score="48.168404">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="54"/>
+								</Node>
+							</Node>
+							<Node score="56.365017">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.6526527"/>
+							</Node>
+						</Node>
+						<Node score="-18.953115">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3838"/>
+							<Node score="42.320045">
+								<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+							</Node>
+							<Node score="13.883626">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+							</Node>
+						</Node>
+						<Node score="28.466959">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							<Node score="57.351395">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+							</Node>
+						</Node>
+						<Node score="21.396084">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="6">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="61.20415">
+						<True/>
+						<Node score="112.743126">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="10"/>
+							<Node score="473.3483">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="9"/>
+								<Node score="591.9035">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.179166"/>
+									<Node score="1132.4098">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="566.2879">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								<Node score="254.1899">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="37"/>
+								</Node>
+							</Node>
+							<Node score="116.31534">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								<Node score="46.089684">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6380"/>
+								</Node>
+								<Node score="312.4594">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+								</Node>
+							</Node>
+							<Node score="43.00224">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="34"/>
+							</Node>
+						</Node>
+						<Node score="112.742256">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+							<Node score="91.46584">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="207.23349">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+									<Node score="211.465">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1801"/>
+										<Node score="132.74376">
+											<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+										</Node>
+									</Node>
+									<Node score="379.692">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+									</Node>
+								</Node>
+								<Node score="24.54029">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+								</Node>
+							</Node>
+							<Node score="269.9268">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+							</Node>
+							<Node score="72.16859">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="60"/>
+								<Node score="21.461838">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+								</Node>
+							</Node>
+							<Node score="178.74881">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+							</Node>
+						</Node>
+						<Node score="38.778896">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+							<Node score="244.92056">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+								<Node score="120.346146">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="4155"/>
+								</Node>
+							</Node>
+							<Node score="93.19789">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="192.32288">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="15.83197"/>
+								</Node>
+							</Node>
+							<Node score="82.035706">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.109611"/>
+							</Node>
+						</Node>
+						<Node score="7.8368764">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1799"/>
+							<Node score="9.655797">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								<Node score="29.485514">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								</Node>
+							</Node>
+							<Node score="-19.487556">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="60"/>
+							</Node>
+						</Node>
+						<Node score="13.828017">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+							<Node score="56.421833">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+							</Node>
+						</Node>
+						<Node score="2.5918472">
+							<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="7">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="1.6038426">
+						<True/>
+						<Node score="90.194496">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="10"/>
+							<Node score="217.48886">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+								<Node score="861.079">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="12"/>
+								</Node>
+								<Node score="629.1624">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+									<Node score="276.62814">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="49"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="31.367579">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								<Node score="52.42359">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6513"/>
+								</Node>
+								<Node score="231.22011">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0250309"/>
+									<Node score="447.96484">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="32.681705">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="34"/>
+							</Node>
+						</Node>
+						<Node score="18.323557">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+							<Node score="36.399845">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								<Node score="130.8441">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.37916"/>
+									<Node score="13.255335">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="67"/>
+										<Node score="54.696613">
+											<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="2"/>
+										</Node>
+									</Node>
+									<Node score="197.95097">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+									</Node>
+								</Node>
+								<Node score="152.26254">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+									<Node score="72.07677">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2013"/>
+									</Node>
+								</Node>
+								<Node score="142.25359">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="3"/>
+								</Node>
+							</Node>
+							<Node score="52.00059">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.618626"/>
+								<Node score="-19.195673">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="64"/>
+									<Node score="35.250843">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+									</Node>
+								</Node>
+								<Node score="79.59079">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+								</Node>
+							</Node>
+							<Node score="-0.088076785">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3220968"/>
+								<Node score="-25.661257">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="44"/>
+								</Node>
+							</Node>
+							<Node score="-23.471424">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6244"/>
+							</Node>
+						</Node>
+						<Node score="-9.60611">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1766"/>
+							<Node score="30.597933">
+								<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+								<Node score="15.4664345">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+									<Node score="76.4517">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+									</Node>
+								</Node>
+								<Node score="7.288193">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="60"/>
+								</Node>
+							</Node>
+							<Node score="-4.505513">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+								<Node score="16.154902">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								</Node>
+							</Node>
+							<Node score="-22.219938">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+							</Node>
+						</Node>
+						<Node score="101.26894">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+						</Node>
+						<Node score="10.601426">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+							<Node score="44.71955">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.541543"/>
+							</Node>
+						</Node>
+						<Node score="25.462605">
+							<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="8">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-3.4960923">
+						<True/>
+						<Node score="-3.6928713">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="10"/>
+							<Node score="182.16812">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+								<Node score="644.58466">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.179166"/>
+									<Node score="161.25732">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="70"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="-4.420972">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								<Node score="444.6175">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="12"/>
+								</Node>
+								<Node score="220.39395">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+									<Node score="59.819096">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+									</Node>
+								</Node>
+								<Node score="82.51903">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="40"/>
+								</Node>
+							</Node>
+							<Node score="40.977642">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+								<Node score="16.364197">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7480"/>
+								</Node>
+								<Node score="165.82883">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+								</Node>
+							</Node>
+							<Node score="83.247955">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="21"/>
+								<Node score="34.597317">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="30"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="67.28593">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="12"/>
+							<Node score="56.056873">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="122.11966">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+									<Node score="104.35196">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="4880"/>
+										<Node score="19.302687">
+											<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="9578"/>
+										</Node>
+									</Node>
+									<Node score="234.90587">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+									</Node>
+								</Node>
+								<Node score="0.38979495">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+									<Node score="14.178467">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="116.04696">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+								<Node score="213.88911">
+									<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+								</Node>
+							</Node>
+							<Node score="37.623363">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="654"/>
+								<Node score="71.33875">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								</Node>
+							</Node>
+							<Node score="106.90064">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+							</Node>
+						</Node>
+						<Node score="29.864702">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+							<Node score="22.733145">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6139"/>
+								<Node score="-5.4075212">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="13.757681"/>
+									<Node score="42.228687">
+										<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+									</Node>
+								</Node>
+								<Node score="-17.97233">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="54"/>
+								</Node>
+							</Node>
+							<Node score="12.860043">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="91.55459">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+								</Node>
+							</Node>
+							<Node score="158.19763">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+							</Node>
+						</Node>
+						<Node score="-14.62836">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							<Node score="18.0967">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								<Node score="46.510365">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.37916"/>
+								</Node>
+							</Node>
+							<Node score="8.140515">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.618626"/>
+							</Node>
+						</Node>
+						<Node score="37.05828">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+							<Node score="0.6042458">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="58"/>
+							</Node>
+						</Node>
+						<Node score="6.3900394">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="9">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-1.5427903">
+						<True/>
+						<Node score="34.831">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+							<Node score="268.33875">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								<Node score="225.32587">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="12"/>
+									<Node score="615.59174">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="26"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="3.8731844">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7480"/>
+								<Node score="15.763844">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								</Node>
+							</Node>
+							<Node score="127.93096">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+								<Node score="35.511475">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="73"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="63.94781">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="12"/>
+							<Node score="221.38396">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+							</Node>
+							<Node score="40.53343">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="127.51637">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+									<Node score="72.62128">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="4880"/>
+									</Node>
+								</Node>
+								<Node score="8.672745">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+								</Node>
+							</Node>
+							<Node score="28.496798">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="594"/>
+								<Node score="61.669746">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="4"/>
+								</Node>
+							</Node>
+							<Node score="134.72774">
+								<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+							</Node>
+						</Node>
+						<Node score="47.774952">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+							<Node score="180.56708">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+								<Node score="54.97862">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="5231"/>
+								</Node>
+								<Node score="50.846195">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+								</Node>
+							</Node>
+							<Node score="104.56118">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3262465"/>
+								<Node score="17.791351">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6532"/>
+								</Node>
+							</Node>
+							<Node score="17.207434">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1239092"/>
+							</Node>
+						</Node>
+						<Node score="4.7350864">
+							<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+							<Node score="37.487247">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="15.83197"/>
+								<Node score="95.7917">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+								</Node>
+							</Node>
+							<Node score="37.065453">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+							</Node>
+						</Node>
+						<Node score="26.265982">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.109611"/>
+							<Node score="-0.697281">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="62"/>
+							</Node>
+						</Node>
+						<Node score="33.459858">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="3"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="10">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="37.834618">
+						<True/>
+						<Node score="35.198742">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+							<Node score="286.44632">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								<Node score="93.16729">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4276578"/>
+									<Node score="508.44788">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+									</Node>
+								</Node>
+								<Node score="112.73658">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="39"/>
+								</Node>
+							</Node>
+							<Node score="3.292209">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7480"/>
+								<Node score="13.399256">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								</Node>
+							</Node>
+							<Node score="96.0973">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							</Node>
+						</Node>
+						<Node score="-6.115357">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+							<Node score="61.393726">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+								<Node score="198.60326">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="1"/>
+									<Node score="36.430225">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="74"/>
+									</Node>
+									<Node score="54.38921">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3858268"/>
+									</Node>
+								</Node>
+								<Node score="21.897339">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="932"/>
+								</Node>
+							</Node>
+							<Node score="3.4996583">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="17.403076"/>
+								<Node score="42.07509">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1005578"/>
+									<Node score="129.39778">
+										<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+									</Node>
+								</Node>
+								<Node score="29.823462">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0703377"/>
+								</Node>
+							</Node>
+							<Node score="7.4429">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+								<Node score="52.593987">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.541543"/>
+								</Node>
+							</Node>
+							<Node score="-26.60339">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+							</Node>
+						</Node>
+						<Node score="22.64959">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+							<Node score="128.96933">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+								<Node score="40.546734">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="5231"/>
+								</Node>
+							</Node>
+							<Node score="78.57634">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3158586"/>
+								<Node score="10.810057">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6532"/>
+								</Node>
+							</Node>
+							<Node score="-13.323999">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3024807"/>
+							</Node>
+						</Node>
+						<Node score="4.6584144">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1882"/>
+							<Node score="-8.134466">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="60"/>
+								<Node score="20.3757">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="12"/>
+								</Node>
+							</Node>
+							<Node score="19.698833">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+							</Node>
+						</Node>
+						<Node score="14.614274">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.541543"/>
+							<Node score="37.870346">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+							</Node>
+						</Node>
+						<Node score="-28.991394">
+							<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="11">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-2.207789">
+						<True/>
+						<Node score="28.158997">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+							<Node score="179.37578">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								<Node score="79.19224">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4276578"/>
+									<Node score="394.0471">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+									</Node>
+								</Node>
+								<Node score="265.7513">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+								</Node>
+								<Node score="-6.228809">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+									<Node score="85.51934">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4045893"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="2.7983735">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="73"/>
+								<Node score="18.106348">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								</Node>
+							</Node>
+							<Node score="76.490555">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							</Node>
+						</Node>
+						<Node score="57.271446">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+							<Node score="64.38087">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3686"/>
+								<Node score="8.2848425">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+									<Node score="-23.337488">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4631774"/>
+									</Node>
+									<Node score="40.35525">
+										<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.777972"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="57.54192">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+								<Node score="186.12958">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="11.375768"/>
+								</Node>
+							</Node>
+							<Node score="11.485657">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.323545"/>
+								<Node score="123.28398">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								</Node>
+							</Node>
+							<Node score="-18.620079">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.2195671"/>
+							</Node>
+						</Node>
+						<Node score="-7.141784">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+							<Node score="57.525322">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+								<Node score="22.772316">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="1"/>
+									<Node score="104.87931">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0362331"/>
+									</Node>
+								</Node>
+								<Node score="21.412895">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="43"/>
+								</Node>
+							</Node>
+							<Node score="74.662704">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4405565"/>
+								<Node score="14.346827">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="5111"/>
+								</Node>
+							</Node>
+							<Node score="17.328873">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+							</Node>
+						</Node>
+						<Node score="22.996407">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="17.403076"/>
+							<Node score="4.1215134">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+								<Node score="27.707907">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								</Node>
+							</Node>
+							<Node score="68.66048">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+							</Node>
+						</Node>
+						<Node score="35.174084">
+							<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+							<Node score="4.099422">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2013"/>
+							</Node>
+						</Node>
+						<Node score="22.231262">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="3"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="12">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-5.925209">
+						<True/>
+						<Node score="22.527199">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+							<Node score="-8.116406">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+								<Node score="285.58905">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1733992"/>
+								</Node>
+								<Node score="67.58833">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+								</Node>
+							</Node>
+							<Node score="150.80765">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								<Node score="0.6417481">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+									<Node score="39.109573">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="2.3786135">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="56"/>
+								<Node score="18.76626">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								</Node>
+							</Node>
+							<Node score="61.023464">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							</Node>
+						</Node>
+						<Node score="-6.3237224">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+							<Node score="48.008915">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+								<Node score="5.8559084">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="53"/>
+									<Node score="47.140137">
+										<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+									</Node>
+									<Node score="18.592031">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="63"/>
+									</Node>
+								</Node>
+								<Node score="16.522802">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.2625962"/>
+									<Node score="70.91838">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3717172"/>
+									</Node>
+								</Node>
+								<Node score="122.97469">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+								</Node>
+							</Node>
+							<Node score="9.991604">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="115.62343">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+									<Node score="14.669362">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2826"/>
+									</Node>
+								</Node>
+								<Node score="56.615494">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="15.83197"/>
+								</Node>
+							</Node>
+							<Node score="-16.603106">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1051"/>
+								<Node score="7.8488593">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.6526527"/>
+								</Node>
+							</Node>
+							<Node score="27.273746">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+							</Node>
+						</Node>
+						<Node score="3.1997614">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							<Node score="-9.400827">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="640"/>
+								<Node score="-0.54936755">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0177566"/>
+									<Node score="28.511219">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="9"/>
+									</Node>
+								</Node>
+								<Node score="25.47774">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								</Node>
+							</Node>
+							<Node score="5.108827">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.986284"/>
+								<Node score="37.80439">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+								</Node>
+							</Node>
+							<Node score="26.71375">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="24"/>
+							</Node>
+						</Node>
+						<Node score="-24.371943">
+							<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="5"/>
+							<Node score="-2.9253511">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="25"/>
+							</Node>
+						</Node>
+						<Node score="-0.9901612">
+							<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+							<Node score="13.086975">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							</Node>
+						</Node>
+						<Node score="10.030906">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="7"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="13">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="4.31195">
+						<True/>
+						<Node score="39.405663">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+							<Node score="185.75674">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								<Node score="24.474903">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4535488"/>
+									<Node score="292.4877">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+									</Node>
+								</Node>
+								<Node score="20.675098">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="39"/>
+									<Node score="57.45015">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+									</Node>
+									<Node score="-6.898975">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+									</Node>
+								</Node>
+								<Node score="0.54550785">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.2001284"/>
+									<Node score="98.80366">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="18"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="2.0218232">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="73"/>
+								<Node score="10.731788">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="61.190956">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+							<Node score="4.5605717">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4311602"/>
+								<Node score="-3.4566286">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+									<Node score="-15.349353">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="-23.907825">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+								<Node score="91.40999">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.659048"/>
+									<Node score="27.876741">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="5663"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="14.206986">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="11.839912"/>
+								<Node score="-6.197803">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="43"/>
+								</Node>
+							</Node>
+							<Node score="15.335395">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2853"/>
+							</Node>
+						</Node>
+						<Node score="67.21523">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="3"/>
+							<Node score="-9.365695">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="579"/>
+								<Node score="36.297348">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+									<Node score="17.856857">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="4055"/>
+									</Node>
+								</Node>
+								<Node score="12.560007">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="1"/>
+								</Node>
+							</Node>
+							<Node score="17.84278">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="6"/>
+								<Node score="60.849613">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="450"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="-15.247618">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.541543"/>
+							<Node score="12.28584">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+								<Node score="-2.9878685">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7250"/>
+								</Node>
+							</Node>
+							<Node score="2.6702023">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="15.729916"/>
+							</Node>
+						</Node>
+						<Node score="-66.908424">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+							<Node score="-1.9488648">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.495077"/>
+							</Node>
+						</Node>
+						<Node score="-20.320824">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="14">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-1.7082206">
+						<True/>
+						<Node score="91.773">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="8"/>
+							<Node score="25.584963">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+								<Node score="217.68019">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="12"/>
+								</Node>
+								<Node score="119.55586">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+									<Node score="5.484375">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="74"/>
+									</Node>
+									<Node score="14.416699">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3790433"/>
+									</Node>
+								</Node>
+								<Node score="-5.864063">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+								</Node>
+							</Node>
+							<Node score="3.273865">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="233"/>
+								<Node score="10.812744">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="20"/>
+									<Node score="5.8234706">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="673"/>
+										<Node score="23.71196">
+											<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+										</Node>
+									</Node>
+									<Node score="63.912113">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+									</Node>
+								</Node>
+								<Node score="-16.646193">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="17"/>
+								</Node>
+								<Node score="21.40276">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="14"/>
+								</Node>
+							</Node>
+							<Node score="50.48313">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0950247"/>
+								<Node score="4.092188">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+									<Node score="18.422754">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="14.532153">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+							<Node score="-19.294996">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1095"/>
+								<Node score="4.9789677">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+									<Node score="73.50723">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="28"/>
+										<Node score="23.440002">
+											<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1794"/>
+										</Node>
+									</Node>
+									<Node score="-11.839673">
+										<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+									</Node>
+								</Node>
+								<Node score="7.5204086">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+									<Node score="42.19777">
+										<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="5"/>
+									</Node>
+								</Node>
+								<Node score="1.7718593">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.2974522"/>
+								</Node>
+							</Node>
+							<Node score="38.72471">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+								<Node score="70.150856">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="17.403076"/>
+								</Node>
+								<Node score="2.7847073">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="13.281256"/>
+								</Node>
+							</Node>
+							<Node score="-11.562445">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="8"/>
+								<Node score="6.650638">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="508"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="-7.0700793">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.37916"/>
+							<Node score="-9.661408">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2006"/>
+								<Node score="-13.829856">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+									<Node score="11.572956">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="31"/>
+									</Node>
+								</Node>
+								<Node score="6.3891954">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+								</Node>
+							</Node>
+							<Node score="10.849186">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								<Node score="33.24212">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="16.927925"/>
+								</Node>
+							</Node>
+							<Node score="9.31573">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+							</Node>
+						</Node>
+						<Node score="-11.38193">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="13.281256"/>
+							<Node score="-4.239562">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1603"/>
+								<Node score="16.988667">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+								</Node>
+							</Node>
+							<Node score="-32.35339">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+							</Node>
+						</Node>
+						<Node score="46.53032">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+							<Node score="-3.8488872">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2246"/>
+							</Node>
+						</Node>
+						<Node score="32.624863">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="15">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-9.115122">
+						<True/>
+						<Node score="23.678894">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+							<Node score="20.467775">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+								<Node score="190.4541">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+								</Node>
+								<Node score="98.139626">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+								</Node>
+								<Node score="-4.984424">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+								</Node>
+							</Node>
+							<Node score="0.8450226">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="40"/>
+								<Node score="7.614961">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								</Node>
+							</Node>
+							<Node score="70.085014">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+								<Node score="-0.02739258">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+									<Node score="15.659473">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="3.5246706">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							</Node>
+						</Node>
+						<Node score="-3.007035">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+							<Node score="15.749494">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+								<Node score="29.215446">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="1"/>
+									<Node score="60.730473">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+										<Node score="4.661719">
+											<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="74"/>
+										</Node>
+									</Node>
+									<Node score="1.8083009">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+									</Node>
+								</Node>
+								<Node score="4.1647453">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2410"/>
+									<Node score="-23.236937">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="74"/>
+									</Node>
+								</Node>
+								<Node score="33.764416">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+								</Node>
+							</Node>
+							<Node score="-3.2885892">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="7.5627112"/>
+								<Node score="6.7154317">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+									<Node score="26.763824">
+										<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+									</Node>
+								</Node>
+								<Node score="7.2628274">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+								</Node>
+							</Node>
+							<Node score="16.004454">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="-9.629979">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6269"/>
+								</Node>
+							</Node>
+							<Node score="-26.674292">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+							</Node>
+						</Node>
+						<Node score="-23.538881">
+							<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="5"/>
+							<Node score="1.6360749">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="20"/>
+								<Node score="-13.598716">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="950"/>
+									<Node score="-3.7134995">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="977"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="3.0764592">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							<Node score="-12.858534">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3656"/>
+								<Node score="2.718173">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="15.475113"/>
+								</Node>
+							</Node>
+							<Node score="36.01491">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="50"/>
+							</Node>
+						</Node>
+						<Node score="-16.341951">
+							<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+							<Node score="-3.7039967">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							</Node>
+						</Node>
+						<Node score="-1.6894845">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="712"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="16">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-9.427122">
+						<True/>
+						<Node score="5.756641">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+							<Node score="67.03931">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="9"/>
+								<Node score="10.665527">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="38"/>
+									<Node score="46.007423">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+									</Node>
+									<Node score="-4.236768">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+									</Node>
+								</Node>
+								<Node score="144.27173">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+									<Node score="37.00254">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="983"/>
+									</Node>
+								</Node>
+								<Node score="-0.023291016">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+									<Node score="13.31045">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="0.71826786">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="40"/>
+								<Node score="5.787393">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+								</Node>
+							</Node>
+							<Node score="30.135195">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							</Node>
+						</Node>
+						<Node score="-33.49849">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+							<Node score="44.095093">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="4"/>
+								<Node score="4.0352783">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2646"/>
+									<Node score="3.9479494">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3525078"/>
+										<Node score="-6.2485766">
+											<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+										</Node>
+									</Node>
+									<Node score="23.401735">
+										<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+									</Node>
+								</Node>
+								<Node score="-0.34898072">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="30"/>
+									<Node score="76.1193">
+										<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+									</Node>
+								</Node>
+								<Node score="2.8537354">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="218"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="-12.292595">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="8519"/>
+							<Node score="18.75471">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="13.757681"/>
+								<Node score="-26.674562">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="73"/>
+									<Node score="-2.7819133">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1036184"/>
+									</Node>
+								</Node>
+								<Node score="1.6902835">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1656038"/>
+								</Node>
+							</Node>
+							<Node score="8.479004">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="8"/>
+							</Node>
+							<Node score="-23.415184">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+							</Node>
+						</Node>
+						<Node score="-6.521293">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+							<Node score="15.605533">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="10"/>
+								<Node score="41.193226">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="12"/>
+								</Node>
+							</Node>
+							<Node score="8.47594">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="10.73268"/>
+							</Node>
+						</Node>
+						<Node score="-0.27826443">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							<Node score="5.7902966">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.37916"/>
+							</Node>
+						</Node>
+						<Node score="-2.710659">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="712"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="17">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-1.1463014">
+						<True/>
+						<Node score="1.8286744">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							<Node score="133.33536">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+							</Node>
+							<Node score="56.983448">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="16"/>
+							</Node>
+							<Node score="26.244362">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4069594"/>
+							</Node>
+							<Node score="-0.01977539">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+							</Node>
+						</Node>
+						<Node score="-30.629137">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+							<Node score="6.9709263">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								<Node score="72.498245">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+									<Node score="9.277149">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+									</Node>
+								</Node>
+								<Node score="-6.3165045">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="8736"/>
+									<Node score="4.1941166">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="59"/>
+									</Node>
+								</Node>
+								<Node score="27.90008">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="1"/>
+								</Node>
+							</Node>
+							<Node score="5.8138347">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.541543"/>
+								<Node score="-3.9506838">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="74"/>
+									<Node score="-22.3684">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="75"/>
+									</Node>
+								</Node>
+								<Node score="21.66053">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.322439"/>
+								</Node>
+							</Node>
+							<Node score="-11.187378">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="56"/>
+							</Node>
+						</Node>
+						<Node score="45.15156">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+							<Node score="4.6670656">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="6"/>
+								<Node score="-4.114779">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1189659"/>
+									<Node score="13.39638">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3158586"/>
+									</Node>
+								</Node>
+								<Node score="21.278616">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.032337"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="10.124958">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="17.403076"/>
+							<Node score="2.268548">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="672"/>
+								<Node score="-8.492168">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="75"/>
+								</Node>
+							</Node>
+							<Node score="53.809074">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="12"/>
+							</Node>
+						</Node>
+						<Node score="-12.12515">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="13.281256"/>
+							<Node score="0.68195504">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="14.37916"/>
+							</Node>
+						</Node>
+						<Node score="12.30406">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.571096"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="18">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="1.0458841">
+						<True/>
+						<Node score="134.071">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							<Node score="1.858191">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="159"/>
+								<Node score="49.57813">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="16"/>
+								</Node>
+								<Node score="20.33943">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4069594"/>
+								</Node>
+								<Node score="0.33622742">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+									<Node score="-0.016845703">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="22.472744">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="3"/>
+							<Node score="5.1410522">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+								<Node score="57.99864">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="11"/>
+									<Node score="7.885547">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+									</Node>
+								</Node>
+								<Node score="-5.053223">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="8736"/>
+									<Node score="3.3552737">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="59"/>
+									</Node>
+								</Node>
+								<Node score="21.41316">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="1"/>
+								</Node>
+							</Node>
+							<Node score="-3.5659974">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3225"/>
+								<Node score="3.6070266">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0924346"/>
+									<Node score="-6.861295">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="57"/>
+									</Node>
+								</Node>
+								<Node score="11.053354">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+								</Node>
+							</Node>
+							<Node score="42.36632">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2908"/>
+								<Node score="5.991138">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+								</Node>
+							</Node>
+							<Node score="6.2663455">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="6"/>
+							</Node>
+						</Node>
+						<Node score="34.36802">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="6.541543"/>
+							<Node score="4.2521906">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+								<Node score="23.153147">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="17.403076"/>
+									<Node score="1.0076659">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1453"/>
+									</Node>
+								</Node>
+								<Node score="-3.7239323">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="13.281256"/>
+								</Node>
+							</Node>
+							<Node score="-10.913152">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="36"/>
+								<Node score="0.7394457">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3356"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="-43.4839">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="11"/>
+							<Node score="-18.501144">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1005"/>
+								<Node score="-1.8456299">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3701591"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="-0.5356434">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+							<Node score="-10.141009">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="620"/>
+							</Node>
+						</Node>
+						<Node score="5.5647945">
+							<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0732676"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="19">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-5.9429355">
+						<True/>
+						<Node score="113.96046">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							<Node score="3.9371583">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="159"/>
+								<Node score="39.6625">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="16"/>
+								</Node>
+								<Node score="18.133156">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4276578"/>
+								</Node>
+								<Node score="0.28579104">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+									<Node score="-0.0143554695">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="11.058691">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+							<Node score="-8.783213">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2603"/>
+								<Node score="-17.795252">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="15.475113"/>
+									<Node score="38.977634">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7305"/>
+										<Node score="-4.335022">
+											<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="72"/>
+										</Node>
+									</Node>
+									<Node score="8.961438">
+										<SimplePredicate field="PMax" operator="greaterOrEqual" value="16.927925"/>
+									</Node>
+								</Node>
+								<Node score="2.2098339">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+									<Node score="-9.971572">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.410322"/>
+									</Node>
+								</Node>
+								<Node score="-19.608517">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1674491"/>
+								</Node>
+							</Node>
+							<Node score="-6.241901">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+								<Node score="66.49598">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="15"/>
+									<Node score="26.03915">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3962042"/>
+									</Node>
+								</Node>
+								<Node score="8.366089">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="10"/>
+								</Node>
+							</Node>
+							<Node score="4.5287204">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="16.694288"/>
+								<Node score="26.249191">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+								</Node>
+							</Node>
+							<Node score="-7.8603363">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="11.839912"/>
+							</Node>
+						</Node>
+						<Node score="-4.011953">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="25"/>
+							<Node score="-10.861914">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="8002"/>
+								<Node score="6.5241294">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="13.757681"/>
+									<Node score="-4.6542444">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="67"/>
+									</Node>
+								</Node>
+								<Node score="1.9040341">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="4"/>
+								</Node>
+							</Node>
+							<Node score="16.145752">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="78"/>
+								<Node score="47.298706">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="10"/>
+								</Node>
+							</Node>
+							<Node score="1.4723723">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							</Node>
+						</Node>
+						<Node score="38.632977">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+						</Node>
+						<Node score="2.3406372">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="20">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-1.7793597">
+						<True/>
+						<Node score="96.86631">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							<Node score="0.98887944">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="159"/>
+								<Node score="31.73008">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="16"/>
+								</Node>
+								<Node score="14.506544">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4069594"/>
+									<Node score="3.7356446">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="9"/>
+									</Node>
+								</Node>
+								<Node score="0.24292603">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+									<Node score="-0.012158204">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="17.812422">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+							<Node score="11.180511">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+								<Node score="-12.5856695">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="647"/>
+									<Node score="34.173927">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="30"/>
+										<Node score="7.7003503">
+											<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="32"/>
+										</Node>
+									</Node>
+									<Node score="7.971973">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="12"/>
+									</Node>
+								</Node>
+								<Node score="49.79612">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="1"/>
+								</Node>
+							</Node>
+							<Node score="-6.281388">
+								<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+								<Node score="32.17837">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.2680104"/>
+								</Node>
+								<Node score="4.77112">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+								</Node>
+							</Node>
+							<Node score="-5.754043">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2041"/>
+								<Node score="4.1329446">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="7"/>
+								</Node>
+							</Node>
+							<Node score="4.519089">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0717435"/>
+							</Node>
+						</Node>
+						<Node score="0.05032277">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="15.123184"/>
+							<Node score="37.65298">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+								<Node score="3.936299">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="218"/>
+									<Node score="18.706598">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="27"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="21.371239">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4920447"/>
+								<Node score="3.46828">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="17.71654"/>
+								</Node>
+							</Node>
+							<Node score="4.4224677">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+							</Node>
+						</Node>
+						<Node score="-8.904219">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="13.281256"/>
+							<Node score="-0.80340666">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="35"/>
+								<Node score="11.838472">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+								</Node>
+							</Node>
+							<Node score="-30.851175">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="12"/>
+							</Node>
+						</Node>
+						<Node score="7.970752">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2520"/>
+							<Node score="-4.8486323">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="34"/>
+							</Node>
+						</Node>
+						<Node score="14.365674">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="10.73268"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="21">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-8.6045885">
+						<True/>
+						<Node score="82.336235">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							<Node score="30.290333">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="159"/>
+								<Node score="0.840564">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="12"/>
+									<Node score="12.596742">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4276578"/>
+									</Node>
+									<Node score="0.20648804">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+										<Node score="-0.010400391">
+											<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+										</Node>
+									</Node>
+									<Node score="3.1751955">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="-0.6242707">
+							<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+							<Node score="7.3965445">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="7"/>
+								<Node score="12.781684">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="10"/>
+									<Node score="11.06488">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="7412"/>
+										<Node score="-11.498865">
+											<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="51"/>
+										</Node>
+									</Node>
+									<Node score="39.864346">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="47"/>
+									</Node>
+								</Node>
+								<Node score="16.456951">
+									<SimplePredicate field="PMax" operator="greaterOrEqual" value="10.73268"/>
+									<Node score="1.4007424">
+										<SimplePredicate field="PMax" operator="greaterOrEqual" value="13.281256"/>
+									</Node>
+								</Node>
+								<Node score="-10.54708">
+									<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+								</Node>
+							</Node>
+							<Node score="-7.973283">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.017451"/>
+								<Node score="-11.21184">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="5"/>
+									<Node score="12.477332">
+										<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+									</Node>
+								</Node>
+								<Node score="0.030686982">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0277555"/>
+								</Node>
+							</Node>
+							<Node score="8.299201">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="39"/>
+								<Node score="-5.632068">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+								</Node>
+							</Node>
+							<Node score="17.810509">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="12"/>
+							</Node>
+						</Node>
+						<Node score="-0.022061348">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3356"/>
+							<Node score="13.0507">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="51"/>
+								<Node score="-6.463242">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="13"/>
+									<Node score="-18.958763">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1887767"/>
+									</Node>
+								</Node>
+								<Node score="-2.4058924">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="4596"/>
+								</Node>
+							</Node>
+							<Node score="5.382788">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="9"/>
+								<Node score="25.983086">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="5151"/>
+								</Node>
+							</Node>
+							<Node score="-9.605137">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="48"/>
+							</Node>
+						</Node>
+						<Node score="0.34624788">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2840"/>
+							<Node score="-38.892693">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+							</Node>
+						</Node>
+						<Node score="21.263014">
+							<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="59"/>
+						</Node>
+						<Node score="5.6616945">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="22">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-4.789197">
+						<True/>
+						<Node score="69.98584">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							<Node score="25.746681">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="159"/>
+								<Node score="0.71447754">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="12"/>
+									<Node score="3.8651857">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4069594"/>
+										<Node score="10.950586">
+											<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+										</Node>
+									</Node>
+									<Node score="0.17551576">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+										<Node score="-0.0087890625">
+											<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+										</Node>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="6.520361">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="14"/>
+							<Node score="-6.342835">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="74"/>
+								<Node score="-0.23307496">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="15"/>
+								</Node>
+								<Node score="-2.3970704">
+									<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+								</Node>
+								<Node score="-17.954752">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0471244"/>
+								</Node>
+							</Node>
+							<Node score="10.786353">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="10"/>
+								<Node score="-5.8447084">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6686"/>
+								</Node>
+								<Node score="37.966084">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.239203"/>
+								</Node>
+							</Node>
+							<Node score="-23.190601">
+								<SimplePredicate field="PMax" operator="greaterOrEqual" value="12.483"/>
+								<Node score="8.454863">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="4"/>
+								</Node>
+							</Node>
+							<Node score="-3.3846157">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="25"/>
+							</Node>
+						</Node>
+						<Node score="1.7223268">
+							<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.875"/>
+							<Node score="7.464533">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.165458"/>
+								<Node score="5.315875">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3184183"/>
+								</Node>
+								<Node score="28.32527">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="-8.594997">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="25"/>
+							<Node score="0.6766707">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+								<Node score="-4.0033207">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="67"/>
+								</Node>
+							</Node>
+							<Node score="2.0377572">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3356"/>
+							</Node>
+						</Node>
+						<Node score="28.453407">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="1"/>
+							<Node score="5.8428226">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="9"/>
+							</Node>
+						</Node>
+						<Node score="3.8385134">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="23">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="-9.270166">
+						<True/>
+						<Node score="59.487892">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							<Node score="21.884766">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="159"/>
+								<Node score="0.60732424">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="12"/>
+									<Node score="3.0921388">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4069594"/>
+										<Node score="8.760449">
+											<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+										</Node>
+									</Node>
+									<Node score="0.14918518">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+										<Node score="-0.007470703">
+											<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+										</Node>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="-4.657114">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="17.403076"/>
+							<Node score="-1.2104851">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="254"/>
+								<Node score="4.031094">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+									<Node score="-2.2586427">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.2145445"/>
+										<Node score="12.52306">
+											<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+										</Node>
+									</Node>
+									<Node score="-19.002802">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1832072"/>
+									</Node>
+								</Node>
+								<Node score="19.413658">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="53"/>
+									<Node score="0.78112876">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2648"/>
+									</Node>
+								</Node>
+								<Node score="-13.9113655">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="44"/>
+								</Node>
+							</Node>
+							<Node score="0.5314911">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+								<Node score="30.313543">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+									<Node score="0.968866">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4216683"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="-0.7602173">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+								<Node score="3.7194889">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3241031"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="4.029856">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="5"/>
+							<Node score="-5.445282">
+								<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+								<Node score="29.614338">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+									<Node score="6.800446">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3322"/>
+									</Node>
+								</Node>
+								<Node score="0.35397646">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="2"/>
+								</Node>
+							</Node>
+							<Node score="-2.5527217">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="2041"/>
+								<Node score="12.287595">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4703822"/>
+								</Node>
+							</Node>
+							<Node score="23.172905">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="1601"/>
+							</Node>
+						</Node>
+						<Node score="-0.021743774">
+							<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4462931"/>
+							<Node score="0.13714558">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4600623"/>
+								<Node score="-14.783611">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="8341"/>
+								</Node>
+							</Node>
+							<Node score="-18.34877">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="5"/>
+							</Node>
+						</Node>
+						<Node score="6.5057273">
+							<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="6"/>
+							<Node score="-0.13271631">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0227342"/>
+							</Node>
+						</Node>
+						<Node score="3.2760231">
+							<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="61"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="24">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="RELIABILITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+						<MiningField name="PMax"/>
+					</MiningSchema>
+					<Node score="1.6983465">
+						<True/>
+						<Node score="50.56465">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							<Node score="18.60205">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="159"/>
+								<Node score="0.516211">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="12"/>
+									<Node score="2.4737306">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4069594"/>
+										<Node score="7.0083985">
+											<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+										</Node>
+									</Node>
+									<Node score="0.1268097">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+										<Node score="-0.0062988284">
+											<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+										</Node>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="1.0638795">
+							<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.875"/>
+							<Node score="1.4838867">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="12"/>
+								<Node score="22.686768">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="8"/>
+								</Node>
+								<Node score="7.7861695">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.2001687"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="-3.217936">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="6"/>
+							<Node score="-0.032547582">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="25"/>
+								<Node score="16.974598">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4934711"/>
+								</Node>
+								<Node score="11.147489">
+									<SimplePredicate field="RELIABILITY" operator="greaterOrEqual" value="0.675"/>
+								</Node>
+							</Node>
+							<Node score="35.390957">
+								<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="22"/>
+							</Node>
+							<Node score="29.052614">
+								<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.380038"/>
+							</Node>
+						</Node>
+						<Node score="-0.19242294">
+							<SimplePredicate field="PMax" operator="greaterOrEqual" value="17.403076"/>
+							<Node score="-4.689392">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="254"/>
+								<Node score="2.4427984">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0747724"/>
+								</Node>
+							</Node>
+							<Node score="18.420008">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="7"/>
+							</Node>
+						</Node>
+						<Node score="-6.7673383">
+							<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="10"/>
+							<Node score="9.038725">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+							</Node>
+						</Node>
+						<Node score="-2.17047">
+							<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.1146758"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="25">
+				<True/>
+				<TreeModel functionName="regression" missingValueStrategy="none" noTrueChildStrategy="returnLastPrediction" splitCharacteristic="multiSplit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRITICALITY"/>
+						<MiningField name="IMPORTANCE"/>
+						<MiningField name="PROVIDED_INTERFACE"/>
+						<MiningField name="REQUIRED_INTERFACE"/>
+						<MiningField name="REPLICA"/>
+						<MiningField name="REQUEST"/>
+						<MiningField name="ADT"/>
+					</MiningSchema>
+					<Node score="-0.9311658">
+						<True/>
+						<Node score="42.97998">
+							<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="13"/>
+							<Node score="15.811817">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="159"/>
+								<Node score="1.148584">
+									<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="12"/>
+									<Node score="6.521924">
+										<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.4276578"/>
+										<Node score="2.3816407">
+											<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="34"/>
+										</Node>
+									</Node>
+									<Node score="0.10778504">
+										<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="14"/>
+										<Node score="-0.005419922">
+											<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="6"/>
+										</Node>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node score="9.411065">
+							<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="69"/>
+							<Node score="-0.033779908">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="6098"/>
+								<Node score="-4.2160387">
+									<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.0383233"/>
+									<Node score="-14.188258">
+										<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="77"/>
+										<Node score="-4.884703">
+											<SimplePredicate field="ADT" operator="greaterOrEqual" value="1.3516554"/>
+										</Node>
+									</Node>
+									<Node score="4.767185">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="8508"/>
+									</Node>
+								</Node>
+								<Node score="-25.07628">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="4"/>
+									<Node score="-7.6961474">
+										<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="9120"/>
+									</Node>
+								</Node>
+								<Node score="-5.863758">
+									<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+								</Node>
+							</Node>
+							<Node score="35.747818">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+							</Node>
+						</Node>
+						<Node score="25.142288">
+							<SimplePredicate field="REPLICA" operator="greaterOrEqual" value="55"/>
+							<Node score="-12.03464">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="3811"/>
+								<Node score="-1.0668017">
+									<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="4016"/>
+									<Node score="4.608447">
+										<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="8"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node score="0.04341431">
+								<SimplePredicate field="CRITICALITY" operator="greaterOrEqual" value="10"/>
+							</Node>
+							<Node score="1.3322754">
+								<SimplePredicate field="PROVIDED_INTERFACE" operator="greaterOrEqual" value="9"/>
+							</Node>
+						</Node>
+						<Node score="-18.326878">
+							<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="8487"/>
+							<Node score="2.3582475">
+								<SimplePredicate field="REQUEST" operator="greaterOrEqual" value="9191"/>
+								<Node score="-6.2963014">
+									<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="12"/>
+								</Node>
+							</Node>
+							<Node score="-6.360889">
+								<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="10"/>
+							</Node>
+						</Node>
+						<Node score="-0.35472515">
+							<SimplePredicate field="IMPORTANCE" operator="greaterOrEqual" value="3"/>
+							<Node score="3.6535811">
+								<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+							</Node>
+						</Node>
+						<Node score="-6.9294066">
+							<SimplePredicate field="REQUIRED_INTERFACE" operator="greaterOrEqual" value="2"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+		</Segmentation>
+	</MiningModel>
+</PMML>
