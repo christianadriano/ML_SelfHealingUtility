@@ -18,6 +18,11 @@
 #https://stats.stackexchange.com/questions/20836/algorithms-for-automatic-model-selection/20856#20856
 #https://stats.stackexchange.com/questions/218208/what-are-the-advantages-of-stepwise-regression
 
+install.packages("xgboost")
+install.packages("devtools")
+install_git("git://github.com/jpmml/r2pmml.git")
+
+library(devtools)
 library(xgboost)
 library(r2pmml) #https://github.com/jpmml/r2pmml
 
@@ -25,28 +30,28 @@ library(r2pmml) #https://github.com/jpmml/r2pmml
 # Initialization section ------------------------------------------------------
 
 #Load utility functions
-source("C://Users//chris//OneDrive//Documentos//GitHub//ML_SelfHealingUtility//loadData.R");
+source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//loadData.R");
 
 #Data structure to keep results
 mcResultsf <- data.frame(matrix(data=NA,nrow=3,ncol=8));
 colnames(mcResultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
                           "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
 #Folder with training data
-folder <- "data//1K-3K-9K//";
-#
+folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//DataPoints_1K-3K-9K//";
+#folder <- "//DataPoints_1K-3K-9K//";
 
 # CONTROL CODE   ------------------------------------------------------------
 
 modelList <- c("Linear","Discontinuous","Saturating","ALL");
 datasetSize <- c("1K","3K","9K");
-modelName <- modelList[1];
+modelName <- modelList[2];
 
 datasetName <- generateDataSetNames(modelName,datasetSize,0);
-
-#for(i in c(1:length(datasetName))){
-   i <- 2;
-   fileName <- paste0(folder,datasetName[i],".csv");
+for(i in c(1:length(datasetName))){
+  #i <- 2;
+  fileName <- paste0(folder,datasetName[i],".csv");
   dataf <- loadData(fileName);
+  #data_all <- read.csv(fileName,header = TRUE,sep=",");
   
   featuresdf <- prepareFeatures(dataf,"ALL");
 
@@ -62,11 +67,13 @@ datasetName <- generateDataSetNames(modelName,datasetSize,0);
   
   #Compute results
   mcResultsf <- validatePredictions(outcomeList,mcResultsf,validationData);
-#}
+}
 
-print(mcResultsf); #show on the console
+#print(mcResultsf); #show on the console
 
-resultsToFile(mcResults,modelName); #save to a .csv file
+resultsToFile(mcResultsf,modelName,"_70-30.csv"); #save to a .csv file
+
+
 generatePMML(outcomeList[[1]],featuresdf,datasetName[i]);#datasetName[length(datasetName)]);
 
 #-------------------------------------------------------------------------------------------------
@@ -88,10 +95,11 @@ generateDataSetNames <- function(modelName,datasetSize,s_idx){
 }
 
 # Save results to file ----------------------------------------------------
-resultsToFile <- function(mcResults,modelName){
-  fileName <- paste0("mcResultsf_",modelName,".csv");
-  write.table(mcResultsf,fileName,sep=",",col.names = TRUE);
-  mcResultsf
+resultsToFile <- function(mcResults,modelName,extension){
+  fileName <- paste0("mcResultsf_",modelName,extension);
+  write.table(mcResults,fileName,sep=",",col.names = TRUE);
+  print(paste0("file written:",fileName));
+  mcResults
 }
 
 # Prepare features --------------------------------------------------------
@@ -188,7 +196,6 @@ generatePMML <- function(xgb.model, featuresdf,modelName){
   
   r2pmml(xgb.model, pmmlFileName, fmap = xgboost.fmap, response_name = "UTILITY_INCREASE", 
          missing = NULL, ntreelimit = 25, compact = TRUE)
-  
 }
 
 
