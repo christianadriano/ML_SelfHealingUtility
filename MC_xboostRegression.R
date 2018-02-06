@@ -44,7 +44,7 @@ folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//Dat
 
 modelList <- c("Linear","Discontinuous","Saturating","ALL");
 datasetSize <- c("1K","3K","9K");
-modelName <- modelList[2];
+modelName <- modelList[3];
 
 datasetName <- generateDataSetNames(modelName,datasetSize,0);
 for(i in c(1:length(datasetName))){
