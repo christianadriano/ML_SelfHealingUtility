@@ -43,9 +43,9 @@ folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//Dat
 # CONTROL CODE   ------------------------------------------------------------
 
 modelList <- c("Linear","Discontinuous","Saturating","ALL");
-datasetSize <- c("1K","3K","9K");
 modelName <- modelList[3];
 
+datasetSize <- c("1K","3K","9K");
 datasetName <- generateDataSetNames(modelName,datasetSize,0);
 for(i in c(1:length(datasetName))){
   #i <- 2;
@@ -53,7 +53,7 @@ for(i in c(1:length(datasetName))){
   dataf <- loadData(fileName);
   #data_all <- read.csv(fileName,header = TRUE,sep=",");
   
-  featuresdf <- prepareFeatures(dataf,"ALL");
+  featuresdf <- prepareFeatures(dataf,"Saturating");
 
   #Extract training ad validation sets 
   totalData = dim(featuresdf)[1];
@@ -71,7 +71,7 @@ for(i in c(1:length(datasetName))){
 
 #print(mcResultsf); #show on the console
 
-resultsToFile(mcResultsf,modelName,"_70-30.csv"); #save to a .csv file
+resultsToFile(mcResultsf,modelName,"_70-30_FeatureSelection.csv"); #save to a .csv file
 
 
 generatePMML(outcomeList[[1]],featuresdf,datasetName[i]);#datasetName[length(datasetName)]);
