@@ -19,7 +19,6 @@ library(devtools)
 library(xgboost)
 library(r2pmml) #https://github.com/jpmml/r2pmml
 
-
 # Initialization section ------------------------------------------------------
 
 #Load utility functions
