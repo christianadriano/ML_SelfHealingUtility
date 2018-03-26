@@ -8,8 +8,7 @@
 #https://github.com/jpmml/jpmml-xgboost
 
 #Automatic model selection
-#https://stats.stackexchange.com/questions/20836/algorithms-for-automatic-model-selection/20856#20856
-#https://stats.stackexchange.com/questions/218208/what-are-the-advantages-of-stepwise-regression
+#Models are select by defining a metric, which in our case we choose RMSE - Root Mean Square Error)
 
 install.packages("xgboost")
 install.packages("devtools")
