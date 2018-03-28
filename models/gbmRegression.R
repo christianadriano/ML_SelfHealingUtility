@@ -121,7 +121,10 @@ prepareFeatures <- function(dataf,selectionType){
 
 # Train function  ---------------------------------------------------------
 trainModel <- function(featuresdf){
-  
+ 
+  #lightGBM with caret?
+  #https://github.com/bwilbertz/RLightGBM
+   
   inputFeatures <- dim(featuresdf)[2] - 1; #last column is the target variable
   
   #train.data = gbm.DMatrix(data.matrix(trainingData[,1:inputFeatures]), 
