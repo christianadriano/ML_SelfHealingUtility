@@ -34,7 +34,7 @@ folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//Dat
 # CONTROL CODE ----------------------------------------------------------------
 
 modelList <- c("Linear","Discontinuous","Saturating","ALL");
-modelName <- modelList[3];
+modelName <- modelList[1];
 
 datasetSize <- c("1K","3K","9K");
 datasetName <- generateDataSetNames(modelName,datasetSize,0);
@@ -124,20 +124,33 @@ trainModel <- function(featuresdf){
   
   inputFeatures <- dim(featuresdf)[2] - 1; #last column is the target variable
   
-  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:inputFeatures]), 
-                               label = trainingData[,"UTILITY_INCREASE"],
-                               missing = NA)
+  #train.data = gbm.DMatrix(data.matrix(trainingData[,1:inputFeatures]), 
+  #                            label = trainingData[,"UTILITY_INCREASE"],
+  #                           missing = NA)
   
-  param <- list(objective = "reg:linear", base_score = 0.5)# booster="gbtree")
-  xgboost.cv = xgb.cv(param=param, data = xgb.train.data, nfold = 10, nrounds = 2500, 
-                      early_stopping_rounds = 500, metrics='rmse',verbose = FALSE)
-  best_iteration <- xgboost.cv$best_iteration;
-  xgboost.cv$evaluation_log[best_iteration]
   
-  xgb.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
+  #system.time gets the time to train the model
+  system.time(
+    gbm.cv.model <- gbm(UTILIT_INCREASE~.,
+                  data = trainingData[,1:inputFeatures],
+                  distribution = gaussian,
+                  n.trees = 500,
+                  n.minobsinnode = 100,
+                  shrinkage = 0.01,
+                  bag.fraction = 0.5,
+                  cv.folds = 10)
+    )
   
-  return(list(xgb.model,xgboost.cv));
+  best.iteration = gbm.perf(gbm.cv.model, method = "cv")
   
+  #xgboost.cv$evaluation_log[best_iteration]
+  
+  gbm.final.model <- gbm(param =param,  data = xgb.train.data, nrounds=best_iteration)
+  
+  # Get feature importance
+  gbm.feature.imp = summary(gbm.cv.model, n.trees = best.iter)
+  
+  return(list(gbm.final.model,gbm.cv.model));
 }
 
 # Validation -------------------------------------------------------------
