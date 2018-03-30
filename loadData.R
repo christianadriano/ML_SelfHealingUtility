@@ -246,26 +246,28 @@ prepareFeatures <- function(dataf,selectionType){
 
 # Generate PMML file ------------------------------------------------------
 
-generatePMML <- function(model, features.df,modelName){  
+generatePMML <- function(model, features.df, modelName, numberOfTrees){  
   
   inputFeatures <- dim(features.df)[2] - 1; #last column is the target variable
   
   # Generate feature map
-  xgboost.fmap = r2pmml::genFMap(features.df[1:inputFeatures])
-  r2pmml::writeFMap(xgboost.fmap, "xgboost.fmap")
+  feature.map = r2pmml::genFMap(features.df[1:inputFeatures])
+  r2pmml::writeFMap(feature.map, "feature.map")
   
   # Save the model in XGBoost proprietary binary format
   xgb.save(model, "xgboost.model")
   
   # Dump the model in text format
-  #  xgb.dump(model, "xgboost.model.txt", fmap = "xgboost.fmap");
+  #  xgb.dump(model, "xgboost.model.txt", fmap = "feature.map");
   
   pmmlFileName <- paste0(".//pmml///",modelName,"-xgb.pmml");
   
-  r2pmml(model, pmmlFileName, fmap = xgboost.fmap, response_name = "UTILITY_INCREASE", 
-         missing = NULL, ntreelimit = 25, compact = TRUE)
+  r2pmml(model, pmmlFileName, fmap = feature.map, response_name = "UTILITY_INCREASE", 
+         missing = NULL, ntreelimit = numberOfTrees, compact = TRUE)
 }
 
+
+# Convert time to Data Frame ----------------------------------------------
 converTimeToDataFrame <- function(time_elapsed){
   
   frame <- data.frame(as.matrix(time_elapsed));
