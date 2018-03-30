@@ -197,9 +197,9 @@ averageRMSE <- function(RMSEVector, sampleSize){
 }
 
 # Save results to file ----------------------------------------------------
-resultsToFile <- function(mcResults,modelName,extension){
-  fileName <- paste0("mcResultsf_",modelName,extension);
-  write.table(mcResults,fileName,sep=",",col.names = TRUE);
+resultsToFile <- function(results, modelName, extension){
+  fileName <- paste0("results_",modelName,extension);
+  write.table(results,fileName,sep=",",col.names = TRUE);
   return (paste0("file written:",fileName));
 }
 
