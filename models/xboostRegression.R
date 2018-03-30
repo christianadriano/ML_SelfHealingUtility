@@ -24,9 +24,9 @@ library(r2pmml) #https://github.com/jpmml/r2pmml
 source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//loadData.R");
 
 #Data structure to keep results
-results.df <- data.frame(matrix(data=NA,nrow=3,ncol=8));
-colnames(results.df) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
-                          "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
+results.df <- data.frame(matrix(data=NA,nrow=3,ncol=12));
+colnames(results.df) <- c("Item","Utility_Type","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
+                          "Test_RMSE_STD","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time");
 #Folder with training data
 folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//DataPoints_1K-3K-9K//";
 #folder <- "//DataPoints_1K-3K-9K//";
@@ -55,8 +55,6 @@ for(i in c(1:length(datasetName))){
   
   #Train model  
   outcomeList <- trainModel(trainingData);
-  
-  outcomeList[3]
   
   #Compute results
   results.df <- validatePredictions(outcomeList,results.df,validationData);
@@ -99,8 +97,8 @@ trainModel <- function(featuresdf){
   
   #Get the bes model
   best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
- 
-  return(list(best.model,trained.model,time));
+  #convertTimeToDataFrame(time)
+  return(list(best.model,trained.model, convertTimeToDataFrame(time)));
   
 }
 
@@ -109,6 +107,7 @@ validatePredictions <- function(modelList, results.df,validationData){
   
   best.model <- modelList[[1]];
   trained.model <- modelList[[2]];
+  time.df <- modelList[3]
   
   best_iteration <- trained.model$best_iteration;
 
@@ -116,8 +115,8 @@ validatePredictions <- function(modelList, results.df,validationData){
   error <- y_pred - validationData$UTILITY_INCREASE;
   
   best_iteration <- trained.model$best_iteration;
-
-  results.df$DataSet[i]<-datasetName[i];
+  results.df$Item[i] = "";
+  results.df$Utility_Type[i]<-datasetName[i];
   results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_mean;
   results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_std;
   results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_mean;
@@ -127,9 +126,9 @@ validatePredictions <- function(modelList, results.df,validationData){
   results.df$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
   results.df$MAPD[i] <- mapd(y_pred,validationData$UTILITY_INCREASE);
   
-  results.df$user.time <- modelList[3]$user.self
-  results.df$sys.time <- modelList[3]$sys.self
-  results.df$elapsed.time <- modelList[3]$elapsed.self
+  results.df$User_Time[i] <- time.df$user.time;
+  results.df$Sys_Time[i] <- time.df$sys.time;
+  results.df$Elapsed_Time[i] <- time.df$elapsed.time;
   
   return(results.df);    
 }
