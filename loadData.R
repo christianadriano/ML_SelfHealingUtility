@@ -243,7 +243,6 @@ prepareFeatures <- function(dataf,selectionType){
         return (features.df);
 }
 
-
 # Generate PMML file ------------------------------------------------------
 
 generatePMML <- function(model, features.df, modelName, numberOfTrees){  
@@ -268,7 +267,7 @@ generatePMML <- function(model, features.df, modelName, numberOfTrees){
 
 
 # Convert time to Data Frame ----------------------------------------------
-converTimeToDataFrame <- function(time.elapsed){
+convertTimeToDataFrame <- function(time.elapsed){
   
   frame <- data.frame(as.matrix(time.elapsed));
   user.self <- frame$mm[1];
