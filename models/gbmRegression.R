@@ -134,7 +134,7 @@ trainModel <- function(featuresdf){
   
   #system.time gets the time to train the model
   system.time(
-    gbm.cv.model <- gbm(UTILIT_INCREASE~.,
+    trained.model <- gbm(UTILIT_INCREASE~.,
                   data = trainingData[,1:inputFeatures],
                   distribution = gaussian,
                   n.trees = 500,
@@ -144,36 +144,36 @@ trainModel <- function(featuresdf){
                   cv.folds = 10)
     )
   
-  best.iteration = gbm.perf(gbm.cv.model, method = "cv")
+  best.iteration = gbm.perf(trained.model, method = "cv")
   
-  #xgboost.cv$evaluation_log[best_iteration]
+  #trained.model$evaluation_log[best_iteration]
   
-  gbm.final.model <- gbm(param =param,  data = xgb.train.data, nrounds=best_iteration)
+  best.model <- gbm(param =param,  data = xgb.train.data, nrounds=best_iteration)
   
   # Get feature importance
-  gbm.feature.imp = summary(gbm.cv.model, n.trees = best.iter)
+  gbm.feature.imp = summary(trained.model, n.trees = best.iter)
   
-  return(list(gbm.final.model,gbm.cv.model));
+  return(list(best.model,trained.model));
 }
 
 # Validation -------------------------------------------------------------
 validatePredictions <- function(modelList, mcResultsf,validationData){
   
-  xgb.model <- modelList[[1]];
-  xgboost.cv <- modelList[[2]];
+  best.model <- modelList[[1]];
+  trained.model <- modelList[[2]];
   
-  best_iteration <- xgboost.cv$best_iteration;
+  best_iteration <- trained.model$best_iteration;
   
-  y_pred <- predict(xgb.model, as.matrix(validationData));
+  y_pred <- predict(best.model, as.matrix(validationData));
   error <- y_pred - validationData$UTILITY_INCREASE;
   
-  best_iteration <- xgboost.cv$best_iteration;
+  best_iteration <- trained.model$best_iteration;
   
   mcResultsf$DataSet[i]<-datasetName[i];
-  mcResultsf$Train_RMSE_MEAN[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_mean;
-  mcResultsf$Train_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$train_rmse_std;
-  mcResultsf$Test_RMSE_MEAN[i]<-xgboost.cv$evaluation_log[best_iteration]$test_rmse_mean;
-  mcResultsf$Test_RMSE_STD[i]<-xgboost.cv$evaluation_log[best_iteration]$test_rmse_std;
+  mcResultsf$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_mean;
+  mcResultsf$Train_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_std;
+  mcResultsf$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_mean;
+  mcResultsf$Test_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_std;
   
   mcResultsf$RMSE[i] <- rmse(error);
   mcResultsf$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
@@ -185,7 +185,7 @@ validatePredictions <- function(modelList, mcResultsf,validationData){
 
 # Generate PMML file ------------------------------------------------------
 
-generatePMML <- function(xgb.model, featuresdf,modelName){  
+generatePMML <- function(best.model, featuresdf,modelName){  
   
   inputFeatures <- dim(featuresdf)[2] - 1; #last column is the target variable
   
@@ -194,14 +194,14 @@ generatePMML <- function(xgb.model, featuresdf,modelName){
   r2pmml::writeFMap(xgboost.fmap, "xgboost.fmap")
   
   # Save the model in XGBoost proprietary binary format
-  xgb.save(xgb.model, "xgboost.model")
+  xgb.save(best.model, "xgboost.model")
   
   # Dump the model in text format
-  #  xgb.dump(xgb.model, "xgboost.model.txt", fmap = "xgboost.fmap");
+  #  xgb.dump(best.model, "xgboost.model.txt", fmap = "xgboost.fmap");
   
   pmmlFileName <- paste0(".//pmml///",modelName,"-xgb.pmml");
   
-  r2pmml(xgb.model, pmmlFileName, fmap = xgboost.fmap, response_name = "UTILITY_INCREASE", 
+  r2pmml(best.model, pmmlFileName, fmap = xgboost.fmap, response_name = "UTILITY_INCREASE", 
          missing = NULL, ntreelimit = 25, compact = TRUE)
 }
 
