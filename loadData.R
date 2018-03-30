@@ -43,30 +43,30 @@ renameAuthenticationServices <- function (df){
 
 # select_Linear <- function(dataf){
 #   # Select feature columns --------------------------------------------------
-#   featuresdf<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY, 
+#   features.df<- data.frame(dataf$CRITICALITY,dataf$CONNECTIVITY, 
 #                           dataf$RELIABILITY,                        
 #                           dataf$UTILITY_INCREASE); 
 #   
 #   
-#   colnames(featuresdf) <- c("CRITICALITY","CONNECTIVITY", 
+#   colnames(features.df) <- c("CRITICALITY","CONNECTIVITY", 
 #                             "RELIABILITY",
 #                             "UTILITY_INCREASE");
 #   
-#   return(featuresdf);
+#   return(features.df);
 # }
 
 select_Linear <- function(dataf){
   # Select feature columns --------------------------------------------------
-  featuresdf<- data.frame(dataf$CRITICALITY,dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
+  features.df<- data.frame(dataf$CRITICALITY,dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
                           dataf$RELIABILITY,                        
                           dataf$UTILITY_INCREASE); 
   
   
-  colnames(featuresdf) <- c("CRITICALITY","PROVIDED_INTERFACE","REQUIRED_INTERFACE",
+  colnames(features.df) <- c("CRITICALITY","PROVIDED_INTERFACE","REQUIRED_INTERFACE",
                             "RELIABILITY",
                             "UTILITY_INCREASE");
   
-  return(featuresdf);
+  return(features.df);
 }
 
 
@@ -74,46 +74,46 @@ select_Linear <- function(dataf){
 select_Saturation <- function(dataf){
   
   # Select feature columns --------------------------------------------------
-  featuresdf<- data.frame(dataf$CRITICALITY,dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
+  features.df<- data.frame(dataf$CRITICALITY,dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
                           dataf$RELIABILITY,
                           dataf$PMax,dataf$alpha,dataf$REPLICA,dataf$REQUEST, 
                           dataf$UTILITY_INCREASE); 
   
-  colnames(featuresdf) <- c("CRITICALITY","PROVIDED_INTERFACE","REQUIRED_INTERFACE",
+  colnames(features.df) <- c("CRITICALITY","PROVIDED_INTERFACE","REQUIRED_INTERFACE",
                             "RELIABILITY",
                             "PMax","alpha","REPLICA","REQUEST",
                             "UTILITY_INCREASE");
   
-  return(featuresdf);
+  return(features.df);
 }
 
 
 select_Discontinuous <- function(dataf){
   
   # Select feature columns --------------------------------------------------
-  featuresdf<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY,dataf$IMPORTANCE, 
+  features.df<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY,dataf$IMPORTANCE, 
                           dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
                           dataf$ADT,dataf$UTILITY_INCREASE); 
   
   
-  colnames(featuresdf) <- c("CRITICALITY","RELIABILITY","IMPORTANCE",
+  colnames(features.df) <- c("CRITICALITY","RELIABILITY","IMPORTANCE",
                             "PROVIDED_INTERFACE","REQUIRED_INTERFACE",
                             "ADT","UTILITY_INCREASE");
   
-  return(featuresdf);
+  return(features.df);
 }
 
 select_ALL <- function(dataf){
   
   # Select feature columns --------------------------------------------------
-  featuresdf<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY, dataf$IMPORTANCE, 
+  features.df<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY, dataf$IMPORTANCE, 
                           dataf$PROVIDED_INTERFACE, dataf$REQUIRED_INTERFACE,
                           dataf$REPLICA,dataf$REQUEST,dataf$ADT,                         
                           dataf$PMax,
                            dataf$UTILITY_INCREASE); 
   # dataf$alpha
   
-  colnames(featuresdf) <- c("CRITICALITY","RELIABILITY", "IMPORTANCE",
+  colnames(features.df) <- c("CRITICALITY","RELIABILITY", "IMPORTANCE",
                             "PROVIDED_INTERFACE", "REQUIRED_INTERFACE",
                             "REPLICA" ,"REQUEST","ADT",
                             "PMax",
@@ -122,7 +122,7 @@ select_ALL <- function(dataf){
   # "alpha",
     
   
-  return(featuresdf);
+  return(features.df);
 }
 
 #-------------------------------------------------------------
@@ -223,35 +223,35 @@ prepareFeatures <- function(dataf,selectionType){
   
   #Do feature selection (or not)
   if(selectionType=="ALL")
-    featuresdf<- select_ALL(dataf) 
+    features.df<- select_ALL(dataf) 
   else
     if(selectionType=="Linear")
-      featuresdf<- select_Linear(dataf) 
+      features.df<- select_Linear(dataf) 
     else
       if(selectionType=="Discontinuous")
-        featuresdf<- select_Discontinuous(dataf) 
+        features.df<- select_Discontinuous(dataf) 
       else
         if(selectionType=="Saturating")
-          featuresdf<- select_Saturation(dataf) 
+          features.df<- select_Saturation(dataf) 
         
         #Remove zero utilities
-        featuresdf <- featuresdf[featuresdf$UTILITY_INCREASE!=0,];
+        features.df <- features.df[features.df$UTILITY_INCREASE!=0,];
         
         # Scramble data 
-        featuresdf <- scrambleData(datadf=featuresdf);
+        features.df <- scrambleData(datadf=features.df);
         
-        return (featuresdf);
+        return (features.df);
 }
 
 
 # Generate PMML file ------------------------------------------------------
 
-generatePMML <- function(model, featuresdf,modelName){  
+generatePMML <- function(model, features.df,modelName){  
   
-  inputFeatures <- dim(featuresdf)[2] - 1; #last column is the target variable
+  inputFeatures <- dim(features.df)[2] - 1; #last column is the target variable
   
   # Generate feature map
-  xgboost.fmap = r2pmml::genFMap(featuresdf[1:inputFeatures])
+  xgboost.fmap = r2pmml::genFMap(features.df[1:inputFeatures])
   r2pmml::writeFMap(xgboost.fmap, "xgboost.fmap")
   
   # Save the model in XGBoost proprietary binary format
