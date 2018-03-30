@@ -24,8 +24,8 @@ library(r2pmml) #https://github.com/jpmml/r2pmml
 source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//loadData.R");
 
 #Data structure to keep results
-mcResultsf <- data.frame(matrix(data=NA,nrow=3,ncol=8));
-colnames(mcResultsf) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
+results.df <- data.frame(matrix(data=NA,nrow=3,ncol=8));
+colnames(results.df) <- c("DataSet","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
                           "Test_RMSE_STD","RMSE","R_Squared", "MAPD");
 #Folder with training data
 folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//DataPoints_1K-3K-9K//";
@@ -39,7 +39,7 @@ modelName <- modelList[1];
 datasetSize <- c("1K","3K","9K");
 datasetName <- generateDataSetNames(modelName,datasetSize,0);
 for(i in c(1:length(datasetName))){
-  i <- 2;
+  i <- 1;
   fileName <- paste0(folder,datasetName[i],".csv");
   dataf <- loadData(fileName);
   #data_all <- read.csv(fileName,header = TRUE,sep=",");
@@ -59,66 +59,17 @@ for(i in c(1:length(datasetName))){
   outcomeList[3]
   
   #Compute results
-  mcResultsf <- validatePredictions(outcomeList,mcResultsf,validationData);
+  results.df <- validatePredictions(outcomeList,results.df,validationData);
 }
 
-#print(mcResultsf); #show on the console
+#print(results.df); #show on the console
 
-resultsToFile(mcResultsf,modelName,"_70-30_FeatureSelection.csv"); #save to a .csv file
-
+message <- resultsToFile(results.df,modelName,"_70-30_FeatureSelection.csv"); #save to a .csv file
+print(message);
 
 generatePMML(outcomeList[[1]],featuresdf,datasetName[i]);#datasetName[length(datasetName)]);
 
 #-------------------------------------------------------------------------------------------------
-
-
-# Generate the dataset names that will be trained -------------------------
-generateDataSetNames <- function(modelName,datasetSize,s_idx){
-  
-  if(s_idx==0 & length(datasetSize)>0){#Generate for all sizes
-    datasetName <- paste0(modelName,datasetSize[1]);
-    for(i in c(2:length(datasetSize))){
-      datasetName <- cbind(datasetName,paste0(modelName,datasetSize[i]));
-    }
-  }
-  else{
-    datasetName <- paste0(modelName,datasetSize[s_idx]);
-  }
-  return(datasetName);
-}
-
-# Save results to file ----------------------------------------------------
-resultsToFile <- function(mcResults,modelName,extension){
-  fileName <- paste0("mcResultsf_",modelName,extension);
-  write.table(mcResults,fileName,sep=",",col.names = TRUE);
-  print(paste0("file written:",fileName));
-  mcResults
-}
-
-# Prepare features --------------------------------------------------------
-prepareFeatures <- function(dataf,selectionType){
-  
-  #Do feature selection (or not)
-  if(selectionType=="ALL")
-    featuresdf<- select_ALL(dataf) 
-  else
-  if(selectionType=="Linear")
-    featuresdf<- select_Linear(dataf) 
-  else
-    if(selectionType=="Discontinuous")
-      featuresdf<- select_Discontinuous(dataf) 
-    else
-      if(selectionType=="Saturating")
-        featuresdf<- select_Saturation(dataf) 
-  
-  #Remove zero utilities
-  featuresdf <- featuresdf[featuresdf$UTILITY_INCREASE!=0,];
-
-  # Scramble data 
-  featuresdf <- scrambleData(datadf=featuresdf);
-  
-  return (featuresdf);
-}
 
 
 # Train function  ---------------------------------------------------------
@@ -154,7 +105,7 @@ trainModel <- function(featuresdf){
 }
 
 # Validation -------------------------------------------------------------
-validatePredictions <- function(modelList, mcResultsf,validationData){
+validatePredictions <- function(modelList, results.df,validationData){
   
   best.model <- modelList[[1]];
   trained.model <- modelList[[2]];
@@ -166,41 +117,23 @@ validatePredictions <- function(modelList, mcResultsf,validationData){
   
   best_iteration <- trained.model$best_iteration;
 
-  mcResultsf$DataSet[i]<-datasetName[i];
-  mcResultsf$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_mean;
-  mcResultsf$Train_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_std;
-  mcResultsf$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_mean;
-  mcResultsf$Test_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_std;
+  results.df$DataSet[i]<-datasetName[i];
+  results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_mean;
+  results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_std;
+  results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_mean;
+  results.df$Test_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_std;
   
-  mcResultsf$RMSE[i] <- rmse(error);
-  mcResultsf$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
-  mcResultsf$MAPD[i] <- mapd(y_pred,validationData$UTILITY_INCREASE);
+  results.df$RMSE[i] <- rmse(error);
+  results.df$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
+  results.df$MAPD[i] <- mapd(y_pred,validationData$UTILITY_INCREASE);
   
-  return(mcResultsf);    
+  results.df$user.time <- modelList[3]$user.self
+  results.df$sys.time <- modelList[3]$sys.self
+  results.df$elapsed.time <- modelList[3]$elapsed.self
+  
+  return(results.df);    
 }
 
-
-# Generate PMML file ------------------------------------------------------
-
-generatePMML <- function(model, featuresdf,modelName){  
-
-  inputFeatures <- dim(featuresdf)[2] - 1; #last column is the target variable
-  
-    # Generate feature map
-  xgboost.fmap = r2pmml::genFMap(featuresdf[1:inputFeatures])
-  r2pmml::writeFMap(xgboost.fmap, "xgboost.fmap")
-  
-  # Save the model in XGBoost proprietary binary format
-  xgb.save(model, "xgboost.model")
-  
-  # Dump the model in text format
-  #  xgb.dump(model, "xgboost.model.txt", fmap = "xgboost.fmap");
-  
-  pmmlFileName <- paste0(".//pmml///",modelName,"-xgb.pmml");
-  
-  r2pmml(model, pmmlFileName, fmap = xgboost.fmap, response_name = "UTILITY_INCREASE", 
-         missing = NULL, ntreelimit = 25, compact = TRUE)
-}
 
 
 # Plot Predicted vs Actual ------------------------------------------------
@@ -209,18 +142,18 @@ generatePMML <- function(model, featuresdf,modelName){
 events = paste("events =",dim(dataf)[1]);
 plot(y_pred, type="p",col="red", pch=4, xlab=events, ylab = "Utility Increase") 
 points(validationData$UTILITY_INCREASE)
-#title = paste("Pred (red cross) x Actual,", affectedComponent[i],", ",name,", MAPD =", mcResultsf$MAPD[i],"%");
-title = paste("Pred (red cross) x Actual,", "All Components",", MAPD =", mcResultsf$MAPD[i],"%");
+#title = paste("Pred (red cross) x Actual,", affectedComponent[i],", ",name,", MAPD =", results.df$MAPD[i],"%");
+title = paste("Pred (red cross) x Actual,", "All Components",", MAPD =", results.df$MAPD[i],"%");
 
 title(title);
 
 
 # Compute Averages --------------------------------------------------------
 
-resultsf$TRAIN_RMSE_MEAN[index] <-averageRMSE(mcResultsf$Train_RMSE_MEAN,trainingSize);
+resultsf$TRAIN_RMSE_MEAN[index] <-averageRMSE(results.df$Train_RMSE_MEAN,trainingSize);
 
 testingSize = totalData - trainingSize; 
-resultsf$TEST_RMSE_MEAN[index] <-averageRMSE(mcResultsf$Test_RMSE_MEAN,testingSize);
+resultsf$TEST_RMSE_MEAN[index] <-averageRMSE(results.df$Test_RMSE_MEAN,testingSize);
 
 resultsf$R_Squared[index] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
 resultsf$MAPD[index] <- mapd(y_pred,validationData$UTILITY_INCREASE);
@@ -243,7 +176,7 @@ title <- paste("Validation RMSE, data proportion", proportionStr,"mean=",meanRMS
 plot(resultsf$RMSE, main=title);
 
 #Plot MAPD
-meanMAPD_validation <- round(mean(mcResultsf$MAPD),4);
+meanMAPD_validation <- round(mean(results.df$MAPD),4);
 title <- paste("Validation MAPD, data proportion", proportionStr,"mean=",meanMAPD_validation)
 plot(resultsf$MAPD, main=title);
 
