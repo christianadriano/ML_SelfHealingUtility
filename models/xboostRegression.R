@@ -39,7 +39,7 @@ modelName <- modelList[1];
 datasetSize <- c("1K","3K","9K");
 datasetName <- generateDataSetNames(modelName,datasetSize,0);
 for(i in c(1:length(datasetName))){
-  #i <- 2;
+  i <- 2;
   fileName <- paste0(folder,datasetName[i],".csv");
   dataf <- loadData(fileName);
   #data_all <- read.csv(fileName,header = TRUE,sep=",");
@@ -55,6 +55,8 @@ for(i in c(1:length(datasetName))){
   
   #Train model  
   outcomeList <- trainModel(trainingData);
+  
+  outcomeList[3]
   
   #Compute results
   mcResultsf <- validatePredictions(outcomeList,mcResultsf,validationData);
@@ -129,14 +131,25 @@ trainModel <- function(featuresdf){
                                missing = NA)
   
   param <- list(objective = "reg:linear", base_score = 0.5)# booster="gbtree")
-  trained.model = xgb.cv(param=param, data = xgb.train.data, nfold = 10, nrounds = 2500, 
-                      early_stopping_rounds = 500, metrics='rmse',verbose = FALSE)
-  best_iteration <- trained.model$best_iteration;
-  trained.model$evaluation_log[best_iteration]
   
+  #Discovers the best model
+  time <- system.time(trained.model <-  xgb.cv(
+                                      param=param, 
+                                      data = xgb.train.data, 
+                                      nfold = 10, 
+                                      nrounds = 2500, 
+                                      early_stopping_rounds = 500, 
+                                      metrics='rmse',
+                                      verbose = FALSE)
+                      )
+  
+  best_iteration <- trained.model$best_iteration;
+  #trained.model$evaluation_log[best_iteration]
+  
+  #Get the bes model
   best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
  
-  return(list(best.model,trained.model));
+  return(list(best.model,trained.model,time));
   
 }
 
