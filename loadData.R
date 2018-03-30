@@ -268,9 +268,9 @@ generatePMML <- function(model, features.df, modelName, numberOfTrees){
 
 
 # Convert time to Data Frame ----------------------------------------------
-converTimeToDataFrame <- function(time_elapsed){
+converTimeToDataFrame <- function(time.elapsed){
   
-  frame <- data.frame(as.matrix(time_elapsed));
+  frame <- data.frame(as.matrix(time.elapsed));
   user.self <- frame$mm[1];
   sys.self <- frame$mm[2];
   elapsed.self <- frame$mm[3];
