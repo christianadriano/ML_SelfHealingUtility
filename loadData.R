@@ -272,9 +272,11 @@ convertTimeToDataFrame <- function(time){
   time.df <- data.frame(matrix(data=NA,nrow=1,ncol=3));
   colnames(time.df) <- c("user.time","sys.time","elapsed.time");
   
-  time.df$user.time <- unlist(lapply(time, '[[', 1));
-  time.df$sys.time <- unlist(lapply(time, '[[', 2));
-  time.df$elapsed.time <-unlist(lapply(time, '[[', 3));
+  df <- data.frame(unlist(lapply(time, '[[', 1)));
+  
+  time.df$user.time <- df[1,1];
+  time.df$sys.time <- df[2,1];
+  time.df$elapsed.time <-df[3,1];
   
   return (time.df);
 }
