@@ -22,9 +22,9 @@ trainModel <- function(featuresdf){
   
   xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:inputFeatures]), 
                                label = trainingData[,"UTILITY_INCREASE"],
-                               missing = NA)
+                               missing = NA);
   
-  param <- list(objective = "reg:linear", base_score = 0.5)# booster="gbtree")
+  param <- list(objective = "reg:linear", base_score = 0.5);# booster="gbtree")
   
   #Discovers the best model
   time <- system.time(trained.model <-  xgb.cv(
@@ -41,7 +41,7 @@ trainModel <- function(featuresdf){
   #trained.model$evaluation_log[best_iteration]
   
   #Get the bes model
-  best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration)
+  best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration);
   #convertTimeToDataFrame(time)
   return(list(best.model,trained.model, convertTimeToDataFrame(time)));
   
