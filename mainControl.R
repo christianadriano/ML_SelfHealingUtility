@@ -12,8 +12,8 @@ library(r2pmml) #https://github.com/jpmml/r2pmml
 
 #Load utility functions
 source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//loadData.R");
-source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//xboostRegression.R");
-#source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//gbmRegression.R");
+source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//xboostRegression.R");
+#source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmRegression.R");
 
   
   #Data structure to keep results
