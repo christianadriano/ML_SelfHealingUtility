@@ -52,7 +52,7 @@ validatePredictions <- function(modelList, results.df,validationData){
   
   best.model <- modelList[[1]];
   trained.model <- modelList[[2]];
-  time.df <- modelList[3]
+  time.df <- modelList[[3]]
   
   best_iteration <- trained.model$best_iteration;
 
