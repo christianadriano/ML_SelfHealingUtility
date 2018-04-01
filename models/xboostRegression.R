@@ -83,5 +83,11 @@ validatePredictions <- function(modelList,validationData,i){
 }
 
 
+# Plot trees --------------------------------------------------------------
+
+plot_trees <- function(feature.names,model){
+  xgb.plot.tree(feature.names,model); 
+}
+
 
 
