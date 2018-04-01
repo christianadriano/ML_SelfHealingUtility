@@ -247,10 +247,10 @@ prepareFeatures <- function(dataf,selectionType){
 
 generatePMML <- function(model, features.df, modelName, numberOfTrees){  
   
-  inputFeatures <- dim(features.df)[2] - 1; #last column is the target variable
+  features.df <- dim(features.df)[2] - 1; #last column is the target variable
   
   # Generate feature map
-  feature.map = r2pmml::genFMap(features.df[1:inputFeatures])
+  feature.map = r2pmml::genFMap(features.df[1:features.df])
   r2pmml::writeFMap(feature.map, "feature.map")
   
   # Save the model in XGBoost proprietary binary format
