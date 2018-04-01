@@ -16,11 +16,11 @@
 
 
 # Train function  ---------------------------------------------------------
-trainModel <- function(featuresdf){
+trainModel <- function(features.df,numberOfTrees=2500,kfolds=10){
   
-  inputFeatures <- dim(featuresdf)[2] - 1; #last column is the target variable
+  features.df <- dim(features.df)[2] - 1; #last column is the target variable
   
-  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:inputFeatures]), 
+  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:features.df]), 
                                label = trainingData[,"UTILITY_INCREASE"],
                                missing = NA);
   
@@ -30,8 +30,8 @@ trainModel <- function(featuresdf){
   time <- system.time(trained.model <-  xgb.cv(
                                       param=param, 
                                       data = xgb.train.data, 
-                                      nfold = 10, 
-                                      nrounds = 2500, 
+                                      nfold = kfolds, 
+                                      nrounds = numberOfTrees, 
                                       early_stopping_rounds = 500, 
                                       metrics='rmse',
                                       verbose = FALSE)
