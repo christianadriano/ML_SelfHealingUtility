@@ -17,9 +17,7 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//xboo
 
   
   #Data structure to keep results
-  results.df <- data.frame(matrix(data=NA,nrow=3,ncol=12));
-  colnames(results.df) <- c("Item","Utility_Type","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
-                            "Test_RMSE_STD","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time");
+ 
   #Folder with training data
   folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//DataPoints_1K-3K-9K//";
   #folder <- "//DataPoints_1K-3K-9K//";
