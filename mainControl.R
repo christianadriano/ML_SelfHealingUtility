@@ -1,11 +1,13 @@
 ## Control code that can run different machine learning methods
 
 install.packages("xgboost")
+install.packages("gbm")
 install.packages("devtools")
 install_git("git://github.com/jpmml/r2pmml.git")
 
 library(devtools)
 library(xgboost)
+library(gbm)
 library(r2pmml) #https://github.com/jpmml/r2pmml
 
 # Initialization section ------------------------------------------------------
@@ -45,7 +47,7 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//xboo
     validationData<-as.data.frame(featuresdf[startTestIndex:totalData,]);
     
     #Train model  
-    outcomeList <- trainModel(trainingData);
+    outcomeList <- trainModel(trainingData,2500,10);
     
     #Compute results
     results.df <- validatePredictions(outcomeList,validationData,i);
