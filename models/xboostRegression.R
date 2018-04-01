@@ -48,10 +48,10 @@ trainModel <- function(featuresdf){
 }
 
 # Validation -------------------------------------------------------------
-validatePredictions <- function(modelList,validationData){
+validatePredictions <- function(modelList,validationData,i){
   
   results.df <- data.frame(matrix(data=NA,nrow=3,ncol=12));
-  colnames(results.df) <- c("Utility_Type","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
+  colnames(results.df) <- c("Item","Utility_Type","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
                             "Test_RMSE_STD","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time");
   
   best.model <- modelList[[1]];
@@ -64,7 +64,8 @@ validatePredictions <- function(modelList,validationData){
   error <- y_pred - validationData$UTILITY_INCREASE;
   
   best_iteration <- trained.model$best_iteration;
-  results.df$Utility_Type[i]<-datasetName[i];
+  results.df$Item[i] <- i;
+  results.df$Utility_Type[i]<-gsub(" ","",datasetName[i],fixed = TRUE);
   results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_mean;
   results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_std;
   results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_mean;

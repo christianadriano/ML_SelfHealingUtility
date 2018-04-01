@@ -48,7 +48,7 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//xboo
     outcomeList <- trainModel(trainingData);
     
     #Compute results
-    results.df <- validatePredictions(outcomeList,results.df,validationData);
+    results.df <- validatePredictions(outcomeList,validationData,i);
   #}
   
   
