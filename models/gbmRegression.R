@@ -7,6 +7,15 @@
 #Convert model to pmml
 ##https://github.com/jpmml/r2pmml
 
+https://www.kaggle.com/nschneider/gbm-vs-xgboost-vs-lightgbm
+https://www.kaggle.com/andrewmvd/lightgbm-in-r
+http://ftp.auckland.ac.nz/software/CRAN/doc/vignettes/gbm/gbm.pdf
+https://stats.stackexchange.com/questions/242105/generating-predictions-on-training-data-in-gbm-regression
+https://stats.stackexchange.com/questions/242105/generating-predictions-on-training-data-in-gbm-regression
+http://allstate-university-hackathons.github.io/PredictionChallenge2016/GBM
+https://stats.stackexchange.com/questions/229356/gbm-package-vs-caret-using-gbm
+https://www.r-bloggers.com/an-introduction-to-xgboost-r-package/
+
 #Automatic model selection
 
 # Train function  ---------------------------------------------------------
