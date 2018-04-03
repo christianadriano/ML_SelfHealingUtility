@@ -46,11 +46,8 @@ trainGBM <- function(training.df,numberOfTrees=2500,kfolds=10){
 }
 
 # Validation -------------------------------------------------------------
-validateGBM <- function(outcome.list,validation.df,i){
+validateGBM <- function(outcome.list,validation.df,dataset.name.list,i,results.df){
   
-  results.df <- data.frame(matrix(data=NA,nrow=3,ncol=12));
-  colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time");
-
   trained.model <- outcome.list[[1]];
   time.df <- outcome.list[[2]]
   
@@ -60,7 +57,7 @@ validateGBM <- function(outcome.list,validation.df,i){
   error <- y_pred - validation.df$UTILITY_INCREASE;
   
   results.df$Item[i] <- i;
-  results.df$Utility_Type[i]<-gsub(" ","",datasetName[i],fixed = TRUE);
+  results.df$Utility_Type[i]<-gsub(" ","",dataset.name.list[i],fixed = TRUE);
   # results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_mean;
   # results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_std;
   # results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$test_rmse_mean;
