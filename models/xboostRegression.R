@@ -37,13 +37,13 @@ trainXGBoost <- function(training.df,numberOfTrees=2500,kfolds=10){
                                       verbose = FALSE)
                       )
   
-  best_iteration <- trained.model$best_iteration;
+  best.iteration <- trained.model$best_iteration;
   #trained.model$evaluation_log[best_iteration]
   
   #Get the bes model
-  best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best_iteration);
-  #convertTimeToDataFrame(time)
-  return(list(best.model,trained.model, convertTimeToDataFrame(time)));
+  best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best.iteration);
+
+  return(list(trained.model, convertTimeToDataFrame(time)));
   
 }
 
@@ -54,22 +54,21 @@ validateXGBoost <- function(modelList,validationData,i){
   colnames(results.df) <- c("Item","Utility_Type","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
                             "Test_RMSE_STD","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time");
   
-  best.model <- modelList[[1]];
-  trained.model <- modelList[[2]];
-  time.df <- modelList[[3]]
+  trained.model <- modelList[[1]];
+  time.df<- modelList[[2]];
   
-  best_iteration <- trained.model$best_iteration;
+  best.iteration <- trained.model$best_iteration;
 
   y_pred <- predict(best.model, as.matrix(validationData));
   error <- y_pred - validationData$UTILITY_INCREASE;
   
-  best_iteration <- trained.model$best_iteration;
+  best.iteration <- trained.model$best_iteration;
   results.df$Item[i] <- i;
   results.df$Utility_Type[i]<-gsub(" ","",datasetName[i],fixed = TRUE);
-  results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_mean;
-  results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$train_rmse_std;
-  results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_mean;
-  results.df$Test_RMSE_STD[i]<-trained.model$evaluation_log[best_iteration]$test_rmse_std;
+  results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_mean;
+  results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_std;
+  results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$test_rmse_mean;
+  results.df$Test_RMSE_STD[i]<-trained.model$evaluation_log[best.iteration]$test_rmse_std;
   
   results.df$RMSE[i] <- rmse(error);
   results.df$R_Squared[i] <- r_squared(y_pred,validationData$UTILITY_INCREASE);
@@ -88,6 +87,8 @@ validateXGBoost <- function(modelList,validationData,i){
 plot_trees <- function(feature.names,model){
   xgb.plot.tree(feature.names,model); 
 }
+
+
 
 
 
