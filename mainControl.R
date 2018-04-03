@@ -15,7 +15,7 @@ library(r2pmml) #https://github.com/jpmml/r2pmml
 #Load utility functions
 source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//loadData.R");
 source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//xboostRegression.R");
-#source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmRegression.R");
+source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmRegression.R");
 
   
   #Data structure to keep results
@@ -40,17 +40,17 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//xboo
     featuresdf <- prepareFeatures(dataf,"Saturating");
     
     #Extract training ad validation sets 
-    totalData = dim(featuresdf)[1];
-    trainingSize = trunc(totalData * 0.7);
-    startTestIndex = totalData - trainingSize;
-    trainingData<- as.data.frame(featuresdf[1:trainingSize,]);
-    validationData<-as.data.frame(featuresdf[startTestIndex:totalData,]);
-    
+    totalData <- dim(featuresdf)[1];
+    trainingSize <- trunc(totalData * 0.7);
+    startTestIndex <- totalData - trainingSize;
+    training.df <- as.data.frame(featuresdf[1:trainingSize,]);
+    validation.df <-as.data.frame(featuresdf[startTestIndex:totalData,]);
+
     #Train model  
-    outcomeList <- trainModel(trainingData,2500,10);
+    outcomeList <- trainXGBoost(training.df,numberOfTrees=2500,kfolds=10);
     
-    #Compute results
-    results.df <- validatePredictions(outcomeList,validationData,i);
+    #Validate model
+    results.df <- validateXGBoost(outcomeList,validation.df,i);
   #}
   
   
