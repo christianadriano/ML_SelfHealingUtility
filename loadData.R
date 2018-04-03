@@ -245,23 +245,21 @@ prepareFeatures <- function(dataf,selectionType){
 
 # Generate PMML file ------------------------------------------------------
 
-generatePMML <- function(model, features.df, modelName, numberOfTrees){  
+generatePMML <- function(trained.model, training.df, pmmlFileName, numberOfTrees){  
   
-  features.df <- dim(features.df)[2] - 1; #last column is the target variable
+  last.column.explanatory <- dim(training.df)[2] - 1; #last column is the target variable
   
   # Generate feature map
-  feature.map = r2pmml::genFMap(features.df[1:features.df])
+  feature.map = r2pmml::genFMap(training.df[1:last.column.explanatory])
   r2pmml::writeFMap(feature.map, "feature.map")
   
   # Save the model in XGBoost proprietary binary format
-  xgb.save(model, "xgboost.model")
+  #xgb.save(model, "xgboost.model")
   
   # Dump the model in text format
   #  xgb.dump(model, "xgboost.model.txt", fmap = "feature.map");
   
-  pmmlFileName <- paste0(".//pmml///",modelName,"-xgb.pmml");
-  
-  r2pmml(model, pmmlFileName, fmap = feature.map, response_name = "UTILITY_INCREASE", 
+  r2pmml(trained.model, pmmlFileName, fmap = feature.map, response_name = "UTILITY_INCREASE", 
          missing = NULL, ntreelimit = numberOfTrees, compact = TRUE)
 }
 
