@@ -7,24 +7,23 @@
 #Convert model to pmml
 ##https://github.com/jpmml/r2pmml
 
-https://www.kaggle.com/nschneider/gbm-vs-xgboost-vs-lightgbm
-https://www.kaggle.com/andrewmvd/lightgbm-in-r
-http://ftp.auckland.ac.nz/software/CRAN/doc/vignettes/gbm/gbm.pdf
-https://stats.stackexchange.com/questions/242105/generating-predictions-on-training-data-in-gbm-regression
-https://stats.stackexchange.com/questions/242105/generating-predictions-on-training-data-in-gbm-regression
-http://allstate-university-hackathons.github.io/PredictionChallenge2016/GBM
-https://stats.stackexchange.com/questions/229356/gbm-package-vs-caret-using-gbm
-https://www.r-bloggers.com/an-introduction-to-xgboost-r-package/
+# https://www.kaggle.com/nschneider/gbm-vs-xgboost-vs-lightgbm
+# https://www.kaggle.com/andrewmvd/lightgbm-in-r
+# http://ftp.auckland.ac.nz/software/CRAN/doc/vignettes/gbm/gbm.pdf
+# https://stats.stackexchange.com/questions/242105/generating-predictions-on-training-data-in-gbm-regression
+# https://stats.stackexchange.com/questions/242105/generating-predictions-on-training-data-in-gbm-regression
+# http://allstate-university-hackathons.github.io/PredictionChallenge2016/GBM
+# https://stats.stackexchange.com/questions/229356/gbm-package-vs-caret-using-gbm
+# https://www.r-bloggers.com/an-introduction-to-xgboost-r-package/
 
-#Automatic model selection
 
 # Train function  ---------------------------------------------------------
-trainGBM <- function(features.df,numberOfTrees=2500,kfolds=10){
+trainGBM <- function(training.df,numberOfTrees=2500,kfolds=10){
  
   #lightGBM with caret?
   #https://github.com/bwilbertz/RLightGBM
    
-  features.df <- dim(features.df)[2] - 1; #last column is the target variable
+  
   
   #train.data = gbm.DMatrix(data.matrix(trainingData[,1:features.df]), 
   #                            label = trainingData[,"UTILITY_INCREASE"],
@@ -33,15 +32,15 @@ trainGBM <- function(features.df,numberOfTrees=2500,kfolds=10){
   
   #system.time gets the time to train the model
   system.time(
-    trained.model <- gbm(UTILIT_INCREASE~.,
-                  data = trainingData[,1:features.df],
-                  distribution = gaussian,
-                  n.trees = numberOfTrees,
-                  n.minobsinnode = 100,
-                  shrinkage = 0.01,
-                  bag.fraction = 0.5,
-                  cv.folds = kfolds)
-    )
+    trained.model <- gbm(UTILITY_INCREASE~.,
+                         data = training.df,
+                         distribution = gaussian,
+                         n.trees = numberOfTrees,
+                         n.minobsinnode = 100,
+                         shrinkage = 0.01,
+                         bag.fraction = 0.5,
+                         cv.folds = kfolds)
+  )
   
   best.iteration = gbm.perf(trained.model, method = "cv")
   
@@ -56,7 +55,7 @@ trainGBM <- function(features.df,numberOfTrees=2500,kfolds=10){
 }
 
 # Validation -------------------------------------------------------------
-validateGBMPredictions <- function(modelList,validationData,i){
+validateGBM <- function(modelList,validationData,i){
   
   results.df <- data.frame(matrix(data=NA,nrow=3,ncol=12));
   colnames(results.df) <- c("Item","Utility_Type","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
