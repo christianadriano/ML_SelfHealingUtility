@@ -26,14 +26,13 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmR
   
   # CONTROL CODE   ------------------------------------------------------------
   
-  modelList <- c("Linear","Discontinuous","Saturating","ALL");
-  modelName <- modelList[1];
+  model.name <- c("Linear","Discontinuous","Saturating","ALL")[1];
   
-  datasetSize <- c("1K","3K","9K");
-  datasetName <- generateDataSetNames(modelName,datasetSize,0);
+  datasetSize.name <- c("1K","3K","9K");
+  dataset.name <- generateDataSetNames(model.name,datasetSize.name,0);
   #for(i in c(1:length(datasetName))){
     i <- 1;
-    fileName <- paste0(folder,datasetName[i],".csv");
+    fileName <- paste0(folder,dataset.name[i],".csv");
     data.df <- loadData(fileName);
     #data_all <- read.csv(fileName,header = TRUE,sep=",");
     
@@ -47,19 +46,19 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmR
     validation.df <-as.data.frame(features.df[startTestIndex:totalData.size,]);
 
     #Train model  
-    outcomeList <- trainGBM(training.df,numberOfTrees=2500,kfolds=10);
-    
+    outcome.list <- trainGBM(training.df,numberOfTrees=2500,kfolds=10);
+
     #Validate model
-    results.df <- validateGBM(outcomeList,validation.df,i);
+    results.df <- validateGBM(outcome.list,validation.df,i);
   #}
   
   
 #print(results.df); #show on the console
 
-message <- resultsToFile(results.df,modelName,"_70-30_FeatureSelection.csv"); #save to a .csv file
+message <- resultsToFile(results.df,model.name,"_70-30_FeatureSelection.csv"); #save to a .csv file
 print(message);
 
-generatePMML(outcomeList[[1]],features.df,datasetName[i]);#datasetName[length(datasetName)]);
+generatePMML(outcome.list[[1]],features.df,dataset.name[i]);#datasetName[length(datasetName)]);
 
 
 
