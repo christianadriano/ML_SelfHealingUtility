@@ -40,8 +40,11 @@ trainXGBoost <- function(training.df,numberOfTrees=2500,kfolds=10){
   best.iteration <- trained.model$best_iteration;
   #trained.model$evaluation_log[best_iteration]
   
+  # Get feature importance
+  summary(trained.model, n.trees = best.iteration)
+  
   #Get the bes model
-  best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best.iteration);
+  #best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best.iteration);
 
   return(list(trained.model, convertTimeToDataFrame(time)));
   
