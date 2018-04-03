@@ -34,23 +34,23 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmR
   #for(i in c(1:length(datasetName))){
     i <- 1;
     fileName <- paste0(folder,datasetName[i],".csv");
-    dataf <- loadData(fileName);
+    data.df <- loadData(fileName);
     #data_all <- read.csv(fileName,header = TRUE,sep=",");
     
-    featuresdf <- prepareFeatures(dataf,"Saturating");
+    features.df <- prepareFeatures(data.df,"Saturating");
     
     #Extract training ad validation sets 
-    totalData <- dim(featuresdf)[1];
-    trainingSize <- trunc(totalData * 0.7);
-    startTestIndex <- totalData - trainingSize;
-    training.df <- as.data.frame(featuresdf[1:trainingSize,]);
-    validation.df <-as.data.frame(featuresdf[startTestIndex:totalData,]);
+    totalData.size <- dim(features.df)[1];
+    training.size <- trunc(totalData.size * 0.7);
+    startTestIndex <- totalData.size - training.size;
+    training.df <- as.data.frame(features.df[1:training.size,]);
+    validation.df <-as.data.frame(features.df[startTestIndex:totalData.size,]);
 
     #Train model  
-    outcomeList <- trainXGBoost(training.df,numberOfTrees=2500,kfolds=10);
+    outcomeList <- trainGBM(training.df,numberOfTrees=2500,kfolds=10);
     
     #Validate model
-    results.df <- validateXGBoost(outcomeList,validation.df,i);
+    results.df <- validateGBM(outcomeList,validation.df,i);
   #}
   
   
@@ -59,7 +59,7 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmR
 message <- resultsToFile(results.df,modelName,"_70-30_FeatureSelection.csv"); #save to a .csv file
 print(message);
 
-generatePMML(outcomeList[[1]],featuresdf,datasetName[i]);#datasetName[length(datasetName)]);
+generatePMML(outcomeList[[1]],features.df,datasetName[i]);#datasetName[length(datasetName)]);
 
 
 
