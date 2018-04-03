@@ -16,9 +16,9 @@ plotData <- function(dataf){
 
 
 # Plot AUC ----------------------------------------------------------------
-plotAUC <- function(model, tes.data, best.iter){
-  test = predict(model, newdata = test.data, n.trees = best.iter);
-  auc.results = roc(test.data$UTILTY_CHANGE, gbm.test, plot = TRUE, col = "red");
+plotAUC <- function(model, test.data, best.iteration){
+  prediction = predict(model, newdata = test.data, n.trees = best.iteration);
+  auc.results = roc(test.data$UTILTY_INCREASE, prediction, plot = TRUE, col = "red");
   plot(auc.results)
   return(auc.results);
 }
