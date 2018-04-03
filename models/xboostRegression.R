@@ -16,12 +16,12 @@
 
 
 # Train function  ---------------------------------------------------------
-trainModel <- function(features.df,numberOfTrees=2500,kfolds=10){
+trainXGBoost <- function(training.df,numberOfTrees=2500,kfolds=10){
   
-  features.df <- dim(features.df)[2] - 1; #last column is the target variable
+  last.column.explanatory <- dim(training.df)[2] - 1; #last column is the target variable
   
-  xgb.train.data = xgb.DMatrix(data.matrix(trainingData[,1:features.df]), 
-                               label = trainingData[,"UTILITY_INCREASE"],
+  xgb.train.data = xgb.DMatrix(data.matrix(training.df[,1:last.column.explanatory]), 
+                               label = training.df[,"UTILITY_INCREASE"],
                                missing = NA);
   
   param <- list(objective = "reg:linear", base_score = 0.5);# booster="gbtree")
@@ -48,7 +48,7 @@ trainModel <- function(features.df,numberOfTrees=2500,kfolds=10){
 }
 
 # Validation -------------------------------------------------------------
-validatePredictions <- function(modelList,validationData,i){
+validateXGBoost <- function(modelList,validationData,i){
   
   results.df <- data.frame(matrix(data=NA,nrow=3,ncol=12));
   colnames(results.df) <- c("Item","Utility_Type","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
