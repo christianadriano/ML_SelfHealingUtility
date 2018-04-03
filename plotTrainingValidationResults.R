@@ -14,6 +14,15 @@ plotData <- function(dataf){
   title(title);
 }
 
+
+# Plot AUC ----------------------------------------------------------------
+plotAUC <- function(model, tes.data, best.iter){
+  test = predict(model, newdata = test.data, n.trees = best.iter);
+  auc.results = roc(test.data$UTILTY_CHANGE, gbm.test, plot = TRUE, col = "red");
+  plot(auc.results)
+  return(auc.results);
+}
+
 # Compute Averages --------------------------------------------------------
 computeAverages <- function(results.df, index){
   results.df$TRAIN_RMSE_MEAN[index] <-averageRMSE(results.df$Train_RMSE_MEAN,trainingSize);
