@@ -22,36 +22,27 @@ trainGBM <- function(training.df,numberOfTrees=2500,kfolds=10){
  
   #lightGBM with caret?
   #https://github.com/bwilbertz/RLightGBM
-   
-  
-  
-  #train.data = gbm.DMatrix(data.matrix(trainingData[,1:features.df]), 
-  #                            label = trainingData[,"UTILITY_INCREASE"],
-  #                           missing = NA)
-  
-  
+
   #system.time gets the time to train the model
-  system.time(
+  time <- system.time(
     trained.model <- gbm(UTILITY_INCREASE~.,
                          data = training.df,
-                         distribution = gaussian,
-                         n.trees = numberOfTrees,
+                         distribution = "gaussian",
+                         n.trees = 2500,
                          n.minobsinnode = 100,
                          shrinkage = 0.01,
                          bag.fraction = 0.5,
-                         cv.folds = kfolds)
+                         cv.folds = 10)
   )
   
   best.iteration = gbm.perf(trained.model, method = "cv")
   
   #trained.model$evaluation_log[best_iteration]
   
-  best.model <- gbm(param =param,  data = xgb.train.data, nrounds=best_iteration)
-  
   # Get feature importance
-  gbm.feature.imp = summary(trained.model, n.trees = best.iter)
+  gbm.feature.imp = summary(trained.model, n.trees = best.iteration)
   
-  return(list(best.model,trained.model));
+  return(list(trained.model, convertTimeToDataFrame(time)));
 }
 
 # Validation -------------------------------------------------------------
@@ -60,10 +51,9 @@ validateGBM <- function(modelList,validationData,i){
   results.df <- data.frame(matrix(data=NA,nrow=3,ncol=12));
   colnames(results.df) <- c("Item","Utility_Type","Train_RMSE_MEAN","Train_RMSE_STD","Test_RMSE_MEAN",
                             "Test_RMSE_STD","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time");
-  
-  best.model <- modelList[[1]];
-  trained.model <- modelList[[2]];
-  time.df <- modelList[[3]]
+
+  trained.model <- modelList[[1]];
+  time.df <- modelList[[2]]
   
   best_iteration <- trained.model$best_iteration;
   
