@@ -30,11 +30,14 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmR
   
   method.name <- c("GBM","XGBoost","LigthGBM")[1];
   
-  dataset.name <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
+  dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
+
+  results.df <- data.frame(matrix(data=NA,nrow=3,ncol=8));
+  colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time");
   
-  #for(i in c(1:length(datasetName))){
-    i <- 1;
-    fileName <- paste0(folder,dataset.name[i],".csv");
+  for(i in c(1:length(dataset.name.list))){
+    # i <- 1;
+    fileName <- paste0(folder,dataset.name.list[i],".csv");
     data.df <- loadData(fileName);
     #data_all <- read.csv(fileName,header = TRUE,sep=",");
     
@@ -48,20 +51,20 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmR
     validation.df <-as.data.frame(features.df[startTestIndex:totalData.size,]);
 
     #Train model  
-    numberOfTrees=15000
-    outcome.list <- trainGBM(training.df,numberOfTrees=15500,kfolds=10);
+    numberOfTrees=2500
+    outcome.list <- trainGBM(training.df,numberOfTrees,kfolds=10);
 
     #Validate model
-    results.df <- validateGBM(outcome.list,validation.df,i);
-  #}
-  
+    results.df <- validateGBM(outcome.list,validation.df,dataset.name.list,i,results.df);
+  }
+
   
 #print(results.df); #show on the console
 
 message <- resultsToFile(results.df,model.name,"_70-30_NOFeatureSelection.csv"); #save to a .csv file
 print(message);
 
-pmmlFileName <- paste0(".//pmml///",dataset.name[i],"-",method.name,".pmml");
+pmmlFileName <- paste0(".//pmml///",dataset.name.list[i],"-",method.name,".pmml");
 generatePMML(outcome.list[[1]],training.df,pmmlFileName,numberOfTrees);#datasetName[length(datasetName)]);
 
 
