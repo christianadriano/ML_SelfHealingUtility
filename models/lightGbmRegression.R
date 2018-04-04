@@ -23,8 +23,8 @@
 # Train function  ---------------------------------------------------------
 trainLightGBM <- function(training.df,interaction,numberOfTrees=2500,kfolds=10){
   
-  max.depth <- 12ç
-  num.leaves <- max.detph^2-1ç
+  max.depth <- 12;
+  num.leaves <- max.detph^2-1;
   
   params.lgb = list(
     objective = "regression"
@@ -45,14 +45,13 @@ trainLightGBM <- function(training.df,interaction,numberOfTrees=2500,kfolds=10){
   
   #system.time gets the time to train the model
   time <- system.time(
-        trained.model <- lgb.cv(params, lgb.train.data))
-  
-  best.iteration = gbm.perf(trained.model, method = "cv")
+                    trained.model <- lgb.cv(params.lgb, lgb.train.data)
+        );
   
   #trained.model$evaluation_log[best_iteration]
   
   # Get feature importance
-  # gbm.feature.imp = summary(trained.model, n.trees = best.iteration)
+  lgb.feature.imp = lgb.importance(trained.model, percentage = TRUE)
   
   return(list(trained.model, best.iteration, convertTimeToDataFrame(time)));
 }
