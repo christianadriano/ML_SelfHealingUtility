@@ -16,7 +16,7 @@
 
 
 # Train function  ---------------------------------------------------------
-trainXGBoost <- function(training.df,numberOfTrees=2500,kfolds=10){
+trainXGBoost <- function(training.df,numberOfTrees,kfolds=10){
   
   last.column.explanatory <- dim(training.df)[2] - 1; #last column is the target variable
   
@@ -30,7 +30,7 @@ trainXGBoost <- function(training.df,numberOfTrees=2500,kfolds=10){
   time <- system.time(trained.model <-  xgb.cv(
                                       param=param, 
                                       data = xgb.train.data, 
-                                      nfold = kfolds, 
+                                      nfold = kfold, 
                                       nrounds = numberOfTrees, 
                                       early_stopping_rounds = 500, 
                                       metrics='rmse',
