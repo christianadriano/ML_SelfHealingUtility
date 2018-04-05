@@ -9,6 +9,13 @@
 
 # https://www.kaggle.com/nschneider/gbm-vs-xgboost-vs-lightgbm
 # https://www.kaggle.com/andrewmvd/lightgbm-in-r
+#https://www.analyticsvidhya.com/blog/2017/06/which-algorithm-takes-the-crown-light-gbm-vs-xgboost/
+
+#Installing LGBM
+#https://github.com/Microsoft/LightGBM/issues/912#issuecomment-329496254
+#https://cmake.org/download/
+#https://www.analyticsvidhya.com/blog/2017/06/which-algorithm-takes-the-crown-light-gbm-vs-xgboost/
+#https://raw.githubusercontent.com/Microsoft/LightGBM/master/R-package/README.md
 
 
 #Hyper-paramaters that made a big difference:
@@ -24,7 +31,7 @@
 trainLightGBM <- function(training.df,interaction,numberOfTrees=2500,kfolds=10){
   
   max.depth <- 12;
-  num.leaves <- max.detph^2-1;
+  num.leaves <- max.depth^2-1;
   
   params.lgb = list(
     objective = "regression"
@@ -57,7 +64,7 @@ trainLightGBM <- function(training.df,interaction,numberOfTrees=2500,kfolds=10){
 }
 
 # Validation -------------------------------------------------------------
-validateLightGBM <- function(outcome.list,validation.df,dataset.name.list,i,results.df,nodes){
+validateLightGBM <- function(outcome.list,validation.df,dataset.name.list,i,results.df){
   
   trained.model <- outcome.list[[1]];
   best.iteration <- outcome.list[[2]];
@@ -68,7 +75,7 @@ validateLightGBM <- function(outcome.list,validation.df,dataset.name.list,i,resu
   
   results.df$Item[i] <- i;
   results.df$Number_of_Trees[i] <- best.iteration;
-  results.df$Utility_Type[i]<-gsub(" ","",dataset.name.list[3],fixed = TRUE);
+  results.df$Utility_Type[i]<-gsub(" ","",dataset.name.list[i],fixed = TRUE);
   # results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_mean;
   # results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_std;
   # results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$test_rmse_mean;
@@ -81,7 +88,7 @@ validateLightGBM <- function(outcome.list,validation.df,dataset.name.list,i,resu
   results.df$User_Time[i] <- time.df$user.time;
   results.df$Sys_Time[i] <- time.df$sys.time;
   results.df$Elapsed_Time[i] <- time.df$elapsed.time;
-  results.df$Number_of_Trees[i] <- nodes;
+  #results.df$Number_of_Trees[i] <- nodes;
   
   return(results.df); 
 }
