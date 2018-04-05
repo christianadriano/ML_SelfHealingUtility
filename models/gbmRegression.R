@@ -20,8 +20,9 @@
 #Hyper-paramaters that made a big difference:
 #Number of trees - I tested with 5K trees and results were 5 times worse
 #interation.depth - consists of the number of feature interactions allowed to be explored. After 15 interactions the MAPD started to saturate
-#n.minobsinnode - number of items allowed in the final nodes (leaves). It was initially 100. I reduced to 10, 5, 1. The best result was with 10. 
-#shrinkage - the learning step, allows the tree to grow slower, hence be more precise. However, the best rersult came from
+#n.minobsinnode - number of items allowed in the final nodes (leaves) to allow stopping the split. Default is 10, the best value for discontinuous (the most sensitive to this) was 5. Investigate the rage from 1 to 100.
+#shrinkage - the learning step, allows the tree to grow slower, hence be more precise. However, the best rersult came from 0.01. The utility function 
+#most sensitive to shrinkage was the disconti
 #bag.fraction - fraction of the trees that can be used to generate the new trees. Reducing the bagging from 1 to 0.7 cause a slight reduction in validation error, but caused an increase in processing time from 35% to 45%. in error
 
 # Train function  ---------------------------------------------------------
@@ -35,10 +36,10 @@ trainGBM <- function(training.df,numberOfTrees,kfolds=10){
     trained.model <- gbm(UTILITY_INCREASE~.,
                          data = training.df,
                          distribution = "gaussian",
-                         interaction.depth=10,
+                         interaction.depth = 10,
                          n.trees = numberOfTrees,
-                         n.minobsinnode = 10,
-                         shrinkage = 0.1,
+                         n.minobsinnode = 5,
+                         shrinkage = 0.01,
                          bag.fraction = 1,
                          cv.folds = kfolds)
   )
@@ -79,6 +80,7 @@ validateGBM <- function(outcome.list,validation.df,dataset.name.list,i,results.d
   results.df$User_Time[i] <- time.df$user.time;
   results.df$Sys_Time[i] <- time.df$sys.time;
   results.df$Elapsed_Time[i] <- time.df$elapsed.time;
+  #results.df$Leaf_Nodes[i] <- nodes;
   
   return(results.df); 
 }

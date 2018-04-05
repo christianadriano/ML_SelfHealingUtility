@@ -246,7 +246,7 @@ prepareFeatures <- function(dataf,selectionType){
 # Generate PMML file ------------------------------------------------------
 
 generatePMML <- function(trained.model, training.df, pmmlFileName, numberOfTrees){  
-  
+  #browser();
   last.column.explanatory <- dim(training.df)[2] - 1; #last column is the target variable
   
   # Generate feature map
@@ -259,8 +259,13 @@ generatePMML <- function(trained.model, training.df, pmmlFileName, numberOfTrees
   # Dump the model in text format
   #  xgb.dump(model, "xgboost.model.txt", fmap = "feature.map");
   
-  r2pmml(trained.model, pmmlFileName, fmap = feature.map, response_name = "UTILITY_INCREASE", 
-         missing = NULL, ntreelimit = numberOfTrees, compact = TRUE)
+ #for gbm
+  r2pmml(trained.model, pmmlFileName);#, fmap = feature.map, response_name = "UTILITY_INCREASE", 
+         #missing = NULL, compact = TRUE)
+  
+  #for xgboost
+  #r2pmml(trained.model, pmmlFileName, fmap = feature.map, response_name = "UTILITY_INCREASE", 
+  #       missing = NULL, ntreelimit = numberOfTrees, compact = TRUE)
 }
 
 
