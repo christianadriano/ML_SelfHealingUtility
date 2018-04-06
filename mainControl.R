@@ -1,19 +1,18 @@
 ## Control code that can run different machine learning methods
 
-install.packages("xgboost")
-install.packages("gbm")
-install.packages("devtools")
-install_git("git://github.com/jpmml/r2pmml.git")
-install_github("Microsoft/LightGBM", subdir = "R-package")
+# install.packages("xgboost")
+# install.packages("gbm")
+# install.packages("devtools")
+# install_git("git://github.com/jpmml/r2pmml.git")
+
+#Install LightGBM
+# options(devtools.install.args = "--no-multiarch") # if you have 64-bit R only, you can skip this
+# install_github("Microsoft/LightGBM", subdir = "R-package")
 
 library(devtools)
 library(xgboost)
 library(lightgbm, quietly=TRUE)
 library(r2pmml) #https://github.com/jpmml/r2pmml
-
-library(devtools)
-options(devtools.install.args = "--no-multiarch") # if you have 64-bit R only, you can skip this
-install_github("Microsoft/LightGBM", subdir = "R-package")
 
 # Initialization section ------------------------------------------------------
 
@@ -21,7 +20,6 @@ install_github("Microsoft/LightGBM", subdir = "R-package")
 source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//loadData.R");
 source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//xboostRegression.R");
 source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//gbmRegression.R");
-
 source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//lightGbmRegression.R");
 
 #Data structure to keep results
