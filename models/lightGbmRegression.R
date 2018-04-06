@@ -7,8 +7,8 @@
 #Convert model to pmml
 ##https://github.com/jpmml/r2pmml
 
-# https://www.kaggle.com/nschneider/gbm-vs-xgboost-vs-lightgbm
-# https://www.kaggle.com/andrewmvd/lightgbm-in-r
+#https://www.kaggle.com/nschneider/gbm-vs-xgboost-vs-lightgbm
+#https://www.kaggle.com/andrewmvd/lightgbm-in-r
 #https://www.analyticsvidhya.com/blog/2017/06/which-algorithm-takes-the-crown-light-gbm-vs-xgboost/
 
 #Installing LGBM
@@ -32,7 +32,7 @@ trainLightGBM <- function(training.df,interaction,numberOfTrees=2500,kfolds=10){
   
   max.depth <- 12;
   num.leaves <- max.depth^2-1;
-  
+
   params.lgb = list(
     objective = "regression"
     , metric = "l2"
@@ -41,26 +41,35 @@ trainLightGBM <- function(training.df,interaction,numberOfTrees=2500,kfolds=10){
     , feature_fraction = 1
     , bagging_fraction = 1
     , bagging_freq = 0
-    , early_stopping_round=50
+    , early_stopping_rounds=50
     , max_depth=max.depth
     , num_leaves = num.leaves
     , learning_rate=0.1
-    , nfold = kfolds
+    , boosting = "dart"
   )
   
-  lgb.train.data <- lgb.Dataset(training.df$data, label=training.df$UTILITY_INCREASE);
+  # params <- list(objective = "regression", metric = "l2")
+  # model <- lgb.cv(params,
+  #                 lgb.train.data ,
+  #                 10,
+  #                 nfold = 5,
+  #                 min_data = 1,
+  #                 learning_rate = 1,
+  #                 early_stopping_rounds = 10)
+  
+  matrix.training.df <- matrix(as.numeric(unlist(training.df)),nrow=nrow(training.df));
+  
+  lgb.train.data <- lgb.Dataset(matrix.training.df, label=training.df$UTILITY_INCREASE);
   
   #system.time gets the time to train the model
   time <- system.time(
-                    trained.model <- lgb.cv(params.lgb, lgb.train.data)
+                    trained.model <- lgb.cv(params.lgb, lgb.train.data, nfold = 10, nrounds=100)
         );
   
-  #trained.model$evaluation_log[best_iteration]
-  
   # Get feature importance
-  lgb.feature.imp = lgb.importance(trained.model, percentage = TRUE)
+  lgb.feature.imp = lgb.importance(trained.model, percentage = TRUE);
   
-  return(list(trained.model, best.iteration, convertTimeToDataFrame(time)));
+  return(list(trained.model, trained.model$best.iteration, convertTimeToDataFrame(time)));
 }
 
 # Validation -------------------------------------------------------------
@@ -68,7 +77,7 @@ validateLightGBM <- function(outcome.list,validation.df,dataset.name.list,i,resu
   
   trained.model <- outcome.list[[1]];
   best.iteration <- outcome.list[[2]];
-  time.df <- outcome.list[[3]]
+  time.df <- outcome.list[[3]];
   
   y_pred <- predict(trained.model, validation.df);
   error <- y_pred - validation.df$UTILITY_INCREASE;
