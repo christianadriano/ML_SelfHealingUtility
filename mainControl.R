@@ -53,19 +53,23 @@ results_line <- 0;
   #Extract training and validation sets 
   totalData.size <- dim(features.df)[1];
   training.size <- trunc(totalData.size * 0.7);
-  startTestIndex <- totalData.size - training.size;
-  training.df <- as.data.frame(features.df[1:training.size,]);
-  validation.df <-as.data.frame(features.df[startTestIndex:totalData.size,]);
+  #endValidationIndex <- totalData.size - training.size;
+  
+  training.df <-as.data.frame(features.df[1:training.size-1,]);
+  validation.df <- as.data.frame(features.df[training.size:totalData.size,]);
+
+  #For lightGBM, need a testing set.
+  trainingTest.list <- extractTrainingTesting(training.df);
   
   #Train model
   numberOfTrees=500;
   kfolds=10;
-  outcome.list <- trainLightGBM(training.df,numberOfTrees,kfolds);
+  outcome.list <- train_LightGBM(train_df=trainingTest.list[[1]],test_df=trainingTest.list[[2]],
+                                 numberOfTrees,kfolds);
   
   #Validate model
-  results.df <- validateLightGBM(outcome.list,validation.df,dataset.name.list,i,results.df);
+  results.df <- validate_LightGBM(outcome.list,validation.df,dataset.name.list,i,results.df);
 #}
-
 
 #print(results.df); #show on the console
 
