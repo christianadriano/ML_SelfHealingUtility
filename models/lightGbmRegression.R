@@ -28,7 +28,9 @@
 #bag.fraction - fraction of the trees that can be used to generate the new trees. Reducing the bagging from 1 to 0.7 cause a slight reduction in validation error, but caused an increase in processing time from 35% to 45%. in error
 
 # Train function  ---------------------------------------------------------
-trainLightGBM <- function(training.df,interaction,numberOfTrees=2500,kfolds=10){
+train_LightGBM <- function(train_df,test_df,numberOfTrees,kfolds=10){
+  #default of cross-validation folds is 10
+  browser();
   
   max.depth <- 12;
   num.leaves <- max.depth^2-1;
@@ -48,32 +50,32 @@ trainLightGBM <- function(training.df,interaction,numberOfTrees=2500,kfolds=10){
     , boosting = "dart"
   )
   
-  # params <- list(objective = "regression", metric = "l2")
-  # model <- lgb.cv(params,
-  #                 lgb.train.data ,
-  #                 10,
-  #                 nfold = 5,
-  #                 min_data = 1,
-  #                 learning_rate = 1,
-  #                 early_stopping_rounds = 10)
   
-  matrix.training.df <- matrix(as.numeric(unlist(training.df)),nrow=nrow(training.df));
+  matrix.training.df <- matrix(as.numeric(unlist(train_df)),nrow=nrow(train_df));
+  matrix.testing.df <- matrix(as.numeric(unlist(test_df)),nrow=nrow(train_df));
   
-  lgb.train.data <- lgb.Dataset(matrix.training.df, label=training.df$UTILITY_INCREASE);
+  
+  lgb.train.data <- lgb.Dataset(matrix.training.df, label=train_df$UTILITY_INCREASE);
+  lgb.test.data <- lgb.Dataset(matrix.testing.df, label=test_df$UTILITY_INCREASE);
   
   #system.time gets the time to train the model
   time <- system.time(
-                    trained.model <- lgb.cv(params.lgb, lgb.train.data, nfold = 10, nrounds=100)
+                    trained.models <- lgb.cv(params.lgb, lgb.train.data, 
+                                             nfold = kfolds, nrounds=numberOfTrees)
         );
   
+  #training final model
+  final.lgb.model = lgb.train(params=params.lgb, data=lgb.train.data, valids=list(lgb.test.data), 
+                              nfold = kfolds, nrounds=trained.models$best_iter);
+                        
   # Get feature importance
-  lgb.feature.imp = lgb.importance(trained.model, percentage = TRUE);
-  
-  return(list(trained.model, trained.model$best.iteration, convertTimeToDataFrame(time)));
+  #lgb.feature.imp = lgb.importance(trained.model, percentage = TRUE);
+
+  return(list(final.lgb.model, trained.models$best_iter, convertTimeToDataFrame(time)));
 }
 
 # Validation -------------------------------------------------------------
-validateLightGBM <- function(outcome.list,validation.df,dataset.name.list,i,results.df){
+validate_LightGBM <- function(outcome.list,validation.df,dataset.name.list,i,results.df){
   
   trained.model <- outcome.list[[1]];
   best.iteration <- outcome.list[[2]];
@@ -85,11 +87,7 @@ validateLightGBM <- function(outcome.list,validation.df,dataset.name.list,i,resu
   results.df$Item[i] <- i;
   results.df$Number_of_Trees[i] <- best.iteration;
   results.df$Utility_Type[i]<-gsub(" ","",dataset.name.list[i],fixed = TRUE);
-  # results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_mean;
-  # results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_std;
-  # results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$test_rmse_mean;
-  # results.df$Test_RMSE_STD[i]<-trained.model$evaluation_log[best.iteration]$test_rmse_std;
-  
+
   results.df$RMSE[i] <- rmse(error);
   results.df$R_Squared[i] <- r_squared(y_pred,validation.df$UTILITY_INCREASE);
   results.df$MAPD[i] <- mapd(y_pred,validation.df$UTILITY_INCREASE);
@@ -97,8 +95,19 @@ validateLightGBM <- function(outcome.list,validation.df,dataset.name.list,i,resu
   results.df$User_Time[i] <- time.df$user.time;
   results.df$Sys_Time[i] <- time.df$sys.time;
   results.df$Elapsed_Time[i] <- time.df$elapsed.time;
-  #results.df$Number_of_Trees[i] <- nodes;
-  
+
   return(results.df); 
 }
 
+# Partition data in training and testing ----------------------------------
+extractTrainingTesting <- function(dataset.df){
+  browser();
+  totalData.size <- dim(dataset.df)[1];
+  train.size <- trunc(totalData.size * 0.9);
+
+  train.df <- as.data.frame(dataset.df[1:train.size-1,]);
+  test.df <- as.data.frame(dataset.df[train.size:totalData.size,]);
+ 
+  train_test.list <- list(train.df,test.df);
+  return (train_test.list);
+}
