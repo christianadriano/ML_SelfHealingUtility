@@ -36,15 +36,17 @@ method.name <- c("GBM","XGBoost","LigthGBM")[3];
 
 dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
 
-results.df <- data.frame(matrix(data=NA,nrow=3,ncol=9));
-colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time","Number_of_Trees");
+results.df <- data.frame(matrix(data=NA,nrow=4,ncol=11));
+colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time","Number_of_Trees","Learning_Rate","Max_Detph");
 
 results_line <- 0;
 
 #for(i in c(1:length(dataset.name.list))){
-#for(nodes in c(1:10)){
-  i <- 1
- # results_line <- results_line+1;
+for(learning.rate in c(1,10,100,1000)){
+  i <- 3
+  learning.rate <- learning.rate/1000;
+  
+  results_line <- results_line+1;
   fileName <- paste0(folder,dataset.name.list[i],".csv");
   data.df <- loadData(fileName);
 
@@ -64,12 +66,15 @@ results_line <- 0;
   #Train model
   numberOfTrees=500;
   kfolds=10;
+  #learning.rate=0.01;
+  max.depth=12;
   outcome.list <- train_LightGBM(train_df=trainingTest.list[[1]],test_df=trainingTest.list[[2]],
-                                 numberOfTrees,kfolds);
+                                 numberOfTrees,kfolds,max.detph,learning.rate);
   
   #Validate model
-  results.df <- validate_LightGBM(outcome.list,validation.df,dataset.name.list,i,results.df);
-#}
+  results.df <- validate_LightGBM(outcome.list,validation.df,dataset.name.list[i],results_line,results.df,
+                                  numberOfTrees,learning.rate,max.depth);
+}
 
 #print(results.df); #show on the console
 
