@@ -28,11 +28,9 @@
 #bag.fraction - fraction of the trees that can be used to generate the new trees. Reducing the bagging from 1 to 0.7 cause a slight reduction in validation error, but caused an increase in processing time from 35% to 45%. in error
 
 # Train function  ---------------------------------------------------------
-train_LightGBM <- function(train_df,test_df,numberOfTrees,kfolds=10){
-  #default of cross-validation folds is 10
-  browser();
+train_LightGBM <- function(train_df,test_df,numberOfTrees=500, kfolds=10, max.detph=12,
+                           learning.rate=0.1){
   
-  max.depth <- 12;
   num.leaves <- max.depth^2-1;
 
   params.lgb = list(
@@ -46,27 +44,38 @@ train_LightGBM <- function(train_df,test_df,numberOfTrees,kfolds=10){
     , early_stopping_rounds=50
     , max_depth=max.depth
     , num_leaves = num.leaves
-    , learning_rate=0.1
+    , learning_rate=learning.rate
     , boosting = "dart"
-  )
+  );
   
   
-  matrix.training.df <- matrix(as.numeric(unlist(train_df)),nrow=nrow(train_df));
-  matrix.testing.df <- matrix(as.numeric(unlist(test_df)),nrow=nrow(train_df));
+  # matrix.training.df <- matrix(as.numeric(unlist(train_df)),nrow=nrow(train_df));
+  # matrix.testing.df <- matrix(as.numeric(unlist(test_df)),nrow=nrow(train_df));
+  #browser();
+  lgb.train.dataset = lgb.Dataset(as.matrix(train_df[, colnames(train_df) != "UTILITY_INCREASE"]), 
+                          label=train_df$UTILITY_INCREASE);
   
+  lgb.test.dataset = lgb.Dataset(as.matrix(test_df[, colnames(test_df) != "UTILITY_INCREASE"]), 
+                                 label=test_df$UTILITY_INCREASE);
   
-  lgb.train.data <- lgb.Dataset(matrix.training.df, label=train_df$UTILITY_INCREASE);
-  lgb.test.data <- lgb.Dataset(matrix.testing.df, label=test_df$UTILITY_INCREASE);
-  
-  #system.time gets the time to train the model
+  ##Discovers the best model
   time <- system.time(
-                    trained.models <- lgb.cv(params.lgb, lgb.train.data, 
-                                             nfold = kfolds, nrounds=numberOfTrees)
-        );
+    trained.models <- lgb.cv(params.lgb
+                             ,lgb.train.dataset
+                             ,nfold = kfolds
+                             ,nrounds=numberOfTrees
+                             ,verbose = -1
+    )
+  );
   
-  #training final model
-  final.lgb.model = lgb.train(params=params.lgb, data=lgb.train.data, valids=list(lgb.test.data), 
-                              nfold = kfolds, nrounds=trained.models$best_iter);
+  
+  #Train final model
+  final.lgb.model = lgb.train(params=params.lgb 
+                              ,data=lgb.train.dataset
+                              ,valids=list(test=lgb.test.dataset)
+                              ,nfold = kfolds
+                              ,nrounds=trained.models$best_iter
+  );
                         
   # Get feature importance
   #lgb.feature.imp = lgb.importance(trained.model, percentage = TRUE);
@@ -75,18 +84,27 @@ train_LightGBM <- function(train_df,test_df,numberOfTrees,kfolds=10){
 }
 
 # Validation -------------------------------------------------------------
-validate_LightGBM <- function(outcome.list,validation.df,dataset.name.list,i,results.df){
-  
+validate_LightGBM <- function(outcome.list,validation.df,dataset.name,i,results.df,
+                              numberOfTrees,learning.rate,max.depth){
+  #browser();
   trained.model <- outcome.list[[1]];
   best.iteration <- outcome.list[[2]];
   time.df <- outcome.list[[3]];
   
-  y_pred <- predict(trained.model, validation.df);
+  #convert dataframe to lightGBM format
+  lgb.validation.matrix =  as.matrix(validation.df[, colnames(validation.df) != "UTILITY_INCREASE"]);
+  
+  lgb.validation.dataset = lgb.Dataset(
+                                as.matrix(validation.df[, colnames(validation.df) != "UTILITY_INCREASE"]), 
+                                label=validation.df$UTILITY_INCREASE
+                                );
+  
+  y_pred <- predict(trained.model, lgb.validation.matrix, n = trained.model$best_iter);
   error <- y_pred - validation.df$UTILITY_INCREASE;
   
   results.df$Item[i] <- i;
-  results.df$Number_of_Trees[i] <- best.iteration;
-  results.df$Utility_Type[i]<-gsub(" ","",dataset.name.list[i],fixed = TRUE);
+  results.df$Number_of_Trees[i] <- trained.model$best_iter;
+  results.df$Utility_Type[i]<-gsub(" ","", dataset.name, fixed = TRUE);
 
   results.df$RMSE[i] <- rmse(error);
   results.df$R_Squared[i] <- r_squared(y_pred,validation.df$UTILITY_INCREASE);
@@ -95,13 +113,17 @@ validate_LightGBM <- function(outcome.list,validation.df,dataset.name.list,i,res
   results.df$User_Time[i] <- time.df$user.time;
   results.df$Sys_Time[i] <- time.df$sys.time;
   results.df$Elapsed_Time[i] <- time.df$elapsed.time;
-
+  
+  results.df$Number_of_Trees[i] <- NumberOfTrees;
+  results.df$Learning_Rate[i] <- learning.rate;
+  results.df$Max_Detph[i] <- max.depth;
+  
   return(results.df); 
 }
 
 # Partition data in training and testing ----------------------------------
 extractTrainingTesting <- function(dataset.df){
-  browser();
+  #browser();
   totalData.size <- dim(dataset.df)[1];
   train.size <- trunc(totalData.size * 0.9);
 
