@@ -16,6 +16,9 @@ loadData<- function(fileName){
   dataf <- renameAuthenticationServices(dataf)
   #dataf <- dataf[dataf$AFFECTED_COMPONENT=="Authentication Service",];
   
+  #Remove negative values
+  dataf <- dataf[dataf$UTILITY_INCREASE>0,]
+  
   return(dataf);
 }
 

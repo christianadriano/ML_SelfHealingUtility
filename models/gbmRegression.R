@@ -18,7 +18,7 @@
 
 
 #Hyper-paramaters that made a big difference:
-#Number of trees - I tested with 5K trees and results were 5 times worse
+#Number of trees - 15K trees gave the best results
 #interation.depth - consists of the number of feature interactions allowed to be explored. After 15 interactions the MAPD started to saturate
 #n.minobsinnode - number of items allowed in the final nodes (leaves) to allow stopping the split. Default is 10, the best value for discontinuous (the most sensitive to this) was 5. Investigate the rage from 1 to 100.
 #shrinkage - the learning step, allows the tree to grow slower, hence be more precise. However, the best rersult came from 0.01. The utility function 
@@ -26,7 +26,7 @@
 #bag.fraction - fraction of the trees that can be used to generate the new trees. Reducing the bagging from 1 to 0.7 cause a slight reduction in validation error, but caused an increase in processing time from 35% to 45%. in error
 
 # Train function  ---------------------------------------------------------
-trainGBM <- function(training.df,numberOfTrees,kfolds=10){
+train_GBM <- function(training.df,numberOfTrees,kfolds=10){
  
   #lightGBM with caret?
   #https://github.com/bwilbertz/RLightGBM
@@ -56,7 +56,7 @@ trainGBM <- function(training.df,numberOfTrees,kfolds=10){
 }
 
 # Validation -------------------------------------------------------------
-validateGBM <- function(outcome.list,validation.df,dataset.name.list,i,results.df){
+validate_GBM <- function(outcome.list,validation.df,dataset.name,i,results.df){
   
   trained.model <- outcome.list[[1]];
   best.iteration <- outcome.list[[2]];
@@ -67,7 +67,7 @@ validateGBM <- function(outcome.list,validation.df,dataset.name.list,i,results.d
   
   results.df$Item[i] <- i;
   results.df$Number_of_Trees[i] <- best.iteration;
-  results.df$Utility_Type[i]<-gsub(" ","",dataset.name.list[i],fixed = TRUE);
+  results.df$Utility_Type[i]<-gsub(" ","",dataset.name,fixed = TRUE);
   # results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_mean;
   # results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_std;
   # results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$test_rmse_mean;

@@ -30,50 +30,68 @@ folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//Dat
 
 # CONTROL CODE   ------------------------------------------------------------
 
-model.name <- c("Linear","Discontinuous","Saturating","ALL")[1];
+model.name.list <- c("Linear","Discontinuous","Saturating","ALL");
+model.name <- model.name.list[2]
 
 method.name <- c("GBM","XGBoost","LigthGBM")[3];
 
 dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
 
-results.df <- data.frame(matrix(data=NA,nrow=4,ncol=11));
-colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time","Number_of_Trees","Learning_Rate","Max_Detph");
+results.df <- data.frame(matrix(data=NA,nrow=1000,ncol=14));
+colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time",
+                          "Number_of_Trees","Learning_Rate","Max_Depth","Train_Split","Min_Data_In_Leaf","Bagging_Fraction");
 
 results_line <- 0;
 
-#for(i in c(1:length(dataset.name.list))){
-for(learning.rate in c(1,10,100,1000)){
-  i <- 3
-  learning.rate <- learning.rate/1000;
+#for(model.name in model.name.list){
+ # dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
   
-  results_line <- results_line+1;
-  fileName <- paste0(folder,dataset.name.list[i],".csv");
-  data.df <- loadData(fileName);
+ # for(i in c(1:length(dataset.name.list))){
+    i <- 3;
+    results_line <- results_line+1;
+    
+    fileName <- paste0(folder,dataset.name.list[i],".csv");
+    data.df <- loadData(fileName);
+    
+    features.df <- prepareFeatures(data.df,"Discontinuous");
+    
+    #Extract training and validation sets 
+    totalData.size <- dim(features.df)[1];
+    training.size <- trunc(totalData.size * 0.9);
+    #endValidationIndex <- totalData.size - training.size;
+    
+    training.df <- as.data.frame(features.df[1:training.size-1,]);
+    validation.df <- as.data.frame(features.df[training.size:totalData.size,]);
+    
+    #For lightGBM, need a testing set.
+    train.split <- 0.9
+    trainingTest.list <- extractTrainingTesting(training.df,train.split);
+    
+    #Train model
+    numberOfTrees <- 5000;
+    kfolds <- 10;
+    learning.rate <- 0.1;
+    max.depth <- 6;
+    bagging.fraction <- 1;
+    min.data.in.leaf <- 20;
+   # outcome.list <- train_LightGBM(train_df=trainingTest.list[[1]],test_df=trainingTest.list[[2]],
+   #                                 numberOfTrees,kfolds,max.detph,learning.rate,min.data.in.leaf,bagging.fraction);
+    
+    #Validate model
+    #results.df <- validate_LightGBM(outcome.list,validation.df,dataset.name.list[i],results_line,results.df,
+    #                                numberOfTrees,learning.rate,max.depth,train.split,min.data.in.leaf,bagging.fraction);
+    
 
-  features.df <- prepareFeatures(data.df,"ALL");
+    outcome.list <- train_GBM(train_df=trainingTest.list[[1]],test_df=trainingTest.list[[2]],
+                                     numberOfTrees,kfolds,max.detph,learning.rate,min.data.in.leaf,bagging.fraction);
+    
+    #Validate model
+    results.df <- validate_GBM(outcome.list,validation.df,dataset.name.list[i],results_line,results.df,
+                                    numberOfTrees,learning.rate,max.depth,train.split,min.data.in.leaf,bagging.fraction);
+    
+        
+  }
   
-  #Extract training and validation sets 
-  totalData.size <- dim(features.df)[1];
-  training.size <- trunc(totalData.size * 0.7);
-  #endValidationIndex <- totalData.size - training.size;
-  
-  training.df <-as.data.frame(features.df[1:training.size-1,]);
-  validation.df <- as.data.frame(features.df[training.size:totalData.size,]);
-
-  #For lightGBM, need a testing set.
-  trainingTest.list <- extractTrainingTesting(training.df);
-  
-  #Train model
-  numberOfTrees=500;
-  kfolds=10;
-  #learning.rate=0.01;
-  max.depth=12;
-  outcome.list <- train_LightGBM(train_df=trainingTest.list[[1]],test_df=trainingTest.list[[2]],
-                                 numberOfTrees,kfolds,max.detph,learning.rate);
-  
-  #Validate model
-  results.df <- validate_LightGBM(outcome.list,validation.df,dataset.name.list[i],results_line,results.df,
-                                  numberOfTrees,learning.rate,max.depth);
 }
 
 #print(results.df); #show on the console
@@ -86,3 +104,15 @@ generatePMML(outcome.list[[1]],training.df,pmmlFileName,numberOfTrees);#datasetN
 
 
 #-----------------------------------------------------------------------------
+
+#for(max.depth in c(12,14,16)){
+
+#for(learning.rate in c(1,10,100)){
+#   learning.rate <- 0.1; #learning.rate/1000;
+
+#for(numberOfTrees in c(5000,10000,15000)){
+#  numberOfTrees <- 5000;
+# for(bagging.fraction in c(7,8,9)){
+#bagging.fraction <- bagging.fraction / 10;
+
+#      for(min.data.in.leaf in c(5,10,15,20)){
