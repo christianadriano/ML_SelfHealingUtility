@@ -23,15 +23,16 @@ folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//Dat
 # CONTROL CODE   ------------------------------------------------------------
 
 model.name.list <- c("Linear","Discontinuous","Saturating","ALL");
-#model.name <- model.name.list[1]
+model.name <- model.name.list[4];
 
-method.name <-  "GBM";
+method.name <- "GBM";
 
 dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
 
 results.df <- data.frame(matrix(data=NA,nrow=1000,ncol=14));
 colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time",
-                          "Number_of_Trees","Learning_Rate","Max_Depth","Train_Split","Min_Data_In_Leaf","Bagging_Fraction");
+                          "Number_of_Trees","Learning_Rate","Max_Depth","Train_Split","Min_Data_In_Leaf",
+                          "Bagging_Fraction");
 
 results_line <- 0;
 
@@ -39,7 +40,7 @@ for(model.name in model.name.list){
   dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
   
   for(i in c(1:length(dataset.name.list))){
-    #i <- 1;
+    #i <- 3;
     results_line <- results_line+1;
     
     fileName <- paste0(folder,dataset.name.list[i],".csv");
@@ -55,19 +56,22 @@ for(model.name in model.name.list){
     validation.df <- as.data.frame(features.df[training.size:totalData.size,]);
     
     #Train model
-    numberOfTrees <- 10000;
+    numberOfTrees <- 5000;
     kfolds <- 10;
-    
+    learning.rate <- 0.01;
+    min.nodes.in.leaf <- 5;
     #Train model
-    outcome.list <- train_GBM(training.df,numberOfTrees,kfolds);
+    outcome.list <- train_GBM(training.df,numberOfTrees,kfolds,
+                              learning.rate,min.nodes.in.leaf);
     
     #Validate model
-    results.df <- validate_GBM(outcome.list,validation.df,dataset.name.list[i],results_line,results.df);
+    results.df <- validate_GBM(outcome.list,validation.df,dataset.name.list[i],results_line,results.df,
+                               learning.rate,min.nodes.in.leaf);
     
     message <- resultsToFile(results.df,model.name,method.name,"_70-30_NOFeatureSelection.csv"); #save to a .csv file
     print(message);
     
-    pmmlFileName <- paste0(".//pmml///",dataset.name.list[i],"-10KTrees",method.name,".pmml");
+    pmmlFileName <- paste0(".//pmml///",dataset.name.list[i],"-5KTrees_learnRate",method.name,".pmml");
     generatePMML(outcome.list[[1]],training.df,pmmlFileName,numberOfTrees);
     
   }

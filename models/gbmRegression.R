@@ -26,7 +26,7 @@
 #bag.fraction - fraction of the trees that can be used to generate the new trees. Reducing the bagging from 1 to 0.7 cause a slight reduction in validation error, but caused an increase in processing time from 35% to 45%. in error
 
 # Train function  ---------------------------------------------------------
-train_GBM <- function(training.df,numberOfTrees,kfolds=10){
+train_GBM <- function(training.df,numberOfTrees,kfolds=10,learning.rate,min.nodes.in.leaf){
  
   #lightGBM with caret?
   #https://github.com/bwilbertz/RLightGBM
@@ -38,8 +38,8 @@ train_GBM <- function(training.df,numberOfTrees,kfolds=10){
                          distribution = "gaussian",
                          interaction.depth = 10,
                          n.trees = numberOfTrees,
-                         n.minobsinnode = 5,
-                         shrinkage = 0.01,
+                         n.minobsinnode = min.nodes.in.leaf,
+                         shrinkage = learning.rate,
                          bag.fraction = 1,
                          cv.folds = kfolds)
   )
@@ -56,12 +56,13 @@ train_GBM <- function(training.df,numberOfTrees,kfolds=10){
 }
 
 # Validation -------------------------------------------------------------
-validate_GBM <- function(outcome.list,validation.df,dataset.name,i,results.df){
+validate_GBM <- function(outcome.list,validation.df,dataset.name,i,results.df,learning.rate,min.nodes.in.leaf){
   
   trained.model <- outcome.list[[1]];
   best.iteration <- outcome.list[[2]];
   time.df <- outcome.list[[3]]
   
+  #Compute time of the prediction
   y_pred <- predict(trained.model, validation.df);
   error <- y_pred - validation.df$UTILITY_INCREASE;
   
@@ -80,8 +81,12 @@ validate_GBM <- function(outcome.list,validation.df,dataset.name,i,results.df){
   results.df$User_Time[i] <- time.df$user.time;
   results.df$Sys_Time[i] <- time.df$sys.time;
   results.df$Elapsed_Time[i] <- time.df$elapsed.time;
-  #results.df$Leaf_Nodes[i] <- nodes;
-  
+  results.df$Learning_Rate[i] <- learning.rate;
+  results.df$Min_Data_In_Leaf[i] <- min.nodes.in.leaf;
+
   return(results.df); 
 }
+
+# Validation error output -------------------------------------------------
+# Write the validation error list to a file so we can run statistical significance tests
 

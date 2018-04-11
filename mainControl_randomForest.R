@@ -23,7 +23,7 @@ folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//Dat
 # CONTROL CODE   ------------------------------------------------------------
 
 model.name.list <- c("Linear","Discontinuous","Saturating","ALL");
-model.name <- model.name.list[3]
+model.name <- model.name.list[2]
 
 method.name <- c("GBM","XGBoost","LigthGBM","RF")[4];
 
@@ -39,7 +39,7 @@ for(model.name in model.name.list){
   dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
   
   for(i in c(1:length(dataset.name.list))){
-    #i <- 3;
+    i <- 3;
     results_line <- results_line+1;
     
     fileName <- paste0(folder,dataset.name.list[i],".csv");
