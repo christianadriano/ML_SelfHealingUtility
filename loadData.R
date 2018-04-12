@@ -170,9 +170,9 @@ rmse <- function(error){
 
 # MAPD --------------------------------------------------------------------
 
-# Mean Absolute Percent Deviation MAPD
+# Mean Absolute Percent Deviation MADP
 # https://en.wikipedia.org/wiki/Mean_absolute_percentage_error
-mapd <- function(prediction, actual){
+madp <- function(prediction, actual){
   error <- abs(actual-prediction);
   return(100* (sum(error/abs(actual) ))/ length(actual));
 }
@@ -207,16 +207,18 @@ resultsToFile <- function(results, modelName, methodName,extension){
 }
 
 # Generate the dataset names that will be trained -------------------------
-generateDataSetNames <- function(modelName,datasetSize,s_idx){
+generateDataSetNames <- function(modelName,datasetSizeList,s_idx){
+  ###s_idx=0 generates for all sizes in the dataset.
+  ###s_idx=1 generates only for the first element of datasetSizeList
   
-  if(s_idx==0 & length(datasetSize)>0){#Generate for all sizes
-    datasetName <- paste0(modelName,datasetSize[1]);
-    for(i in c(2:length(datasetSize))){
-      datasetName <- cbind(datasetName,paste0(modelName,datasetSize[i]));
+  if(s_idx==0 & length(datasetSizeList)>0){#Generate for all sizes
+    datasetName <- paste0(modelName,datasetSizeList[1]);
+    for(i in c(2:length(datasetSizeList))){
+      datasetName <- cbind(datasetName,paste0(modelName,datasetSizeList[i]));
     }
   }
   else{
-    datasetName <- paste0(modelName,datasetSize[s_idx]);
+    datasetName <- paste0(modelName,datasetSizeList[s_idx]);
   }
   return(datasetName);
 }
