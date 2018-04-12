@@ -76,7 +76,7 @@ validate_GBM <- function(outcome.list,validation.df,dataset.name,i,results.df,le
   
   results.df$RMSE[i] <- rmse(error);
   results.df$R_Squared[i] <- r_squared(y_pred,validation.df$UTILITY_INCREASE);
-  results.df$MAPD[i] <- mapd(y_pred,validation.df$UTILITY_INCREASE);
+  results.df$MADP[i] <- madp(y_pred,validation.df$UTILITY_INCREASE);
   
   results.df$User_Time[i] <- time.df$user.time;
   results.df$Sys_Time[i] <- time.df$sys.time;
