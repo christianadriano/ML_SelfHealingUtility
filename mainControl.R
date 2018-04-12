@@ -38,7 +38,7 @@ method.name <- c("GBM","XGBoost","LigthGBM")[3];
 dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
 
 results.df <- data.frame(matrix(data=NA,nrow=1000,ncol=14));
-colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MAPD","User_Time","Sys_Time","Elapsed_Time",
+colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MADP","User_Time","Sys_Time","Elapsed_Time",
                           "Number_of_Trees","Learning_Rate","Max_Depth","Train_Split","Min_Data_In_Leaf","Bagging_Fraction");
 
 results_line <- 0;
