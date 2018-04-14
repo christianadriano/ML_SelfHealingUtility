@@ -71,7 +71,7 @@ for(model.name in model.name.list){
                                dataset.name.list[i],results_line,results.df,
                                numberOfTrees);
     
-    message <- resultsToFile(results.df,model.name,method.name,"_1KTrees_70_30_NOFeatureSelection.csv"); #save to a .csv file
+    message <- resultsToFile(results.df,model.name,method.name,"-200Trees5Nodes_70_30_NOFeatureSelection.csv"); #save to a .csv file
     print(message);
 
     pmmlFileName <- paste0(".//pmml///",dataset.name.list[i],"-200Trees5Nodes",method.name,".pmml");
