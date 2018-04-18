@@ -11,7 +11,7 @@ library(r2pmml) #https://github.com/jpmml/r2pmml
 # Initialization section ------------------------------------------------------
 
 #Load utility functions
-source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//loadData.R");
+source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//loadData.R");
 
 #Data structure to keep results
 
@@ -26,7 +26,7 @@ model.name <- model.name.list[2];
 
 method.name <- "RF";
 
-dataset.name.list <- generateDataSetNames(model.name, c("1K","2K","9K"),3);
+dataset.name.list <- generateDataSetNames(model.name, c("1K","2K","9K"),0);
 
 results.df <- data.frame(matrix(data=NA,nrow=1000,ncol=14));
 colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MADP","User_Time","Sys_Time","Elapsed_Time",
@@ -35,7 +35,7 @@ colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MADP","User
 results_line <- 0;
 
 for(model.name in model.name.list){
-  dataset.name.list <- generateDataSetNames(model.name, c("1K","2K","9K"),3);
+  dataset.name.list <- generateDataSetNames(model.name, c("1K","2K","9K"),0);
   
   for(i in c(1:length(dataset.name.list))){
     #i <- 1;
@@ -55,7 +55,7 @@ for(model.name in model.name.list){
     validation.df <- as.data.frame(features.df[training.size:totalData.size,]);
     
     #Train model
-    numberOfTrees <- 100
+    numberOfTrees <- 2
     control <- trainControl(method="repeatedcv", number=10, repeats=1, search="random")
     set.seed(7)
     bestmtry <- tuneRF(training.df, training.df$UTILITY_INCREASE, stepFactor=1.5, 
@@ -71,10 +71,10 @@ for(model.name in model.name.list){
                                dataset.name.list[i],results_line,results.df,
                                numberOfTrees);
     
-    message <- resultsToFile(results.df,model.name,method.name,"_RF_70_30.csv"); #save to a .csv file
+    message <- resultsToFile(results.df,model.name,method.name,"_RF_70_30_test.csv"); #save to a .csv file
     print(message);
 
-    pmmlFileName <- paste0(".//pmml///",dataset.name.list[i],"-200Trees5Nodes",method.name,".pmml");
+    pmmlFileName <- paste0(".//pmml///",dataset.name.list[i],"_RF_70-30_test",method.name,".pmml");
     generatePMML(trained.model,training.df,pmmlFileName,numberOfTrees);
   }
 }
