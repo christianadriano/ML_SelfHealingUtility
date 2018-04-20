@@ -21,7 +21,7 @@ folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//Dat
 
 # CONTROL CODE   ------------------------------------------------------------
 
-model.name.list <- c("Linear","Discontinuous","Saturating","ALL");
+model.name.list <- c("Linear","Discontinuous","Saturating","Combined");
 model.name <- model.name.list[2];
 
 method.name <- "RF";
@@ -35,7 +35,7 @@ colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MADP","User
 results_line <- 0;
 
 for(model.name in model.name.list){
-  dataset.name.list <- generateDataSetNames(model.name, c("1K","2K","9K"),0);
+  dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
   
   for(i in c(1:length(dataset.name.list))){
     #i <- 1;
@@ -44,7 +44,7 @@ for(model.name in model.name.list){
     fileName <- paste0(folder,dataset.name.list[i],".csv");
     data.df <- loadData(fileName);
     
-    features.df <- prepareFeatures(data.df,"ALL");
+    features.df <- prepareFeatures(data.df,"Combined");
     
     #Extract training and validation sets 
     totalData.size <- dim(features.df)[1];
@@ -55,7 +55,7 @@ for(model.name in model.name.list){
     validation.df <- as.data.frame(features.df[training.size:totalData.size,]);
     
     #Train model
-    numberOfTrees <- 2
+    numberOfTrees <- 100
     control <- trainControl(method="repeatedcv", number=10, repeats=1, search="random")
     set.seed(7)
     bestmtry <- tuneRF(training.df, training.df$UTILITY_INCREASE, stepFactor=1.5, 
@@ -70,15 +70,14 @@ for(model.name in model.name.list){
     results.df <- validate_RF(trained.model,convertTimeToDataFrame(time),validation.df,
                                dataset.name.list[i],results_line,results.df,
                                numberOfTrees);
-    
-    message <- resultsToFile(results.df,model.name,method.name,"_RF_70_30_test.csv"); #save to a .csv file
-    print(message);
 
-    pmmlFileName <- paste0(".//pmml///",dataset.name.list[i],"_RF_70-30_test",method.name,".pmml");
-    generatePMML(trained.model,training.df,pmmlFileName,numberOfTrees);
+    #pmmlFileName <- paste0(".//pmml///",dataset.name.list[i],"_RF_70-30_test",method.name,".pmml");
+    #generatePMML(trained.model,training.df,pmmlFileName,numberOfTrees);
   }
 }
 
+message <- resultsToFile(results.df,model.name,method.name,"_RF_70_30_test.csv"); #save to a .csv file
+print(message);
 
 #-----------------------------------------------------------------------------
 
