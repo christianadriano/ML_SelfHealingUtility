@@ -10,13 +10,16 @@
 #Automatic model selection
 #Models are select by defining a metric, which in our case we choose RMSE - Root Mean Square Error)
 
+#Interesting articles about XGBoost
+#https://medium.com/@Synced/tree-boosting-with-xgboost-why-does-xgboost-win-every-machine-learning-competition-ca8034c0b283
+#
 
 
 #-------------------------------------------------------------------------------------------------
 
 
 # Train function  ---------------------------------------------------------
-trainXGBoost <- function(training.df,numberOfTrees,kfolds=10){
+train_XGBoost <- function(training.df,numberOfTrees,kfolds=10){
   
   last.column.explanatory <- dim(training.df)[2] - 1; #last column is the target variable
   
@@ -30,39 +33,38 @@ trainXGBoost <- function(training.df,numberOfTrees,kfolds=10){
   time <- system.time(trained.model <-  xgb.cv(
                                       param=param, 
                                       data = xgb.train.data, 
-                                      nfold = kfold, 
+                                      nfold = kfolds, 
                                       nrounds = numberOfTrees, 
                                       early_stopping_rounds = 500, 
                                       metrics='rmse',
-                                      verbose = FALSE)
-                      )
+                                      verbose = TRUE)
+                      );
   
   best.iteration <- trained.model$best_iteration;
-  #trained.model$evaluation_log[best_iteration]
-  
+  trained.model$evaluation_log[best.iteration];
+  #browser();
   # Get feature importance
-  summary(trained.model, n.trees = best.iteration)
+  summary(trained.model, n.trees = best.iteration);
   
   #Get the bes model
-  #best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best.iteration);
+  best.model <- xgboost(param =param,  data = xgb.train.data, nrounds=best.iteration);
 
-  return(list(trained.model, convertTimeToDataFrame(time)));
-  
+  return(list(best.model, convertTimeToDataFrame(time),best.iteration));
 }
 
 # Validation -------------------------------------------------------------
-validateXGBoost <- function(outcome.list,validation.df,dataset.name.list,i,results.df){
+validate_XGBoost <- function(outcome.list,validation.df,dataset.name,i,results.df){
   
   trained.model <- outcome.list[[1]];
   time.df <- outcome.list[[2]];
   
-  best.iteration <- trained.model$best_iteration;
+  best.iteration <- outcome.list[[3]];;
 
   y_pred <- predict(trained.model, as.matrix(validation.df));
   error <- y_pred - validation.df$UTILITY_INCREASE;
   
   results.df$Item[i] <- i;
-  results.df$Utility_Type[i]<-gsub(" ","",dataset.name.list[i],fixed = TRUE);
+  results.df$Utility_Type[i]<-gsub(" ","",dataset.name,fixed = TRUE);
   # results.df$Train_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_mean;
   # results.df$Train_RMSE_STD[i]<-trained.model$evaluation_log[best.iteration]$train_rmse_std;
   # results.df$Test_RMSE_MEAN[i]<-trained.model$evaluation_log[best.iteration]$test_rmse_mean;
@@ -70,11 +72,12 @@ validateXGBoost <- function(outcome.list,validation.df,dataset.name.list,i,resul
   
   results.df$RMSE[i] <- rmse(error);
   results.df$R_Squared[i] <- r_squared(y_pred,validation.df$UTILITY_INCREASE);
-  results.df$MAPD[i] <- mapd(y_pred,validation.df$UTILITY_INCREASE);
+  results.df$MADP[i] <- madp(y_pred,validation.df$UTILITY_INCREASE);
   
-  results.df$User_Time[i] <- time.df$user.time;
-  results.df$Sys_Time[i] <- time.df$sys.time;
+  #results.df$User_Time[i] <- time.df$user.time;
+  #results.df$Sys_Time[i] <- time.df$sys.time;
   results.df$Elapsed_Time[i] <- time.df$elapsed.time;
+  results.df$Number_of_Trees[i] <- best.iteration;
   
   return(results.df);    
 }

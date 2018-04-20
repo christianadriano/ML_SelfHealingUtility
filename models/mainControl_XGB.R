@@ -6,7 +6,6 @@
 
 library(devtools)
 library(xgboost)
-library(lightgbm, quietly=TRUE)
 library(r2pmml) #https://github.com/jpmml/r2pmml
 
 # Initialization section ------------------------------------------------------
@@ -18,78 +17,60 @@ source("C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//models//xboo
 #Data structure to keep results
 
 #Folder with training data
-folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//DataPoints_1K-3K-9K//";
-#folder <- "//DataPoints_1K-3K-9K//";
+folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//";
+datafolder_1k3k9k <- "//DataPoints_1K-3K-9K//";
+#datafolder_10K <- "//DataPoints_10K-150K//";
 
-# CONTROL CODE   ------------------------------------------------------------
+folder <- paste0(folder,datafolder_1k3k9k);
+
+# CONTROL CODE   ---------------------------------------------------------------
 
 model.name.list <- c("Linear","Discontinuous","Saturating","Combined");
-model.name <- model.name.list[2]
+model.name <- model.name.list[4];
 
-method.name <- c("GBM","XGBoost","LigthGBM")[3];
+method.name <- "XGB";
 
 dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
 
-results.df <- data.frame(matrix(data=NA,nrow=1000,ncol=14));
-colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MADP","User_Time","Sys_Time","Elapsed_Time",
-                          "Number_of_Trees","Learning_Rate","Max_Depth","Train_Split","Min_Data_In_Leaf","Bagging_Fraction");
+results.df <- data.frame(matrix(data=NA,nrow=1000,ncol=7));
+colnames(results.df) <- c("Item","Utility_Type","RMSE","R_Squared", "MADP","Elapsed_Time","Number_of_Trees");
+  #                        "User_Time","Sys_Time","Learning_Rate","Max_Depth","Train_Split","Min_Data_In_Leaf",
+  #                        "Bagging_Fraction");
 
-results_line <- 0;
+#results_line <- 0;
 
-#for(model.name in model.name.list){
- # dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0);
+for(model.name in model.name.list){
+  dataset.name.list <- generateDataSetNames(model.name, c("1K","3K","9K"),0); 
   
- # for(i in c(1:length(dataset.name.list))){
-    i <- 3;
+ for(i in c(1:length(dataset.name.list))){
+    #i <- 1;
     results_line <- results_line+1;
     
     fileName <- paste0(folder,dataset.name.list[i],".csv");
     data.df <- loadData(fileName);
     
-    features.df <- prepareFeatures(data.df,"Discontinuous");
+    features.df <- prepareFeatures(data.df,"Combined");
     
     #Extract training and validation sets 
     totalData.size <- dim(features.df)[1];
-    training.size <- trunc(totalData.size * 0.9);
-    #endValidationIndex <- totalData.size - training.size;
+    training.size <- trunc(totalData.size * 0.7);
     
     training.df <- as.data.frame(features.df[1:training.size-1,]);
     validation.df <- as.data.frame(features.df[training.size:totalData.size,]);
     
-    #For lightGBM, need a testing set.
-    train.split <- 0.9
-    trainingTest.list <- extractTrainingTesting(training.df,train.split);
-    
     #Train model
-    numberOfTrees <- 5000;
+    numberOfTrees <- 1000;
     kfolds <- 10;
-    learning.rate <- 0.1;
-    max.depth <- 6;
-    bagging.fraction <- 1;
-    min.data.in.leaf <- 20;
-   # outcome.list <- train_LightGBM(train_df=trainingTest.list[[1]],test_df=trainingTest.list[[2]],
-   #                                 numberOfTrees,kfolds,max.detph,learning.rate,min.data.in.leaf,bagging.fraction);
-    
+    outcome.list <- train_XGBoost(training.df,numberOfTrees,kfolds);
+    dataset.name.list[i];
     #Validate model
-    #results.df <- validate_LightGBM(outcome.list,validation.df,dataset.name.list[i],results_line,results.df,
-    #                                numberOfTrees,learning.rate,max.depth,train.split,min.data.in.leaf,bagging.fraction);
-    
-
-    outcome.list <- train_GBM(train_df=trainingTest.list[[1]],test_df=trainingTest.list[[2]],
-                                     numberOfTrees,kfolds,max.detph,learning.rate,min.data.in.leaf,bagging.fraction);
-    
-    #Validate model
-    results.df <- validate_GBM(outcome.list,validation.df,dataset.name.list[i],results_line,results.df,
-                                    numberOfTrees,learning.rate,max.depth,train.split,min.data.in.leaf,bagging.fraction);
-    
-        
+    results.df <- validate_XGBoost(outcome.list,validation.df,dataset.name.list[i],results_line,results.df);
   }
-  
 }
 
 #print(results.df); #show on the console
 
-message <- resultsToFile(results.df,model.name,method.name,"_70-30_NOFeatureSelection.csv"); #save to a .csv file
+message <- resultsToFile(results.df,model.name,method.name,"XGB_70-30_500_trees.csv"); #save to a .csv file
 print(message);
 
 pmmlFileName <- paste0(".//pmml///",dataset.name.list[i],"-",method.name,".pmml");
