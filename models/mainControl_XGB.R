@@ -1,13 +1,8 @@
 ## Control code that can run different machine learning methods
 
 # install.packages("xgboost")
-# install.packages("gbm")
 # install.packages("devtools")
 # install_git("git://github.com/jpmml/r2pmml.git")
-
-#Install LightGBM
-# options(devtools.install.args = "--no-multiarch") # if you have 64-bit R only, you can skip this
-# install_github("Microsoft/LightGBM", subdir = "R-package")
 
 library(devtools)
 library(xgboost)
@@ -28,7 +23,7 @@ folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//Dat
 
 # CONTROL CODE   ------------------------------------------------------------
 
-model.name.list <- c("Linear","Discontinuous","Saturating","ALL");
+model.name.list <- c("Linear","Discontinuous","Saturating","Combined");
 model.name <- model.name.list[2]
 
 method.name <- c("GBM","XGBoost","LigthGBM")[3];
