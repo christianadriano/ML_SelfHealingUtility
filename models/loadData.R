@@ -106,7 +106,7 @@ select_Discontinuous <- function(dataf){
   return(features.df);
 }
 
-select_ALL <- function(dataf){
+select_Combined <- function(dataf){
   
   # Select feature columns --------------------------------------------------
   features.df<- data.frame(dataf$CRITICALITY,dataf$RELIABILITY, dataf$IMPORTANCE, 
@@ -227,8 +227,8 @@ generateDataSetNames <- function(modelName,datasetSizeList,s_idx){
 prepareFeatures <- function(dataf,selectionType){
   
   #Do feature selection (or not)
-  if(selectionType=="ALL")
-    features.df<- select_ALL(dataf) 
+  if(selectionType=="Combined")
+    features.df<- select_Combined(dataf) 
   else
     if(selectionType=="Linear")
       features.df<- select_Linear(dataf) 
