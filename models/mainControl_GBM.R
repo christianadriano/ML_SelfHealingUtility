@@ -22,7 +22,7 @@ folder <- "C://Users//Chris//Documents//GitHub//ML_SelfHealingUtility//data//Dat
 
 # CONTROL CODE   ------------------------------------------------------------
 
-model.name.list <- c("Linear","Discontinuous","Saturating","ALL");
+model.name.list <- c("Linear","Discontinuous","Saturating","Combined");
 model.name <- model.name.list[4];
 
 method.name <- "GBM";
@@ -46,7 +46,7 @@ for(model.name in model.name.list){
     fileName <- paste0(folder,dataset.name.list[i],".csv");
     data.df <- loadData(fileName);
     
-    features.df <- prepareFeatures(data.df,"ALL");
+    features.df <- prepareFeatures(data.df,"Combined");
     
     #Extract training and validation sets 
     totalData.size <- dim(features.df)[1];
