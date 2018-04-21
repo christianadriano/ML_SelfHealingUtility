@@ -77,7 +77,6 @@ validate_XGBoost <- function(outcome.list,validation.df,dataset.name,i,results.d
   #results.df$User_Time[i] <- time.df$user.time;
   #results.df$Sys_Time[i] <- time.df$sys.time;
   results.df$Elapsed_Time[i] <- time.df$elapsed.time;
-  results.df$Number_of_Trees[i] <- best.iteration;
   
   return(results.df);    
 }
